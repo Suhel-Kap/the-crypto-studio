@@ -1,12 +1,14 @@
 import { HeaderSimple } from "./HeaderSimple"
 import { AppShell, Footer } from "@mantine/core"
+import {NavbarSide} from "./Navbar";
 
 export function Layout({ children }) {
     return (
         <AppShell
             padding="md"
             header={<HeaderSimple />}
-            footer={<Footer height={60} p={"md"}> Application Footer </Footer>}
+            navbar={<NavbarSide />}
+            footer={<Footer height={60} p={"md"}> All rights reserved. </Footer>}
             styles={(theme) => ({
                 main: {
                     backgroundColor:

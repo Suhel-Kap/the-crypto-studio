@@ -12,10 +12,11 @@ import {
     Divider,
     Center,
     Box,
-    Burger,
+    Burger, Title,
 } from '@mantine/core';
 import { MantineLogo } from '@mantine/ds';
 import { useDisclosure } from '@mantine/hooks';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const useStyles = createStyles((theme) => ({
     link: {
@@ -83,28 +84,20 @@ export function HeaderSimple() {
     const { classes, theme } = useStyles();
 
     return (
-            <Header height={60} px="md">
-                <Group position="apart" sx={{ height: '100%' }}>
-                    <MantineLogo size={30} />
-
-                    <Group sx={{ height: '100%' }} spacing={0} className={classes.hiddenMobile}>
-                        <a href="#" className={classes.link}>
-                            Home
-                        </a>
-                        <a href="#" className={classes.link}>
-                            Learn
-                        </a>
-                        <a href="#" className={classes.link}>
-                            Academy
-                        </a>
-                    </Group>
-
+            <Header height={100} p="md">
+                <Group position="apart" p={"md"} sx={{ height: '100%' }}>
+                    <Title>
+                        Dynamic Audio NFT
+                    </Title>
                     <Group className={classes.hiddenMobile}>
-                        <Button variant="default">Log in</Button>
-                        <Button>Sign up</Button>
+                        <ConnectButton
+                            accountStatus={{
+                                smallScreen: 'avatar',
+                                largeScreen: 'full',
+                            }}
+                            showBalance={false}
+                        />
                     </Group>
-
-                    <Burger opened={drawerOpened} onClick={toggleDrawer} className={classes.hiddenDesktop} />
                 </Group>
             </Header>
     );

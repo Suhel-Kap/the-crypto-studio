@@ -5,7 +5,7 @@ export default function MyNft() {
     return (
         <>
             <Head>
-                <title>My Dynamic Visual NFTs</title>
+                <title>My NFTs - The Crypto Studio</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
             <Layout>

@@ -23,11 +23,13 @@ import {GlobalContext} from "../contexts/GlobalContext";
 import {Orbis} from "@orbisclub/orbis-sdk";
 
 let orbis = new Orbis();
-const GROUP_ID = "kjzl6cwe1jw148pbmyr0mpwb4c8jexbspwyixszvw9trzv71zazzmryg14cczqg";
+const GROUP_ID = "kjzl6cwe1jw14axp80vka5y7ca38y09datmcu4bz0tz8xzntvn9la91292wfnhb";
+const CHANNEL_ID = "kjzl6cwe1jw14b9kogz1as83u05pswa5fs4pzbejlr55f8njn108punvyyrymk5"
 
 export default function App(props: AppProps) {
     const [user, setUser] = useState(null);
     const group_id = GROUP_ID;
+    const channel_id = CHANNEL_ID;
     const {Component, pageProps} = props;
     const {chains, provider, webSocketProvider} = configureChains(
         [chain.polygonMumbai],
@@ -62,11 +64,6 @@ export default function App(props: AppProps) {
             setUser(res.details);
         }
     }
-    /*
-    * Upmint
-    * The crypto studio
-    * Techno Labs
-    * */
 
     return (
         <>
@@ -74,7 +71,7 @@ export default function App(props: AppProps) {
                 <title>Page title</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
-            <GlobalContext.Provider value={{user, setUser, group_id, orbis}}>
+            <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis}}>
                 <WagmiConfig client={wagmiClient}>
                     <RainbowKitProvider chains={chains} theme={darkTheme()}>
                         <MantineProvider

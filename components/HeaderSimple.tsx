@@ -87,7 +87,7 @@ export function HeaderSimple() {
             <Header height={100} p="md">
                 <Group position="apart" p={"md"} sx={{ height: '100%' }}>
                     <Title>
-                        Dynamic Audio NFT
+                        The Crypto Studio
                     </Title>
                     <Group className={classes.hiddenMobile}>
                         <ConnectButton

@@ -5,7 +5,7 @@ export default function Home() {
     return (
         <>
             <Head>
-                <title>Dynamic Visual NFTs</title>
+                <title>The Crypto Studio</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
             <Layout>

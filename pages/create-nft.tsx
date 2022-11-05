@@ -5,7 +5,7 @@ export default function CreateNft() {
     return (
         <>
             <Head>
-                <title>Create Dynamic Visual NFTs</title>
+                <title>Create NFT - The Crypto Studio</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
             <Layout>

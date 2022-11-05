@@ -2,7 +2,7 @@ import Head from 'next/head'
 import {Layout} from "../components/Layout";
 import {useContext, useEffect, useState} from "react";
 import { useProvider } from 'wagmi'
-import {Center, Button} from "@mantine/core";
+import {Center, Button, Stack} from "@mantine/core";
 import {GlobalContext} from "../contexts/GlobalContext";
 import ChatContent from '../components/ChatContent';
 import ChatBox from "../components/ChatBox";
@@ -69,10 +69,10 @@ export default function Discussions() {
                         </Button>
                     </Center>
                     :
-                    <>
+                    <Stack>
                         <ChatContent posts={posts}/>
                         <ChatBox posts={posts} setPosts={setPosts} />
-                    </>
+                    </Stack>
                 }
             </Layout>
         </>

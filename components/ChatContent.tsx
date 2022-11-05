@@ -1,18 +1,41 @@
-import {Group, ScrollArea, Tooltip} from "@mantine/core"
+import {Badge, Group, ScrollArea, Tooltip} from "@mantine/core"
 import makeBlockie from 'ethereum-blockies-base64'
 import {Avatar, Text} from "@mantine/core"
+import {useClipboard} from "@mantine/hooks";
+import {showNotification} from "@mantine/notifications"
+import {useEffect, useRef} from 'react'
 
 export default function ChatContent(props: Array<JSON>) {
+    const viewport = useRef<HTMLDivElement>(null)
+    const scrollToBottom = () =>
+        viewport.current.scrollTo({top: viewport.current.scrollHeight, behavior: 'smooth'})
+    const clipboard = useClipboard()
+    useEffect(() => {
+        scrollToBottom()
+    })
     const posts = props.posts.slice(0).reverse().map((post, index) => {
         return (
             <div key={index}>
-                <Group m={"md"}>
-                    <Tooltip label={post.creator_details.metadata.address}>
-                        <Avatar src={makeBlockie(post.creator_details.metadata.address)}/>
-                    </Tooltip>
+                <Group m={"md"} noWrap>
                     <div>
-                        <Text size={"xs"} weight={500} color={"dimmed"}>{post.creator_details.profile.username}</Text>
-                        <Text>{post.content.body}</Text>
+                        <Tooltip label={post.creator_details.metadata.address}>
+                            <Avatar src={makeBlockie(post.creator_details.metadata.address)} radius={"md"}/>
+                        </Tooltip>
+                    </div>
+                    <div>
+                        <Group>
+                            <Text size={"xs"} weight={500}
+                                  color={"dimmed"}>{post.creator_details.profile.username}</Text>
+                            <Badge onClick={() => {
+                                clipboard.copy(post.creator_details.metadata.address)
+                                showNotification({
+                                    title: "Copied to clipboard",
+                                    message: post.creator_details.metadata.address,
+                                })
+                            }} size={"xs"} color={"indigo"} variant={"filled"}
+                                   sx={{cursor: "pointer"}}>{post.creator_details.metadata.address.slice(0, 4) + "-" + post.creator_details.metadata.address.slice(-4)}</Badge>
+                        </Group>
+                        <Text sx={{maxWidth: "90%"}}>{post.content.body}</Text>
                     </div>
                 </Group>
             </div>
@@ -20,7 +43,7 @@ export default function ChatContent(props: Array<JSON>) {
     })
 
     return (
-        <ScrollArea style={{height: "60vh"}}>
+        <ScrollArea style={{height: "75vh"}} viewportRef={viewport}>
             {posts}
         </ScrollArea>
     )

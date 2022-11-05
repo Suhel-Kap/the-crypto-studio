@@ -16,6 +16,7 @@ import {
 import {alchemyProvider} from 'wagmi/providers/alchemy';
 import {publicProvider} from 'wagmi/providers/public';
 import {useState, useEffect} from "react";
+import {NotificationsProvider} from '@mantine/notifications'
 
 import {GlobalContext} from "../contexts/GlobalContext";
 
@@ -81,7 +82,9 @@ export default function App(props: AppProps) {
                                 colorScheme: 'dark',
                             }}
                         >
-                            <Component {...pageProps} />
+                            <NotificationsProvider>
+                                <Component {...pageProps} />
+                            </NotificationsProvider>
                         </MantineProvider>
                     </RainbowKitProvider>
                 </WagmiConfig>

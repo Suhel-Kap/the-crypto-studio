@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState} from "react";
 import {GlobalContext} from "../contexts/GlobalContext";
-import {Grid, TextInput, Button} from "@mantine/core";
+import {Grid, Textarea, Button} from "@mantine/core";
 
 export default function ChatBox({posts, setPosts}) {
     const {user, setUser, orbis, group_id, channel_id} = useContext(GlobalContext)
@@ -19,8 +19,8 @@ export default function ChatBox({posts, setPosts}) {
     return (
         <Grid>
             <Grid.Col span={10}>
-                <TextInput value={message} placeholder={"Start typing your message..."}
-                           onChange={(e) => setMessage(e.currentTarget.value)}/>
+                <Textarea value={message} placeholder={"Start typing your message..."}
+                           onChange={(e) => setMessage(e.currentTarget.value)} autosize minRows={2} maxRows={4}/>
             </Grid.Col>
             <Grid.Col span={2}>
                 <Button onClick={async () => {
@@ -28,7 +28,7 @@ export default function ChatBox({posts, setPosts}) {
                     if (res.status === 200) {
                         console.log("Post created: ", res);
                         setMessage("")
-                        setTimeout(getPosts, 1500)
+                        setTimeout(getPosts, 2000)
                     }
                 }}>Send</Button>
             </Grid.Col>

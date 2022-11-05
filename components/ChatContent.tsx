@@ -24,8 +24,9 @@ export default function ChatContent(props: Array<JSON>) {
                     </div>
                     <div>
                         <Group>
-                            <Text size={"xs"} weight={500}
-                                  color={"dimmed"}>{post.creator_details.profile.username}</Text>
+                            {post.creator_details.profile &&
+                                <Text size={"xs"} weight={500}
+                                      color={"dimmed"}>{post.creator_details.profile.username}</Text>}
                             <Badge onClick={() => {
                                 clipboard.copy(post.creator_details.metadata.address)
                                 showNotification({
@@ -35,7 +36,7 @@ export default function ChatContent(props: Array<JSON>) {
                             }} size={"xs"} color={"indigo"} variant={"filled"}
                                    sx={{cursor: "pointer"}}>{post.creator_details.metadata.address.slice(0, 4) + "-" + post.creator_details.metadata.address.slice(-4)}</Badge>
                         </Group>
-                        <Text sx={{maxWidth: "90%"}}>{post.content.body}</Text>
+                        <Text sx={{maxWidth: "100%"}}>{post.content.body}</Text>
                     </div>
                 </Group>
             </div>
@@ -43,7 +44,7 @@ export default function ChatContent(props: Array<JSON>) {
     })
 
     return (
-        <ScrollArea style={{height: "75vh"}} viewportRef={viewport}>
+        <ScrollArea style={{height: "74vh"}} viewportRef={viewport}>
             {posts}
         </ScrollArea>
     )

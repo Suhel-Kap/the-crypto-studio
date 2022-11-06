@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>The Crypto Studio</title>
+    <title>Visualizer_4</title>
     <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
     <script>
         document.documentElement.className = "js"
@@ -119,11 +119,26 @@
     var colorPalette = ["#676767", "#232D22", "#C1C1C2", "#FFF903"]
     var uploadLoading = false
     var particles = []
-    let audioFile
 
     /*=============================================
     SETUP
 =============================================*/
+
+    function preload() {
+        getStorage()
+        audio = loadSound(
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy"
+        )
+    }
+
+    // loader του νέου mp3 file απο το file system
+    function uploaded(file) {
+        uploadLoading = true
+        uploadedAudio = loadSound(
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy",
+            uploadedAudioPlay
+        )
+    }
 
     function getStorage() {
         smoothing = 0.5
@@ -139,18 +154,11 @@
     }
 
     function setup() {
-        loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4", gotData)
-    }
-
-    function gotData(data) {
-        getStorage()
-        audioFile = data[0].audio
-        audio = loadSound(audioFile)
         createCanvas(windowWidth, windowHeight)
         gui = createGui()
         b = createButton("Button", 50, 50)
 
-        fft = new p5.FFT(smoothing, bins)
+        fft = new p5.FFT(0.4)
 
         audio.amp(parseFloat(amplitude))
         angleMode(DEGREES)
@@ -187,68 +195,66 @@
     DRAW
 =============================================*/
     function draw() {
-        if (audio){
-            stroke(50)
-            strokeWeight(2)
+        stroke(50)
+        strokeWeight(2)
 
-            translate(windowWidth / 2, windowHeight / 2)
+        translate(windowWidth / 2, windowHeight / 2)
 
-            let spectrum = fft.analyze()
-            spectrum.splice(bars, bins - bars)
+        let spectrum = fft.analyze()
+        spectrum.splice(bars, bins - bars)
 
-            amp = fft.getEnergy("treble")
-            amp1 = fft.getEnergy("bass")
+        amp = fft.getEnergy("treble")
+        amp1 = fft.getEnergy("bass")
 
-            push()
-            // image(img, 0, 0, width/2.5, height/2.5);
-            if (amp > 230) {
-                //   rotate(random(-0.5, 0.5))
+        push()
+        // image(img, 0, 0, width/2.5, height/2.5);
+        if (amp > 230) {
+            //   rotate(random(-0.5, 0.5))
+        }
+
+        pop()
+
+        var alpha = map(amp, 0, 25, 180, 150)
+        fill(0, alpha)
+        rect(0, 0, width, height)
+        background(255, 125, 125, 15)
+        if (amp1 > 230 && amp1 < 300) {
+            background(random(255), random(255), random(255))
+        }
+
+        var wave = fft.waveform()
+        for (var t = -1; t <= 1; t += 2) {
+            beginShape()
+
+            for (var i = 0; i <= 180; i += 0.5) {
+                var index = floor(map(i, 0, 180, 0, wave.length - 1))
+                var r = map(wave[index], -1, 1, 50, 116)
+
+                var x = r * sin(i) * t * 1.5
+                var y = r * cos(i) * 1.5
+                vertex(x, y)
             }
+            endShape()
+        }
 
-            pop()
-
-            var alpha = map(amp, 0, 25, 180, 150)
-            fill(0, alpha)
-            rect(0, 0, width, height)
-            background(255, 125, 125, 15)
-            if (amp1 > 230 && amp1 < 300) {
-                background(random(255), random(255), random(255))
-            }
-
-            var wave = fft.waveform()
-            for (var t = -1; t <= 1; t += 2) {
-                beginShape()
-
-                for (var i = 0; i <= 180; i += 0.5) {
-                    var index = floor(map(i, 0, 180, 0, wave.length - 1))
-                    var r = map(wave[index], -1, 1, 50, 116)
-
-                    var x = r * sin(i) * t * 1.5
-                    var y = r * cos(i) * 1.5
-                    vertex(x, y)
-                }
-                endShape()
-            }
-
-            var p = new Particle(33)
-            // var p2 = new Particle(33);
-            p.Particle()
-            // p2.Particle()
-            //    var p3 = new Particle();
-            particles.push(p)
-            // particles.push(p2);
-            // particles.push(p3);
-            for (var i = particles.length - 1; i >= 0; i--) {
-                if (!particles[i].edges()) {
-                    let bool = particles[i].update(amp1 > 300)
-                    particles[i].update1(amp > 150 && amp < 299)
-                    // particles[i].update2(amp > 100 && amp<150);
-                    // particles[i].update3(amp < 100);
-                    particles[i].show()
-                } else {
-                    //διαγραφει τα particles που παιρνανε απο τα edges του canva
-                    particles.splice(i, 1)
-                }
+        var p = new Particle(33)
+        // var p2 = new Particle(33);
+        p.Particle()
+        // p2.Particle()
+        //    var p3 = new Particle();
+        particles.push(p)
+        // particles.push(p2);
+        // particles.push(p3);
+        for (var i = particles.length - 1; i >= 0; i--) {
+            if (!particles[i].edges()) {
+                let bool = particles[i].update(amp1 > 300)
+                particles[i].update1(amp > 150 && amp < 299)
+                // particles[i].update2(amp > 100 && amp<150);
+                // particles[i].update3(amp < 100);
+                particles[i].show()
+            } else {
+                //διαγραφει τα particles που παιρνανε απο τα edges του canva
+                particles.splice(i, 1)
             }
         }
     }

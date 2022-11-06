@@ -28,6 +28,7 @@
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^5.7.2",
     "next": "13.0.2",
+    "nft.storage": "^7.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "4.8.4",

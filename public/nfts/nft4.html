@@ -48,26 +48,16 @@
 =============================================*/
 
     function preload() {
-        let audioFile
-        const res = fetch("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=1")
-        res.then(r => r.json()).then(r => {
-            audioFile = r[0].audio
-        })
         audio = loadSound(
-            audioFile
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy"
         )
     }
 
     // loader του νέου mp3 file απο το file system
     function uploaded(file) {
         uploadLoading = true
-        let audioFile
-        const res = fetch("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=1")
-        res.then(r => r.json()).then(r => {
-            audioFile = r[0].audio
-        })
         uploadedAudio = loadSound(
-            audioFile,
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy",
             uploadedAudioPlay
         )
     }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>The Crypto Studio</title>
+    <title>Visualizer_4</title>
     <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
     <script>
         document.documentElement.className = "js"
@@ -43,8 +43,21 @@
     var colorPalette = ["#000", "rgba(22, 59, 72, 0.5)", "#00a6e0", "#002a38"]
     var uploadLoading = false
     var particles = []
-    let audioFile
 
+    function preload() {
+        audio = loadSound(
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy"
+        )
+    }
+
+    // loader του νέου mp3 file απο το file system
+    function uploaded(file) {
+        uploadLoading = true
+        uploadedAudio = loadSound(
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy",
+            uploadedAudioPlay
+        )
+    }
 
     function mousePressed() {
         if (audio.isPlaying()) {
@@ -69,13 +82,6 @@
     }
 
     function setup() {
-        loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4", gotData)
-    }
-
-    function gotData(data){
-        audioFile = data[0].audio
-        audio = loadSound(audioFile)
-        console.log(audioFile)
         createCanvas(windowWidth, windowHeight, WEBGL)
         gui = createGui()
         b = createButton("Button", 50, 50)
@@ -108,69 +114,67 @@
     let counter = 0
 
     function draw() {
-        if (audio){
-            newCursor()
+        newCursor()
 
-            // prosthetei ena loading animation otan fortwnete ena neo track
-            //  apo to file system i otan allazei to visualizer
-            // -----------------------------------------------
+        // prosthetei ena loading animation otan fortwnete ena neo track
+        //  apo to file system i otan allazei to visualizer
+        // -----------------------------------------------
 
-            // Εδω δημιουργειται το μπλε 3d σχήμα με την βοήθεια της webGL βιβλιοθήκης
-            // το κάθε line διαστρεβλώνεται ανάλογα με το waveform που μας δίνεται
-            // απο τον αλγόριθμο Fast Fourier Transform
-            waveform = fft.waveform()
+        // Εδω δημιουργειται το μπλε 3d σχήμα με την βοήθεια της webGL βιβλιοθήκης
+        // το κάθε line διαστρεβλώνεται ανάλογα με το waveform που μας δίνεται
+        // απο τον αλγόριθμο Fast Fourier Transform
+        waveform = fft.waveform()
 
-            background(0, 0, 0, 0.9)
-            counter += 0.01
-            for (let i = 0; i <= number; i++) {
-                radius = 350 //noise(counter) * 15;
-                rad += 0.03
-                let speed = i / (number * 8)
-                let angle = radians(rad)
-                push()
-                bass = fft.getEnergy("bass")
-                var treble = fft.getEnergy(50, 110)
-                var mid = fft.getEnergy("mid")
-                // περιστροφή γυρω απο τους x,y,z άξονεσ
-                // η περιστροφή εξαρτάται απο το treble του ήχου
-                // απο τα mid και το  bass του ήχου
-                rotateZ(PI / (1 / mid))
-                rotateX(PI / (1 / (3 * bass)))
-                rotateY(PI / (1 / treble))
-                beginShape()
-                //---------------αρχή
-                curveVertex(0, -windowHeight / 5, 0)
-                curveVertex(0, -windowHeight / 2.9, 0)
-                //---------------μέσεο τμήμα
-                curveVertex(
-                    radius * 0.4 * sin(angle * speed),
-                    20 * sin(angle * 3 * waveform[i] * 0.5) + 40,
-                    radius * 0.6 * cos(angle * speed)
-                )
-
-                //---------------τέλος
-                curveVertex(0, windowHeight / 2 - 120, 0)
-                curveVertex(0, windowHeight / 2 - 120, 0)
-                endShape()
-                pop()
-
-                sphere(15)
-            }
+        background(0, 0, 0, 0.9)
+        counter += 0.01
+        for (let i = 0; i <= number; i++) {
+            radius = 350 //noise(counter) * 15;
+            rad += 0.03
+            let speed = i / (number * 8)
+            let angle = radians(rad)
             push()
-            translate(0, 0)
-            r++
-            fill(0)
-            var locX = mouseX - width / 2
-            var locY = mouseY - height / 2
-            pointLight(random(255), random(255), random(255), locX, locY, 50)
-            noStroke()
-            particles.forEach((p, i) => {
-                displayParicles(p.getX(), p.getY(), p.getSize(), color(100), true, false)
-                p.change(mouseX, mouseY)
-                p.move(amplitude)
-            })
+            bass = fft.getEnergy("bass")
+            var treble = fft.getEnergy(50, 110)
+            var mid = fft.getEnergy("mid")
+            // περιστροφή γυρω απο τους x,y,z άξονεσ
+            // η περιστροφή εξαρτάται απο το treble του ήχου
+            // απο τα mid και το  bass του ήχου
+            rotateZ(PI / (1 / mid))
+            rotateX(PI / (1 / (3 * bass)))
+            rotateY(PI / (1 / treble))
+            beginShape()
+            //---------------αρχή
+            curveVertex(0, -windowHeight / 5, 0)
+            curveVertex(0, -windowHeight / 2.9, 0)
+            //---------------μέσεο τμήμα
+            curveVertex(
+                radius * 0.4 * sin(angle * speed),
+                20 * sin(angle * 3 * waveform[i] * 0.5) + 40,
+                radius * 0.6 * cos(angle * speed)
+            )
+
+            //---------------τέλος
+            curveVertex(0, windowHeight / 2 - 120, 0)
+            curveVertex(0, windowHeight / 2 - 120, 0)
+            endShape()
             pop()
+
+            sphere(15)
         }
+        push()
+        translate(0, 0)
+        r++
+        fill(0)
+        var locX = mouseX - width / 2
+        var locY = mouseY - height / 2
+        pointLight(random(255), random(255), random(255), locX, locY, 50)
+        noStroke()
+        particles.forEach((p, i) => {
+            displayParicles(p.getX(), p.getY(), p.getSize(), color(100), true, false)
+            p.change(mouseX, mouseY)
+            p.move(amplitude)
+        })
+        pop()
     }
 
     function toggleAudio() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>The Crypto Studio</title>
+    <title>Visualizer_4</title>
     <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
     <script>
         document.documentElement.className = "js"
@@ -39,7 +39,7 @@
         affinity,
         colour //locally stored values
     let frameID = 0 //counter for animating the loading animation when a new song is uploaded
-    let pieces,
+    var pieces,
         fft,
         analyzer,
         mapMouseX,
@@ -49,20 +49,25 @@
         uploadBtn,
         uploadedAudio,
         uploadAnim
-    let colorPalette = ["#02073c", "#5b0ff5", "#f50fac", "#f50fac"]
-    let uploadLoading = false
+    var colorPalette = ["#02073c", "#5b0ff5", "#f50fac", "#f50fac"]
+    var uploadLoading = false
 
     /*=============================================
   SETUP
   =============================================*/
 
-    let audioFile
+    function preload() {
+        getStorage()
+        audio = loadSound(
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy"
+        )
+    }
 
     // loader του νέου mp3 file απο το file system
     function uploaded(file) {
         uploadLoading = true
         uploadedAudio = loadSound(
-            audioFile,
+            "https://ipfs.io/ipfs/bafybeicf6fmwvesmzyp34adh2jkbuxvztwer7eqt75knr2evp5dzygxlmy",
             uploadedAudioPlay
         )
     }
@@ -85,13 +90,6 @@
     // αλλα και του animation φόρτωσης του uploaded song ao to file system
     // η οταν φορτώνει ενα visualizer με το default του song
     function setup() {
-        loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4", gotData)
-    }
-
-    function gotData(data){
-        getStorage()
-        audioFile = data[0].audio
-        audio = loadSound(audioFile)
         createCanvas(windowWidth, windowHeight)
         fft = new p5.FFT(smoothing, bins)
         audio.amp(parseFloat(amplitude))
@@ -102,39 +100,37 @@
   =============================================*/
 
     function draw() {
-        if(audio){
-            let bass = fft.getEnergy(2, 250)
-            background((bass * bass) / 5000)
-            let spectrum = fft.analyze()
-            spectrum.splice(bars, bins - bars)
-            noStroke()
-            let dtheta = Math.PI / spectrum.length,
-                angleOffset = -Math.PI / 18
-            let x1 = windowWidth / 2,
-                y1 = windowHeight / 2
-            let angle, x2, y2, x3, y3, magnitude
+        let bass = fft.getEnergy(2, 250)
+        background((bass * bass) / 5000)
+        let spectrum = fft.analyze()
+        spectrum.splice(bars, bins - bars)
+        noStroke()
+        let dtheta = Math.PI / spectrum.length,
+            angleOffset = -Math.PI / 18
+        let x1 = windowWidth / 2,
+            y1 = windowHeight / 2
+        let angle, x2, y2, x3, y3, magnitude
 
-            stroke(200)
-            strokeWeight(strokeWidth)
+        stroke(200)
+        strokeWeight(strokeWidth)
 
-            for (let i = 0; i < spectrum.length; i++) {
-                magnitude =
-                    (Math.pow(spectrum[i], exponent) * factor) / Math.pow(255, exponent) +
-                    radius * 0.3 //magnitude = frequency volume ^ exponent / 255 ^ exponent
+        for (let i = 0; i < spectrum.length; i++) {
+            magnitude =
+                (Math.pow(spectrum[i], exponent) * factor) / Math.pow(255, exponent) +
+                radius * 0.3 //magnitude = frequency volume ^ exponent / 255 ^ exponent
 
-                angle = dtheta * i
+            angle = dtheta * i
 
-                x2 = Math.cos(angleOffset + angle + dtheta / 2) * magnitude + x1
-                y2 = Math.sin(angleOffset + angle + dtheta / 2) * magnitude + y1
-                x3 = Math.cos(angleOffset - angle - dtheta / 2) * magnitude + x1
-                y3 = Math.sin(angleOffset - angle - dtheta / 2) * magnitude + y1
-                line(x1, y1 - 10, x2, y2)
-                line(x1, y1 - 10, x3, y3)
-            }
-            // ροζ color του κύκλου
-            fill("#3B1344")
-            circle(x1, y1, radius * 0.28 * (2 + bass / 255))
+            x2 = Math.cos(angleOffset + angle + dtheta / 2) * magnitude + x1
+            y2 = Math.sin(angleOffset + angle + dtheta / 2) * magnitude + y1
+            x3 = Math.cos(angleOffset - angle - dtheta / 2) * magnitude + x1
+            y3 = Math.sin(angleOffset - angle - dtheta / 2) * magnitude + y1
+            line(x1, y1 - 10, x2, y2)
+            line(x1, y1 - 10, x3, y3)
         }
+        // ροζ color του κύκλου
+        fill("#3B1344")
+        circle(x1, y1, radius * 0.28 * (2 + bass / 255))
     }
 
     function mousePressed() {

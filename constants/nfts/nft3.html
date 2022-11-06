@@ -125,16 +125,29 @@
   =============================================*/
 
     function preload() {
+        let audioFile
+        const res = fetch("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4")
+        res.then(r => r.json()).then(r => {
+            console.log(r)
+            audioFile = r[0].audio
+            console.log(audioFile)
+        })
+        console.log("audioFile", audioFile)
         audio = loadSound(
-            "https://bafybeibnjamphh5hbwbfcmqcyuipe3x6hcmeaddxvfrpi5eywvrmfud5fm.ipfs.dweb.link"
+            audioFile
         )
     }
 
     // loader του νέου mp3 file απο το file system
     function uploaded(file) {
         uploadLoading = true
+        let audioFile
+        const res = fetch("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4")
+        res.then(r => r.json()).then(r => {
+            audioFile = r[0].audio
+        })
         uploadedAudio = loadSound(
-            "'https://bafybeibnjamphh5hbwbfcmqcyuipe3x6hcmeaddxvfrpi5eywvrmfud5fm.ipfs.dweb.link'",
+            audioFile,
             uploadedAudioPlay
         )
     }

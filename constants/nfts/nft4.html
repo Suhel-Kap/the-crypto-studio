@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Visualizer_4</title>
+    <title>The Crypto Studio</title>
     <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
     <script>
         document.documentElement.className = "js"
@@ -42,40 +42,19 @@
     var colorPalette = ["#000000", "#5b0ff5", "#f50fac", "#f50fac"]
     var uploadLoading = false
     var particles = []
+    let audioFile
 
     /*=============================================
   SETUP
 =============================================*/
 
-    function preload() {
-        let audioFile
-        const res = fetch("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=1")
-        res.then(r => r.json()).then(r => {
-            audioFile = r[0].audio
-        })
-        audio = loadSound(
-            audioFile
-        )
-    }
-
-    // loader του νέου mp3 file απο το file system
-    function uploaded(file) {
-        uploadLoading = true
-        let audioFile
-        const res = fetch("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=1")
-        res.then(r => r.json()).then(r => {
-            audioFile = r[0].audio
-        })
-        uploadedAudio = loadSound(
-            audioFile,
-            uploadedAudioPlay
-        )
-    }
-
-    // Αρχικοποιηση των buttons upload track & play/pause
-    // αλλα και του animation φόρτωσης του uploaded song ao to file system
-    // η οταν φορτώνει ενα visualizer με το default του song
     function setup() {
+        loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4", gotData)
+    }
+
+    function gotData(data) {
+        audioFile = data[0].audio
+        audio = loadSound(audioFile)
         createCanvas(windowWidth, windowHeight)
 
         analyzer = new p5.Amplitude()
@@ -87,74 +66,76 @@
   DRAW
 =============================================*/
     function draw() {
-        background("#999999")
+        if(audio) {
+            background("#999999")
 
-        translate(windowWidth / 2, windowHeight / 2)
-        gui = createGui()
-        b = createButton("Button", 50, 50)
-        level = analyzer.getLevel()
-        fft.analyze()
+            translate(windowWidth / 2, windowHeight / 2)
+            gui = createGui()
+            b = createButton("Button", 50, 50)
+            level = analyzer.getLevel()
+            fft.analyze()
 
-        var bass = fft.getEnergy(100, 150)
-        var treble = fft.getEnergy(150, 250)
-        var mid = fft.getEnergy("mid")
+            var bass = fft.getEnergy(100, 150)
+            var treble = fft.getEnergy(150, 250)
+            var mid = fft.getEnergy("mid")
 
-        var mapMid = map(mid, 0, 255, -100, 200)
+            var mapMid = map(mid, 0, 255, -100, 200)
 
-        var mapTreble = map(treble, 0, 255, 200, 350)
+            var mapTreble = map(treble, 0, 255, 200, 350)
 
-        var mapbass = map(bass, 0, 255, 50, 200)
+            var mapbass = map(bass, 0, 255, 50, 200)
 
-        mapMouseX = map(100, 0, width, 1, 50)
-        mapMouseXbass = map(160, 0, width, 1, 5)
-        mapMouseY = map(mouseY, 0, height, 2, 6)
+            mapMouseX = map(100, 0, width, 1, 50)
+            mapMouseXbass = map(160, 0, width, 1, 5)
+            mapMouseY = map(mouseY, 0, height, 2, 6)
 
-        pieces = 20
-        radius = 100
+            pieces = 20
+            radius = 100
 
-        for (i = 0; i < pieces; i += 0.1) {
-            rotate(TWO_PI / (pieces / 2))
+            for (i = 0; i < pieces; i += 0.1) {
+                rotate(TWO_PI / (pieces / 2))
 
-            noFill()
+                noFill()
 
-            /*----------  BASS  ----------*/
-            push()
-            stroke(colorPalette[1])
-            rotate(frameCount * 0.002)
-            strokeWeight(0.5)
-            polygon(mapbass + i, mapbass - i, mapMouseXbass * i, 3)
-            pop()
+                /*----------  BASS  ----------*/
+                push()
+                stroke(colorPalette[1])
+                rotate(frameCount * 0.002)
+                strokeWeight(0.5)
+                polygon(mapbass + i, mapbass - i, mapMouseXbass * i, 3)
+                pop()
 
-            /*----------  MID  ----------*/
-            push()
-            stroke(colorPalette[1])
-            strokeWeight(0.2)
-            polygon(mapMid + i / 2, mapMid - i * 2, mapMouseX * i, 7)
-            pop()
+                /*----------  MID  ----------*/
+                push()
+                stroke(colorPalette[1])
+                strokeWeight(0.2)
+                polygon(mapMid + i / 2, mapMid - i * 2, mapMouseX * i, 7)
+                pop()
 
-            /*----------  TREMBLE  ----------*/
-            push()
-            stroke(colorPalette[3])
-            strokeWeight(0.6)
-            scale(mouseX * 0.0005)
-            rotate(mouseX * 0.002)
-            polygon(mapTreble + i / 2, mapTreble - i / 2, (mapMouseY * i) / 2, 3)
-            pop()
-        }
-        var p = new Particle(20)
+                /*----------  TREMBLE  ----------*/
+                push()
+                stroke(colorPalette[3])
+                strokeWeight(0.6)
+                scale(mouseX * 0.0005)
+                rotate(mouseX * 0.002)
+                polygon(mapTreble + i / 2, mapTreble - i / 2, (mapMouseY * i) / 2, 3)
+                pop()
+            }
+            var p = new Particle(20)
 
-        particles.push(p)
+            particles.push(p)
 
-        for (var i = particles.length - 1; i >= 0; i--) {
-            if (!particles[i].edges()) {
-                // particles[i].update(treble > 300);
-                particles[i].update1(treble > 150 && treble < 299)
-                particles[i].update2(bass > 100 && bass < 150)
-                particles[i].update3(bass < 100)
-                particles[i].show()
-            } else {
-                //deleting out of range particles
-                particles.splice(i, 1)
+            for (var i = particles.length - 1; i >= 0; i--) {
+                if (!particles[i].edges()) {
+                    // particles[i].update(treble > 300);
+                    particles[i].update1(treble > 150 && treble < 299)
+                    particles[i].update2(bass > 100 && bass < 150)
+                    particles[i].update3(bass < 100)
+                    particles[i].show()
+                } else {
+                    //deleting out of range particles
+                    particles.splice(i, 1)
+                }
             }
         }
     }

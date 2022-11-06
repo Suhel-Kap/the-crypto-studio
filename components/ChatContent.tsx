@@ -5,15 +5,15 @@ import {useClipboard} from "@mantine/hooks";
 import {showNotification} from "@mantine/notifications"
 import {useEffect, useRef} from 'react'
 
-export default function ChatContent(props: Array<JSON>) {
-    const viewport = useRef<HTMLDivElement>(null)
+export default function ChatContent(props: any) {
+    const viewport = useRef<HTMLDivElement>()
     const scrollToBottom = () =>
-        viewport.current.scrollTo({top: viewport.current.scrollHeight, behavior: 'smooth'})
+        viewport?.current?.scrollTo({top: viewport.current.scrollHeight, behavior: 'smooth'})
     const clipboard = useClipboard()
     useEffect(() => {
         scrollToBottom()
     })
-    const posts = props.posts.slice(0).reverse().map((post, index) => {
+    const posts = props?.posts?.slice(0).reverse().map((post: any, index: number) => {
         return (
             <div key={index}>
                 <Group m={"md"} noWrap>

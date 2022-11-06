@@ -69,23 +69,11 @@
     }
 
     function setup() {
-        loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=4", gotData)
-    }
-
-    function gotData(data){
-        audioFile = data[0].audio
-        audio = loadSound(audioFile)
-        console.log(audioFile)
         createCanvas(windowWidth, windowHeight, WEBGL)
+        loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=7", gotData)
         gui = createGui()
         b = createButton("Button", 50, 50)
-
-        amplitude = new p5.Amplitude()
-
-        amplitude.setInput(audio)
-        fft = new p5.FFT()
         background(0)
-        audio.loop()
         number = 20
         stroke(24, 202, 230, 0.5)
         strokeWeight(1)
@@ -102,6 +90,18 @@
                 random(1, 255)
             )
         }
+    }
+
+    function gotData(data){
+        audioFile = data[0].audio
+        audio = loadSound(audioFile)
+        console.log(audioFile)
+
+        amplitude = new p5.Amplitude()
+
+        amplitude.setInput(audio)
+        fft = new p5.FFT()
+        audio.loop()
     }
 
     let r = 0

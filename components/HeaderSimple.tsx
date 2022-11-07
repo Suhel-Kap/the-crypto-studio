@@ -1,24 +1,32 @@
 import {
     createStyles,
     Header,
-    HoverCard,
     Group,
-    Button,
-    UnstyledButton,
-    Text,
-    SimpleGrid,
-    ThemeIcon,
-    Anchor,
-    Divider,
-    Center,
-    Box,
-    Burger, Title,
+    Burger, Title, Transition, Paper, Stack,
 } from '@mantine/core';
-import { MantineLogo } from '@mantine/ds';
-import { useDisclosure } from '@mantine/hooks';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import {useDisclosure} from '@mantine/hooks';
+import {ConnectButton} from '@rainbow-me/rainbowkit';
+import Link from 'next/link';
+
+const HEADER_HEIGHT = 60;
 
 const useStyles = createStyles((theme) => ({
+    dropdown: {
+        position: 'absolute',
+        top: HEADER_HEIGHT,
+        left: 0,
+        right: 0,
+        zIndex: 0,
+        borderTopRightRadius: 0,
+        borderTopLeftRadius: 0,
+        borderTopWidth: 0,
+        overflow: 'hidden',
+
+        [theme.fn.largerThan('sm')]: {
+            display: 'none',
+        },
+    },
+
     link: {
         display: 'flex',
         alignItems: 'center',
@@ -76,29 +84,75 @@ const useStyles = createStyles((theme) => ({
             display: 'none',
         },
     },
+
+    burger: {
+        [theme.fn.largerThan('md')]: {
+            display: 'none',
+        },
+    },
+
+    title: {
+        [theme.fn.smallerThan('md')]: {
+            fontSize: theme.fontSizes.xl,
+        }
+    }
 }));
+
+const links = [
+    {
+        "link": "/discussions",
+        "label": "Discussions"
+    },
+    {
+        "link": "/create-nft",
+        "label": "Create NFT"
+    },
+    {
+        "link": `/my-nft`,
+        "label": "Your NFTs"
+    },
+
+]
 
 
 export function HeaderSimple() {
-    const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-    const { classes, theme } = useStyles();
+    const [drawerOpened, {toggle: toggleDrawer, close: closeDrawer}] = useDisclosure(false);
+    const {classes, theme} = useStyles();
+    const [opened, {toggle, close}] = useDisclosure(false)
+
+    const items = links.map((link) => (
+        <Link href={link.link} key={link.label}>
+            {link.label}
+        </Link>
+    ));
 
     return (
-            <Header height={100} p="md">
-                <Group position="apart" p={"md"} sx={{ height: '100%' }}>
-                    <Title>
-                        The Crypto Studio
-                    </Title>
-                    <Group className={classes.hiddenMobile}>
-                        <ConnectButton
-                            accountStatus={{
-                                smallScreen: 'avatar',
-                                largeScreen: 'full',
-                            }}
-                            showBalance={false}
-                        />
-                    </Group>
+        <Header height={100} p="md">
+            <Group position="apart" p={"md"} sx={{height: '100%'}}>
+                <Title className={classes.title}>
+                    The Crypto Studio
+                </Title>
+                <Group className={classes.hiddenMobile}>
+                    <ConnectButton
+                        accountStatus={{
+                            smallScreen: 'avatar',
+                            largeScreen: 'full',
+                        }}
+                        showBalance={false}
+                    />
                 </Group>
-            </Header>
+                <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm"/>
+                <Transition transition="pop-top-right" duration={200} mounted={opened}>
+                    {(styles) => (
+                        <Paper className={classes.dropdown} withBorder style={styles}>
+                            <Stack pl={"2%"} align={"flex-start"} justify={"flex-start"}>
+                                {items}
+                                <ConnectButton showBalance={false}/>
+                            </Stack>
+                        </Paper>
+                    )}
+                </Transition>
+            </Group>
+        </Header>
     );
 }

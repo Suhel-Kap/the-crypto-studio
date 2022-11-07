@@ -14,6 +14,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
         navbar: {
             backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
                 .background,
+            [theme.fn.smallerThan('md')]: {
+                display: 'none',
+            }
         },
 
         version: {

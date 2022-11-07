@@ -8,6 +8,7 @@ import ChatContent from '../components/ChatContent';
 import ChatBox from "../components/ChatBox";
 
 export default function Discussions() {
+    // @ts-ignore
     const { user, setUser, orbis, group_id, channel_id } = useContext(GlobalContext)
     const [loading, setLoading] = useState(false)
     const [posts, setPosts] = useState([])

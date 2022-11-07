@@ -6,7 +6,7 @@ import {showNotification} from "@mantine/notifications"
 import {useEffect, useRef} from 'react'
 
 export default function ChatContent(props: any) {
-    const viewport = useRef<HTMLDivElement>()
+    const viewport = useRef<HTMLDivElement>(null)
     const scrollToBottom = () =>
         viewport?.current?.scrollTo({top: viewport.current.scrollHeight, behavior: 'smooth'})
     const clipboard = useClipboard()

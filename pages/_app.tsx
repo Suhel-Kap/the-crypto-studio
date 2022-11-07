@@ -21,6 +21,7 @@ import {NotificationsProvider} from '@mantine/notifications'
 import {GlobalContext} from "../contexts/GlobalContext";
 
 /** Import Orbis SDK */
+// @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
 
 let orbis = new Orbis();
@@ -72,7 +73,7 @@ export default function App(props: AppProps) {
                 <title>Page title</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
-            <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis}}>
+            <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis} as any}>
                 <WagmiConfig client={wagmiClient}>
                     <RainbowKitProvider chains={chains} theme={darkTheme()}>
                         <MantineProvider

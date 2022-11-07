@@ -1,8 +1,14 @@
 import { HeaderSimple } from "./HeaderSimple"
 import { AppShell, Footer } from "@mantine/core"
 import {NavbarSide} from "./Navbar";
+import {ReactNode} from "react";
 
-export function Layout({ children }) {
+interface Props {
+    children?: ReactNode
+    // any props that come into the component
+}
+
+export function Layout({ children }: Props) {
     return (
         <AppShell
             padding="md"

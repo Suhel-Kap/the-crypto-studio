@@ -1,9 +1,11 @@
 import tcsAbi from "./tcs.abi.json"
 import tcsContractAddress from "./contractAddress.json"
 import tableland from "./tableland.json"
+import nftImages from "./nftImages.json"
 
-module.exports = {
+export {
     tcsAbi,
     tcsContractAddress,
-    tableland
+    tableland,
+    nftImages
 }

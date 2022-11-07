@@ -6,18 +6,19 @@ import {useState} from "react";
 import useNftStorage from "../hooks/useNftStorage";
 import {useContract} from "../hooks/useContract";
 import {showNotification} from "@mantine/notifications";
-import {useRouter} from "next/router";
+import {useRouter} from "next/router"
+import {nftImages} from "../constants";
 
 export default function CreateNft() {
     const [file, setFile] = useState<File>()
-    const [name, setName] = useState<string | null>("")
+    const [name, setName] = useState<String>("")
     const [price, setPrice] = useState<string | null>("")
     const [loading, setLoading] = useState(false)
     const [displayPreview, setDisplayPreview] = useState(false)
-    const [description, setDescription] = useState<string | null>("")
-    const [spaceName, setSpaceName] = useState<string | null>("The Crypto Studio")
+    const [description, setDescription] = useState<String>("")
+    const [spaceName, setSpaceName] = useState<String>("The Crypto Studio")
     const {upload} = useNftStorage()
-    const [selectedNft, setSelectedNft] = useState<string | null>(null)
+    const [selectedNft, setSelectedNft] = useState<String>()
     const {getCurrentTokenId, mint} = useContract()
     const router = useRouter()
 
@@ -28,7 +29,7 @@ export default function CreateNft() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
-        let audioCid = await upload(file)
+        let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         const tokenId = await getCurrentTokenId()
         const updateHtml = await fetch("api/updateHtml", {
@@ -48,7 +49,26 @@ export default function CreateNft() {
         console.log("dataCid", cid)
         const animationCid = `ipfs://${cid}/${parseInt(tokenId) + 1}.html`
         console.log("animationCid", animationCid)
-        const image = "https://bafkreibwneuzorjlhzlwvzd4oudv5wv5gm4hlos3vwjsanuvs7zcmshmvi.ipfs.nftstorage.link/"
+        let image
+        switch (selectedNft) {
+            case "1":
+                image = nftImages["nft-design-1"]
+                break
+            case "2":
+                image = nftImages["nft-design-2"]
+                break
+            case "3":
+                image = nftImages["nft-design-3"]
+                break
+            case "4":
+                image = nftImages["nft-design-4"]
+                break
+            case "5":
+                image = nftImages["nft-design-5"]
+                break
+            default:
+                image = nftImages["nft-design-1"]
+        }
         try {
             await mint({name, image,animation: animationCid , audioCid, description, spaceName})
             showNotification({
@@ -61,6 +81,7 @@ export default function CreateNft() {
             console.log(e)
             showNotification({
                 title: "Error",
+                // @ts-ignore
                 message: e.message,
             })
             setLoading(false)
@@ -109,18 +130,18 @@ export default function CreateNft() {
                     {/*<TextInput m={"md"} label={"NFT Price in MATIC"} value={price}*/}
                     {/*           onChange={(event) => setPrice(event.currentTarget.value)}*/}
                     {/*           placeholder="1 MATIC" required/>*/}
-                    <TextInput m={"md"} label={"NFT Name"} value={name}
+                    <TextInput m={"md"} label={"NFT Name"} value={name as any}
                                onChange={(event) => setName(event.currentTarget.value)}
                                placeholder="Name" required/>
-                    <TextInput m={"md"} label={"NFT Space Name"} value={spaceName}
+                    <TextInput m={"md"} label={"NFT Space Name"} value={spaceName as any}
                                onChange={(event) => setSpaceName(event.currentTarget.value)}
                                placeholder="The Crypto Studio" required/>
-                    <Textarea m={"md"} label={"NFT Description"} value={description}
+                    <Textarea m={"md"} label={"NFT Description"} value={description as any}
                               onChange={(event) => setDescription(event.currentTarget.value)} placeholder="Description"
                               required/>
                     <FileInput m={"md"} required label={"Upload your audio file"} placeholder={"Upload audio file"}
                                accept={"audio/*"} icon={<IconUpload size={14}/>} value={file}
-                               onChange={setFile}/>
+                               onChange={setFile as any}/>
                     <Group>
                         <Button disabled={loading} m={"md"} onClick={async () => await handlePreviewClick()}>Preview
                             NFTs</Button>

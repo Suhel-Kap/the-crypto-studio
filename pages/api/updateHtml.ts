@@ -1,23 +1,23 @@
 import fs from "fs"
 import {File, NFTStorage} from "nft.storage"
 
-const endpoint = "https://api.nft.storage"
-const token = process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY
+const endpoint = "https://api.nft.storage" as any
+const token = process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY as string
 
 const regex = /https:\/\/ipfs\.io\/ipfs\/.*"/g
 const finalRegex = /https:\/\/testnet.tableland.network\/query\?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=.*"/g
 
-function updateHtml(html, cid) {
+function updateHtml(html: String, cid: String) {
     let toReplace = "https://ipfs.io/ipfs/" + cid + '"'
     return html.replace(regex, toReplace)
 }
 
-function updateFinalHtml(html, tokenId){
+function updateFinalHtml(html: String, tokenId: String){
     let toReplace = "https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3630%20where%20tokenId=" + tokenId + '"'
     return html.replace(finalRegex, toReplace)
 }
 
-async function storeHTMLFile(nft, tokenId) {
+async function storeHTMLFile(nft: String, tokenId:String) {
     const storage = new NFTStorage({endpoint, token})
     const viz1 = await fs.promises.readFile(`./constants/nfts/nft${nft}.html`)
 
@@ -26,7 +26,7 @@ async function storeHTMLFile(nft, tokenId) {
     ])
 }
 
-async function preview(audioCid) {
+async function preview(audioCid: String) {
     for (let i = 1; i < 6; i++) {
         let path = "./public/nfts/nft" + i + ".html"
         let html = fs.readFileSync(path, "utf8")
@@ -36,7 +36,7 @@ async function preview(audioCid) {
     return true
 }
 
-async function mint(token, nft) {
+async function mint(token: String, nft: String) {
     let path = "./constants/nfts/nft" + nft + ".html"
     let html = fs.readFileSync(path, "utf8")
     let result = updateFinalHtml(html, token)
@@ -44,7 +44,7 @@ async function mint(token, nft) {
     return await storeHTMLFile(nft, token)
 }
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
     const cid = req.body.cid
     const isPreview = req.body.preview
     console.log("fileCid: " + cid)

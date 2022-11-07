@@ -14,6 +14,10 @@ Our contract is deployed on polygon mumbai.
 
 https://mumbai.polygonscan.com/address/0x502d9Ac8F668c4BDD95e35B19B586e0813075e72#code
 
+## Social layer
+
+We also include a chat box for anyone to connect with each other. This is established by using Orbis.club and ceramic network which is an IPFS implementation!
+
 
 
 

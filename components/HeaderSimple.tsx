@@ -2,11 +2,13 @@ import {
     createStyles,
     Header,
     Group,
+    Image,
     Burger, Title, Transition, Paper, Stack,
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {ConnectButton} from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
+import {useRouter} from "next/router";
 
 const HEADER_HEIGHT = 60;
 
@@ -92,6 +94,7 @@ const useStyles = createStyles((theme) => ({
     },
 
     title: {
+        cursor: "pointer",
         [theme.fn.smallerThan('md')]: {
             fontSize: theme.fontSizes.xl,
         }
@@ -119,9 +122,10 @@ export function HeaderSimple() {
     const [drawerOpened, {toggle: toggleDrawer, close: closeDrawer}] = useDisclosure(false);
     const {classes, theme} = useStyles();
     const [opened, {toggle, close}] = useDisclosure(false)
+    const router = useRouter()
 
     const items = links.map((link) => (
-        <Link href={link.link} key={link.label}>
+        <Link href={link.link} key={link.label} className={classes.link}>
             {link.label}
         </Link>
     ));
@@ -129,9 +133,12 @@ export function HeaderSimple() {
     return (
         <Header height={100} p="md">
             <Group position="apart" p={"md"} sx={{height: '100%'}}>
-                <Title className={classes.title}>
-                    The Crypto Studio
-                </Title>
+                <Group>
+                    <Image src="/logo.webp" width={50} height={50} alt="logo" radius={"xl"} style={{cursor: "pointer"}} onClick={() => router.push('/')}/>
+                    <Title onClick={() => router.push("/")} className={classes.title}>
+                        The Crypto Studio
+                    </Title>
+                </Group>
                 <Group className={classes.hiddenMobile}>
                     <ConnectButton
                         accountStatus={{

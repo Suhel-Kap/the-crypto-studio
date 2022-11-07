@@ -12,10 +12,10 @@
 </head>
 
 <body class="The Crypto Studio" overflow="hidden">
-    <main class="site-wrapper "></main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js " integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin=" anonymous " referrerpolicy="no-referrer "></script>
-    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js " integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin=" anonymous " referrerpolicy="no-referrer "></script>
+    <main class="site-wrapper"></main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
         class Particle {
@@ -81,7 +81,7 @@
         }
 
         var pieces, radius, fft, analyzer, mapMouseX, mapMouseY, audio, toggleBtn, uploadBtn, uploadedAudio, uploadAnim
-        var colorPalette = ["#676767 ", "#232D22 ", "#C1C1C2 ", "#FFF903 "]
+        var colorPalette = ["#676767", "#232D22", "#C1C1C2", "#FFF903"]
         var uploadLoading = false
         var particles = []
         let audioFile
@@ -100,11 +100,11 @@
             exponent = 5
             strokeWidth = 5
             affinity = 1
-            colour = "#ee44ee "
+            colour = "#ee44ee"
         }
 
         function setup() {
-            loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3641%20where%20tokenId=5 ", gotData)
+            loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3641%20where%20tokenId=4", gotData)
         }
 
         function gotData(data) {
@@ -113,7 +113,7 @@
             audio = loadSound(audioFile)
             createCanvas(windowWidth, windowHeight)
             gui = createGui()
-            b = createButton("Button ", 50, 50)
+            b = createButton("Button", 50, 50)
 
             fft = new p5.FFT(smoothing, bins)
 
@@ -155,8 +155,8 @@
                 let spectrum = fft.analyze()
                 spectrum.splice(bars, bins - bars)
 
-                amp = fft.getEnergy("treble ")
-                amp1 = fft.getEnergy("bass ")
+                amp = fft.getEnergy("treble")
+                amp1 = fft.getEnergy("bass")
 
                 push()
                 if (amp > 230) {}

@@ -88,9 +88,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 
 const data = [
-    { link: '/discussions', label: 'Discussions', icon: IconMessageDots },
     { link: '/create-nft', label: 'Create NFT', icon: IconHammer },
     { link: '/my-nft', label: 'View your NFTs', icon: IconArtboard },
+    { link: '/discussions', label: 'Group Chat', icon: IconMessageDots },
 ];
 
 export function NavbarSide() {
@@ -110,7 +110,7 @@ export function NavbarSide() {
     ));
 
     return (
-        <Navbar height={"100vh"} width={{ sm: 300 }} p="md" className={classes.navbar}>
+        <Navbar height={"100vh"} width={{ sm: 200 }} p="md" className={classes.navbar}>
             <Navbar.Section grow>
                 {links}
             </Navbar.Section>

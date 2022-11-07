@@ -67,7 +67,7 @@ export default function NftCard({ title, animationUrl, description, tokenId, ima
             </Text>
 
             <ActionIcon onClick={setModalOpen}>
-                <IconPencil />
+                <IconPencil/>
             </ActionIcon>
         </Card>
     );

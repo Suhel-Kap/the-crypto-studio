@@ -37,7 +37,7 @@ export default function MyNft() {
             )
         })
     } else {
-        renderNfts = <Text>No NFTs found</Text>
+        renderNfts = <Text>Loading</Text>
     }
 
     const updateModal = (

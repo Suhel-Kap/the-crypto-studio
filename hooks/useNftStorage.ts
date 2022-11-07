@@ -12,6 +12,8 @@ const useNftStorage = () => {
     }
 
     return { upload }
+
+    
 }
 
 export default useNftStorage

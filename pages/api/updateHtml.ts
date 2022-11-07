@@ -1,4 +1,5 @@
 import fs from "fs"
+import path from "path";
 import {File, NFTStorage} from "nft.storage"
 
 const endpoint = "https://api.nft.storage" as any
@@ -27,8 +28,10 @@ async function storeHTMLFile(nft: String, tokenId:String) {
 }
 
 async function preview(audioCid: String) {
+    const dir = "nfts"
+    const dirPath = path.resolve('./public', dir)
     for (let i = 1; i < 6; i++) {
-        let path = "./public/nfts/nft" + i + ".html"
+        let path = `${dirPath}/nft` + i + ".html"
         let html = fs.readFileSync(path, "utf8")
         let result = updateHtml(html, audioCid)
         fs.writeFileSync(path, result)
@@ -37,11 +40,13 @@ async function preview(audioCid: String) {
 }
 
 async function mint(token: String, nft: String) {
+    const dir = "nfts"
+    const dirPath = path.resolve('./constants', dir)
     console.log(`minting nft${nft} with token ${token}`)
-    let path = "./constants/nfts/nft" + nft + ".html"
-    let html = fs.readFileSync(path, "utf8")
+    let location = `${dirPath}/nft` + nft + ".html"
+    let html = fs.readFileSync(location, "utf8")
     let result = updateFinalHtml(html, token)
-    fs.writeFileSync(path, result)
+    fs.writeFileSync(location, result)
     return await storeHTMLFile(nft, token)
 }
 

@@ -1,3 +1,26 @@
+# Welcome to CryptoStudio!
+
+Crypto Studio is a Dynamic ERC721 Collection built for digital artists. Under the hood, we are utilizing tableland a new narrative that brings SQL into smart contracts and also IPFS for storing (images - HTML - mp3) files for our NFTs into the network through NFT.STORAGE.
+
+Our platform is open to everyone. For now, we are providing some precoded visualizers for newcomers to come and mint them with their preferred soundtrack. But we have plans to create a playground for anyone to come and create their scripts with 0 codings just from our UI! But also we can't wait for digital artists to join us and build cool things!
+
+Our NFTs are based on HTML files and a p5.js script for playing the visualizer and the sound.
+
+The HTML file is getting uploaded on IPFS and that derives the animation_url that is part of the NFT metadata.
+
+The dynamic features for changing the audio track of an NFT come into place by using the changeNFTaudio function which is located inside our contract. This function can be called only by the Owner of an NFT that wants to change the soundtrack of his NFT. The contract interacts with tableland to update the audio column of that NFT with the new audio CID!
+
+Our contract is deployed on polygon mumbai. 
+
+https://mumbai.polygonscan.com/address/0x502d9Ac8F668c4BDD95e35B19B586e0813075e72#code
+
+## Social layer
+
+We also include a chat box for anyone to connect with each other. This is established by using Orbis.club and ceramic network which is an IPFS implementation!
+
+
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

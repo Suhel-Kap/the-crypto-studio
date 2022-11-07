@@ -52,7 +52,7 @@ export default async function handler(req: any, res: any) {
     if (isPreview) {
         const jsonCid = await preview(cid)
         res.status(200).send({
-            jsonCid
+            res: true
         })
     }
     if(!isPreview){

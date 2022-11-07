@@ -1,14 +1,17 @@
+import {IconPencil} from "@tabler/icons";
+
 interface NftCardProps {
     title: string;
     description: string;
     tokenId: string;
     animationUrl: string;
     image: any;
+    setModalOpen: any;
 }
 import {
     Card,
     Text,
-    createStyles, Image,
+    createStyles, Image, ActionIcon,
 } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
@@ -43,7 +46,7 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-export default function NftCard({ title, animationUrl, description, tokenId, image }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
+export default function NftCard({ title, animationUrl, description, tokenId, image, setModalOpen }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const { classes, cx, theme } = useStyles();
     const linkProps = { href: animationUrl, target: '_blank', rel: 'noopener noreferrer' };
 
@@ -62,6 +65,10 @@ export default function NftCard({ title, animationUrl, description, tokenId, ima
             <Text size="sm" color="dimmed" lineClamp={4}>
                 {description}
             </Text>
+
+            <ActionIcon onClick={setModalOpen}>
+                <IconPencil />
+            </ActionIcon>
         </Card>
     );
 }

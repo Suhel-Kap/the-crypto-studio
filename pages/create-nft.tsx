@@ -32,6 +32,7 @@ export default function CreateNft() {
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         const tokenId = await getCurrentTokenId()
+        console.log("Token ID: ", tokenId)
         const updateHtml = await fetch("api/updateHtml", {
             method: "POST",
             headers: {

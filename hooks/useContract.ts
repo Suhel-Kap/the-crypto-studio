@@ -18,7 +18,7 @@ export const useContract = () => {
     const contract = new ethers.Contract(tcsContractAddress["the-crypto-studio"], tcsAbi, signer!)
 
     const getCurrentTokenId = async () => {
-        return await contract.getCurrentTokenID()
+        return await contract.totalSupply()
     }
 
     const mint = async ({name, image, animation, audioCid, description, spaceName}: MintProps) => {

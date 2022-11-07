@@ -10,5 +10,14 @@ const alchemy = new Alchemy(config)
 
 export async function getNfts(address: `0x${string}`) {
     const nfts = await alchemy.nft.getNftsForOwner(address)
-    return nfts.ownedNfts.filter(nft => nft.contract.address === tcsContractAddress["the-crypto-studio"].toLowerCase())
+    const cryptoSudioNfts = nfts.ownedNfts.filter(nft => nft.contract.address === tcsContractAddress["the-crypto-studio"].toLowerCase())
+    let nftsData = []
+    for (const nft of cryptoSudioNfts) {
+        // @ts-ignore
+        const nftData = await fetch(nft.tokenUri?.gateway)
+        const nftJson = await nftData.json()
+        console.log(nftJson)
+        nftsData.push(nftJson)
+    }
+    return nftsData
 }

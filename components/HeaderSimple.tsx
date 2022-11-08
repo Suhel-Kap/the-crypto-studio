@@ -114,6 +114,10 @@ const links = [
         "link": `/my-nft`,
         "label": "Your NFTs"
     },
+    {
+        "link": "/explore-spaces",
+        "label": "Explore Spaces"
+    }
 
 ]
 

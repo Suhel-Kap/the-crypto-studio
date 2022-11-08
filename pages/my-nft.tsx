@@ -1,20 +1,24 @@
 import Head from 'next/head'
 import {Layout} from "../components/Layout";
 import {useAccount} from "wagmi";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {getNfts} from "../utils/getNfts";
 import NftCard from "../components/NftCard"
 import {Center, Container, Grid, Modal, Text} from "@mantine/core";
 import {UpdateAudio} from "../components/UpdateAudio";
+import {GlobalContext} from "../contexts/GlobalContext";
+import CreatorCard from "../components/CreatorCard";
 
 export default function MyNft() {
     const {address, isDisconnected} = useAccount()
     const [nfts, setNfts] = useState<Array<any>>()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [tokenId, setTokenId] = useState("")
+    // @ts-ignore
+    const {user} = useContext(GlobalContext)
+    console.log(user)
 
     const handleClick = (tokenId: string) => {
-        console.log(tokenId)
         setTokenId(tokenId)
         setIsModalOpen(true)
     }
@@ -23,7 +27,6 @@ export default function MyNft() {
             setNfts(res)
         })
     }, [address])
-    console.log("nfts", nfts)
     let renderNfts
     // @ts-ignore
     if (nfts?.length > 0) {
@@ -62,15 +65,19 @@ export default function MyNft() {
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
             <Layout>
+                {/*// @ts-ignore*/}
+                <Container size={"85%"}>
                 <h1>NFTs</h1>
                 {isDisconnected && <Text>Please connect your wallet to view NFTs</Text>}
                 {!isDisconnected &&
                     <Container size={"xl"}>
+                        <CreatorCard image={user?.profile?.pfp} name={user?.profile?.username} email={user?.metadata?.address}/>
                         <Grid gutter={"xl"}>
                             {renderNfts}
                         </Grid>
                     </Container>}
                 {updateModal}
+                </Container>
             </Layout>
         </>
     )

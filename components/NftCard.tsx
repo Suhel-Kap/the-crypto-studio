@@ -59,6 +59,7 @@ export default function NftCard({title, animationUrl, description, tokenId, imag
     const [isHome, setIsHome] = useState(false)
     useEffect(() => {
         router.pathname === '/' ? setIsHome(true) : setIsHome(false)
+        router.pathname === '/space' ? setIsHome(true) : setIsHome(false)
     }, [router.pathname])
 
     return (

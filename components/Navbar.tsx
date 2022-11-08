@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { createStyles, Navbar, Group, Code } from '@mantine/core';
 import {
     IconArtboard,
-    IconHammer,
+    IconHammer, IconMapSearch,
     IconMessageDots
 } from '@tabler/icons';
 import Link from "next/link";
@@ -91,6 +91,7 @@ const data = [
     { link: '/create-nft', label: 'Create NFT', icon: IconHammer },
     { link: '/my-nft', label: 'View your NFTs', icon: IconArtboard },
     { link: '/discussions', label: 'Group Chat', icon: IconMessageDots },
+    { link: '/explore-spaces', label: "Explore Spaces", icon: IconMapSearch },
 ];
 
 export function NavbarSide() {

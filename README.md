@@ -28,7 +28,7 @@ Each space in the next version of our application will contain a seperated group
 
 ##IPFS usage
   
-  ##NFT.STORAGE
+  ###NFT.STORAGE
   
   All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
   The code snippets that are using NFT.STORAGE modules are located here:

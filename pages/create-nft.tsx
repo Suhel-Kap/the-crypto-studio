@@ -1,26 +1,45 @@
 import Head from 'next/head'
 import {Layout} from "../components/Layout";
-import {Button, Container, FileInput, Radio, SimpleGrid, Textarea, TextInput, Text, Loader, Group} from "@mantine/core";
+import {
+    Button,
+    Container,
+    FileInput,
+    Radio,
+    SimpleGrid,
+    Textarea,
+    TextInput,
+    Text,
+    Loader,
+    Group,
+    Title,
+    Divider, NativeSelect
+} from "@mantine/core";
 import {IconUpload} from "@tabler/icons";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import useNftStorage from "../hooks/useNftStorage";
 import {useContract} from "../hooks/useContract";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/router"
 import {nftImages} from "../constants";
+import {useAccount} from "wagmi";
+import getSpaces from "../utils/getSpaces";
 
 export default function CreateNft() {
     const [file, setFile] = useState<File>()
     const [name, setName] = useState<String>("")
+    const [spacename, setSpacename] = useState<string>("")
     const [loading, setLoading] = useState(false)
     const [displayPreview, setDisplayPreview] = useState(false)
     const [description, setDescription] = useState<String>("")
-    const [spaceName, setSpaceName] = useState<String>("The Crypto Studio")
+    const [spaceName, setSpaceName] = useState<string>("")
     const {upload} = useNftStorage()
     const [selectedNft, setSelectedNft] = useState<String>()
-    const {getCurrentTokenId, mint} = useContract()
+    const {getCurrentTokenId, mint, spaceExists, mintSpace} = useContract()
     const router = useRouter()
     const [tempCid, setTempCid] = useState<String>()
+    const [spaces, setSpaces] = useState([])
+    const {address} = useAccount()
+    const [disabled, setDisabled] = useState(false)
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedNft(e.target.value)
@@ -71,7 +90,7 @@ export default function CreateNft() {
                 image = nftImages["nft-design-1"]
         }
         try {
-            await mint({name, image,animation: animationCid , audioCid, description, spaceName})
+            await mint({name, image, animation: animationCid, audioCid, description, spaceName})
             showNotification({
                 title: "Success",
                 message: "Your NFT has been minted",
@@ -96,6 +115,7 @@ export default function CreateNft() {
             setLoading(false)
             return
         }
+        console.log(spaceName, "spaceName")
         if (file && name && description && spaceName) {
             const cid = await upload(file)
             console.log(cid)
@@ -121,6 +141,54 @@ export default function CreateNft() {
         }
     }
 
+    const handleMintSpace = async () => {
+        setLoading(true)
+        const isSpace = await spaceExists(spacename)
+        if (isSpace) {
+            showNotification({
+                title: "Error",
+                message: "Space already exists",
+            })
+            setLoading(false)
+            return
+        }
+        try {
+            await mintSpace(spacename)
+            showNotification({
+                title: "Success",
+                message: "Space has been created",
+            })
+            setLoading(false)
+            router.reload()
+        } catch (e) {
+            console.log(e)
+            showNotification({
+                title: "Error",
+                // @ts-ignore
+                message: e.message,
+            })
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getSpaces(address!).then(res => {
+            if(res[0].message === "Row not found") {
+                setDisabled(true)
+                // @ts-ignore
+                setSpaces(["No spaces found"])
+                return
+            }
+            let temp: Array<string> = []
+            res[0].forEach((space: any ) => {
+                temp.push(space.spaceName)
+            })
+            setSpaceName(temp[0])
+            // @ts-ignore
+            setSpaces(temp)
+        })
+    }, [address])
+
     return (
         <>
             <Head>
@@ -128,14 +196,31 @@ export default function CreateNft() {
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
             </Head>
             <Layout>
-                <h1>Create NFT</h1>
                 <Container>
+                    <Title order={1}>Create Space</Title>
+                    <TextInput m={"md"} label={"NFT Space Name"} value={spacename as any}
+                               onChange={(event) => setSpacename(event.currentTarget.value)}
+                               placeholder="Name" required/>
+                    <Button disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Mint
+                        Space </Button>
+                </Container>
+
+                <Divider m={"xl"}/>
+                <Container>
+                    <Title order={1}>Create NFT</Title>
                     <TextInput m={"md"} label={"NFT Name"} value={name as any}
                                onChange={(event) => setName(event.currentTarget.value)}
                                placeholder="Name" required/>
-                    <TextInput m={"md"} label={"NFT Space Name"} value={spaceName as any}
-                               onChange={(event) => setSpaceName(event.currentTarget.value)}
-                               placeholder="The Crypto Studio" required/>
+                    <NativeSelect data={spaces} value={spaceName}
+                                  onChange={(event) => setSpaceName(event.currentTarget.value)}
+                                  label="Select your space"
+                                  description="Make sure you have minted a space name before creating an NFT"
+                                  variant="filled"
+                                  withAsterisk
+                                  required
+                                  disabled={disabled}
+                                  m={"md"}
+                    />
                     <Textarea m={"md"} label={"NFT Description"} value={description as any}
                               onChange={(event) => setDescription(event.currentTarget.value)} placeholder="Description"
                               required/>

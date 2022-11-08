@@ -22,7 +22,7 @@ export const useContract = () => {
     }
 
     const mint = async ({name, image, animation, audioCid, description, spaceName}: MintProps) => {
-        const tx = await contract.mint_your_Art(name, image, animation, audioCid, description, spaceName)
+        const tx = await contract.mint_your_Art(name, image, animation, audioCid, description, spaceName, {value: ethers.utils.parseEther("0.01")})
         return await tx.wait()
     }
 
@@ -31,9 +31,20 @@ export const useContract = () => {
         return await tx.wait()
     }
 
+    const spaceExists = async (spaceName: string) => {
+        return await contract.spaceExists(spaceName)
+    }
+
+    const mintSpace = async (spaceName: string) => {
+        const tx = await contract.mintSpace(spaceName)
+        return await tx.wait()
+    }
+
     return {
         getCurrentTokenId,
         mint,
-        changeAudio
+        changeAudio,
+        spaceExists,
+        mintSpace
     }
 }

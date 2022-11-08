@@ -49,16 +49,11 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-export default function NftCard({
-                                    title,
-                                    animationUrl,
-                                    description,
-                                    tokenId,
-                                    image,
-                                    setModalOpen
-                                }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
+export default function NftCard({title, animationUrl, description, tokenId, image, setModalOpen}: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
-    const linkProps = {href: animationUrl, target: '_blank', rel: 'noopener noreferrer'};
+    const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+
+    const linkProps = {href: gatewayUrl, target: '_blank', rel: 'noopener noreferrer'};
 
     const router = useRouter()
     const [isHome, setIsHome] = useState(false)

@@ -12,7 +12,6 @@ import {nftImages} from "../constants";
 export default function CreateNft() {
     const [file, setFile] = useState<File>()
     const [name, setName] = useState<String>("")
-    const [price, setPrice] = useState<string | null>("")
     const [loading, setLoading] = useState(false)
     const [displayPreview, setDisplayPreview] = useState(false)
     const [description, setDescription] = useState<String>("")
@@ -21,6 +20,7 @@ export default function CreateNft() {
     const [selectedNft, setSelectedNft] = useState<String>()
     const {getCurrentTokenId, mint} = useContract()
     const router = useRouter()
+    const [tempCid, setTempCid] = useState<String>()
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedNft(e.target.value)
@@ -110,6 +110,8 @@ export default function CreateNft() {
                 })
             })
             const dataCid = await updateHtml.json()
+            const animationCid = dataCid.res
+            setTempCid(animationCid)
             console.log("dataCid", dataCid)
             setLoading(false)
             setDisplayPreview(true)
@@ -128,9 +130,6 @@ export default function CreateNft() {
             <Layout>
                 <h1>Create NFT</h1>
                 <Container>
-                    {/*<TextInput m={"md"} label={"NFT Price in MATIC"} value={price}*/}
-                    {/*           onChange={(event) => setPrice(event.currentTarget.value)}*/}
-                    {/*           placeholder="1 MATIC" required/>*/}
                     <TextInput m={"md"} label={"NFT Name"} value={name as any}
                                onChange={(event) => setName(event.currentTarget.value)}
                                placeholder="Name" required/>
@@ -155,10 +154,11 @@ export default function CreateNft() {
                                 <label>
                                     <input type={"radio"} value={"1"} onChange={(e) => handleSelectChange(e)}/>
                                     <iframe
-                                        src={"./nfts/nft1.html"}
+                                        src={`https://ipfs.io/ipfs/${tempCid}/nft1.html`}
                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                         height="500px"
                                         width="500px"
+                                        scrolling={"no"}
                                         style={{
                                             overflow: "hidden",
                                         }}
@@ -169,10 +169,11 @@ export default function CreateNft() {
                                 <label>
                                     <input type={"radio"} value={"2"} onChange={(e) => handleSelectChange(e)}/>
                                     <iframe
-                                        src={"./nfts/nft2.html"}
+                                        src={`https://ipfs.io/ipfs/${tempCid}/nft2.html`}
                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                         height="500px"
                                         width="500px"
+                                        scrolling={"no"}
                                         style={{
                                             overflow: "hidden",
                                         }}
@@ -183,10 +184,11 @@ export default function CreateNft() {
                                 <label>
                                     <input type={"radio"} value={"3"} onChange={(e) => handleSelectChange(e)}/>
                                     <iframe
-                                        src={"./nfts/nft3.html"}
+                                        src={`https://ipfs.io/ipfs/${tempCid}/nft3.html`}
                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                         height="500px"
                                         width="500px"
+                                        scrolling={"no"}
                                         style={{
                                             overflow: "hidden",
                                         }}
@@ -197,10 +199,11 @@ export default function CreateNft() {
                                 <label>
                                     <input type={"radio"} value={"4"} onChange={(e) => handleSelectChange(e)}/>
                                     <iframe
-                                        src={"./nfts/nft4.html"}
+                                        src={`https://ipfs.io/ipfs/${tempCid}/nft4.html`}
                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                         height="500px"
                                         width="500px"
+                                        scrolling={"no"}
                                         style={{
                                             overflow: "hidden",
                                         }}
@@ -211,10 +214,11 @@ export default function CreateNft() {
                                 <label>
                                     <input type={"radio"} value={"5"} onChange={(e) => handleSelectChange(e)}/>
                                     <iframe
-                                        src={"./nfts/nft5.html"}
+                                        src={`https://ipfs.io/ipfs/${tempCid}/nft5.html`}
                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                         height="500px"
                                         width="500px"
+                                        scrolling={"no"}
                                         style={{
                                             overflow: "hidden",
                                         }}

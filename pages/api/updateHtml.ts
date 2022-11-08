@@ -27,16 +27,36 @@ async function storeHTMLFile(nft: String, tokenId:String) {
     ])
 }
 
+async function storeHTMLDirectory() {
+    const dir = "display"
+    const dirPath = path.resolve('./constants', dir)
+    const storage = new NFTStorage({ endpoint, token })
+    const viz1 = await fs.promises.readFile(`${dirPath}/nft1.html`)
+    const viz2 = await fs.promises.readFile(`${dirPath}/nft2.html`)
+    const viz3 = await fs.promises.readFile(`${dirPath}/nft3.html`)
+    const viz4 = await fs.promises.readFile(`${dirPath}/nft4.html`)
+    const viz5 = await fs.promises.readFile(`${dirPath}/nft5.html`)
+
+    const cid = await storage.storeDirectory([
+        new File([viz1], "nft1.html"),
+        new File([viz2], "nft2.html"),
+        new File([viz3], "nft3.html"),
+        new File([viz4], "nft4.html"),
+        new File([viz5], "nft5.html")
+    ])
+    return cid
+}
+
 async function preview(audioCid: String) {
-    const dir = "nfts"
-    const dirPath = path.resolve('./public', dir)
+    const dir = "display"
+    const dirPath = path.resolve('./constants', dir)
     for (let i = 1; i < 6; i++) {
         let path = `${dirPath}/nft` + i + ".html"
         let html = fs.readFileSync(path, "utf8")
         let result = updateHtml(html, audioCid)
         fs.writeFileSync(path, result)
     }
-    return true
+    return await storeHTMLDirectory()
 }
 
 async function mint(token: String, nft: String) {
@@ -57,7 +77,7 @@ export default async function handler(req: any, res: any) {
     if (isPreview) {
         const jsonCid = await preview(cid)
         res.status(200).send({
-            res: true
+            res: jsonCid
         })
     }
     if(!isPreview){

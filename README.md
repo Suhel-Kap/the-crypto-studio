@@ -18,7 +18,7 @@ The dynamic features for changing the audio track of an NFT come into place by u
 
 NFT owners can add and update their NFT metadata by interacting with the cryptoStudio Smart contract as they want except the animationURL and the spaceName trait attributes, to keep the basic art and the creatorSignature immutable.
 
---------------------------------------------------------------------SOCIAL LAYER---------------------------------------------------------------------------------
+## SOCIAL LAYER
 
 
 Each user has his profile based on the ceramic network using orbis.club
@@ -27,7 +27,7 @@ We also include a public grouChat for anyone into cryptoStudio to connect with e
 
 Each space in the next version of our application will contain a seperated group chat with tokengated access controll  by leveraging Orbis.club & lit.protocol for the spaceNFT owners and give them a decentralized discord experience.
 
-##IPFS usage
+## IPFS usage
   
   * NFT.STORAGE
   
@@ -51,7 +51,7 @@ Each space in the next version of our application will contain a seperated group
 
 Our contract is deployed on polygon mumbai. 
 
-https://mumbai.polygonscan.com/address/0x502d9Ac8F668c4BDD95e35B19B586e0813075e72#code
+  * https://mumbai.polygonscan.com/address/0x502d9Ac8F668c4BDD95e35B19B586e0813075e72#code
 
 
 

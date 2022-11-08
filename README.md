@@ -18,7 +18,8 @@ The dynamic features for changing the audio track of an NFT come into place by u
 
 NFT owners can add and update their NFT metadata by interacting with the cryptoStudio Smart contract as they want except the animationURL and the spaceName trait attributes, to keep the basic art and the creatorSignature immutable.
 
-## Social layer
+--------------------------------------------------------------------SOCIAL LAYER---------------------------------------------------------------------------------
+
 
 Each user has his profile based on the ceramic network using orbis.club
 
@@ -26,22 +27,22 @@ We also include a public grouChat for anyone into cryptoStudio to connect with e
 
 Each space in the next version of our application will contain a seperated group chat with tokengated access controll  by leveraging Orbis.club & lit.protocol for the spaceNFT owners and give them a decentralized discord experience.
 
-#IPFS usage
+##IPFS usage
   
-  ##NFT.STORAGE
+  * NFT.STORAGE
   
-  All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
-  The code snippets that are using NFT.STORAGE modules are located here:
+    All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
+    The code snippets that are using NFT.STORAGE modules are located here:
 
-  ##Spheron usage
+  * Spheron usage
 
-  We uploaded our frontend into IPFS using Spheron
-  our application url = 
+    We uploaded our frontend into IPFS using Spheron
+    our application url = 
   
-  ##Ceramic Network which is based on the IPFS stack
+  * Ceramic Network which is based on the IPFS stack
   
-  We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
-  but also a unified and open GroupChat for the Crypto Studio users!
+    We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
+    but also a unified and open GroupChat for the Crypto Studio users!
 
 
 

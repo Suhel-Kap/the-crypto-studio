@@ -11,10 +11,28 @@ const useStyles = createStyles((theme) => ({
     user: {
         display: 'block',
         width: '100%',
-        // height: "150px",
+        margin: theme.spacing.xl,
         padding: theme.spacing.md,
         color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+        [theme.fn.smallerThan('md')]: {
+            margin: theme.spacing.md,
+        },
+        [theme.fn.smallerThan('xs')]: {
+            margin: theme.spacing.sm,
+        }
     },
+    title: {
+        fontSize: theme.fontSizes.xl,
+        [theme.fn.smallerThan('sm')]: {
+            fontSize: theme.fontSizes.md,
+        }
+    },
+    address: {
+        fontSize: theme.fontSizes.sm,
+        [theme.fn.smallerThan('sm')]: {
+            fontSize: theme.fontSizes.xs,
+        }
+    }
 }));
 
 interface UserButtonProps extends UnstyledButtonProps {
@@ -28,16 +46,16 @@ export default function CreatorCard({ image, name, email, icon, ...others }: Use
     const { classes } = useStyles();
 
     return (
-        <Paper className={classes.user} {...others} m={"xl"}>
+        <Paper className={classes.user} {...others}>
             <Group>
                 <Avatar src={image} radius="xl" />
 
                 <div style={{ flex: 1 }}>
-                    <Text size="xl" weight={500}>
+                    <Text className={classes.title} weight={500}>
                         {name}
                     </Text>
 
-                    <Text color="dimmed" size="lg">
+                    <Text color="dimmed" className={classes.address}>
                         {email}
                     </Text>
                 </div>

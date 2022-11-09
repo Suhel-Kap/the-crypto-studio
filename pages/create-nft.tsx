@@ -1,19 +1,6 @@
 import Head from 'next/head'
 import {Layout} from "../components/Layout";
-import {
-    Button,
-    Container,
-    FileInput,
-    Radio,
-    SimpleGrid,
-    Textarea,
-    TextInput,
-    Text,
-    Loader,
-    Group,
-    Title,
-    Divider, NativeSelect
-} from "@mantine/core";
+import {Button, Container, FileInput, Textarea, TextInput, Text, Loader, Group, Title, Divider, NativeSelect} from "@mantine/core";
 import {IconUpload} from "@tabler/icons";
 import {useEffect, useState} from "react";
 import useNftStorage from "../hooks/useNftStorage";
@@ -23,6 +10,8 @@ import {useRouter} from "next/router"
 import {nftImages} from "../constants";
 import {useAccount} from "wagmi";
 import getSpaces from "../utils/getSpaces";
+// @ts-ignore
+import {Orbis} from "@orbisclub/orbis-sdk";
 
 export default function CreateNft() {
     const [file, setFile] = useState<File>()
@@ -32,7 +21,7 @@ export default function CreateNft() {
     const [displayPreview, setDisplayPreview] = useState(false)
     const [description, setDescription] = useState<String>("")
     const [spaceName, setSpaceName] = useState<string>("")
-    const {upload} = useNftStorage()
+    const {upload, uploadImage} = useNftStorage()
     const [selectedNft, setSelectedNft] = useState<String>()
     const {getCurrentTokenId, mint, spaceExists, mintSpace} = useContract()
     const router = useRouter()
@@ -40,6 +29,7 @@ export default function CreateNft() {
     const [spaces, setSpaces] = useState([])
     const {address} = useAccount()
     const [disabled, setDisabled] = useState(false)
+    const [spacePfp, setSpacePfp] = useState<File>()
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedNft(e.target.value)
@@ -152,6 +142,15 @@ export default function CreateNft() {
             setLoading(false)
             return
         }
+        const cid = await uploadImage(spacePfp!)
+        let orbis = new Orbis()
+        await orbis.connect()
+        const res = await orbis.createGroup({
+            pfp: `https://ipfs.io/ipfs/${cid}`,
+            name: spacename,
+        })
+        const groupId = res.doc
+
         try {
             await mintSpace(spacename)
             showNotification({
@@ -201,6 +200,9 @@ export default function CreateNft() {
                     <TextInput m={"md"} label={"NFT Space Name"} value={spacename as any}
                                onChange={(event) => setSpacename(event.currentTarget.value)}
                                placeholder="Name" required/>
+                    <FileInput m={"md"} required label={"Upload your space image"} placeholder={"Upload image file"}
+                               accept={"image/*"} icon={<IconUpload size={14}/>} value={spacePfp as any}
+                               onChange={setSpacePfp as any}/>
                     <Button disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Mint
                         Space </Button>
                 </Container>

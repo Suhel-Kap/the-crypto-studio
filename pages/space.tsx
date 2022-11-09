@@ -1,4 +1,4 @@
-import {Container, Grid, Stack, Text, Title} from "@mantine/core";
+import {Button, Container, createStyles, Grid, Stack, Text, Title} from "@mantine/core";
 import Head from "next/head";
 import {Layout} from "../components/Layout";
 import {useRouter} from "next/router";
@@ -8,8 +8,23 @@ import NftCard from "../components/NftCard";
 import CreatorCard from "../components/CreatorCard";
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
+import Link from "next/link";
+
+let query = "https://testnets.opensea.io/collection/cryptostudio-nhfjonzwws?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
+
+const useStyles = createStyles((theme) => ({
+    btn: {
+        [theme.fn.smallerThan('md')]:{
+            height: 50,
+            margin: theme.spacing.md
+        },
+        height: "-webkit-fill-available",
+        margin: theme.spacing.xl
+    }
+}))
 
 export default function Space() {
+    const { classes } = useStyles();
     const router = useRouter()
     const [nfts, setNfts] = useState()
     const [spaceName, setSpaceName] = useState("")
@@ -18,10 +33,7 @@ export default function Space() {
 
     const getProfile = async (address: string) => {
         let orbis = new Orbis()
-        console.log("address", address)
         let {data, error} = await orbis.getProfile(`did:pkh:eip155:80001:${address}`)
-        console.log(data)
-        console.log(error)
         if (data) {
             return data
         }
@@ -39,6 +51,7 @@ export default function Space() {
     useEffect(() => {
         if (!router.isReady) return;
         const {id} = router.query
+        query = query + id
         // @ts-ignore
         setSpaceName(id)
         // @ts-ignore
@@ -77,8 +90,19 @@ export default function Space() {
                 <Container size={"85%"}>
                     <Title>{spaceName}</Title>
                     {mounted && <Stack>
-                        {/*@ts-ignore*/}
-                        <CreatorCard image={creatorData?.details?.profile.pfp} name={creatorData?.username} email={creatorData?.address}/>
+                        <Grid>
+                            <Grid.Col lg={9}>
+                                {/*@ts-ignore*/}
+                                <CreatorCard image={creatorData?.details?.profile.pfp} name={creatorData?.username} email={creatorData?.address}/>
+                            </Grid.Col>
+                            <Grid.Col lg={3}>
+                                <Button color={"teal"} className={classes.btn}>
+                                    <Link href={query} style={{textDecoration: "none"}} target={"_blank"}>
+                                        View Space on Opensea
+                                    </Link>
+                                </Button>
+                            </Grid.Col>
+                        </Grid>
                     </Stack>}
                     <Grid gutter={"xl"}>
                         {renderNfts}

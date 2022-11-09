@@ -65,6 +65,9 @@ export default function Home() {
                             }
                         >
                             <List.Item>
+                                <b>Mint Your Space</b> – choose a name of your NFT collection, an image and mint a space
+                            </List.Item>
+                            <List.Item>
                                 <b>Mint NFT</b> – choose a name of your NFT, write a description, upload an audio and
                                 mint your NFT
                             </List.Item>

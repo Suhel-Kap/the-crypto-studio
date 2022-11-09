@@ -9,6 +9,7 @@ import {UpdateAudio} from "../components/UpdateAudio";
 import {UpdateProfile} from "../components/UpdateProfile";
 import {GlobalContext} from "../contexts/GlobalContext";
 import CreatorCard from "../components/CreatorCard";
+import {useRouter} from "next/router";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -34,13 +35,52 @@ const useStyles = createStyles((theme) => ({
 
 export default function MyNft() {
     const {classes} = useStyles();
-    const {address, isDisconnected} = useAccount()
+    const {address, isDisconnected, isConnected} = useAccount()
     const [nfts, setNfts] = useState<Array<any>>()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
     const [tokenId, setTokenId] = useState("")
+    const router = useRouter()
     // @ts-ignore
-    const {user} = useContext(GlobalContext)
+    const {user, setUser, orbis, group_id} = useContext(GlobalContext)
+
+    async function getProvider() {
+        let provider = null;
+
+        if(window.ethereum) {
+            provider = window.ethereum;
+
+            /** Return provider to use */
+            return provider;
+        }
+    }
+
+    const connect = async () => {
+        let provider = await getProvider();
+        let res = await orbis.connect_v2({provider, network: 'ethereum', lit: false});
+        if(res.status == 200) {
+            setUser(res.did);
+            let {data, error} = await orbis.getIsGroupMember(group_id, res.did)
+            if (!data){
+                await orbis.setGroupMember(group_id, true)
+            }
+        } else {
+            console.log("Error connecting to Ceramic: ", res);
+            alert("Error connecting to Ceramic.");
+        }
+    }
+
+    const orbisConnect = async () => {
+        let res = await orbis.isConnected()
+        if(res !== false) return
+        connect()
+    }
+
+    useEffect(() => {
+        if(!router.isReady) return
+        if(isDisconnected) return
+        orbisConnect()
+    }, [router.isReady])
 
     const handleClick = (tokenId: string) => {
         setTokenId(tokenId)
@@ -120,6 +160,7 @@ export default function MyNft() {
                                             onClick={() => setIsProfileModalOpen(true)}>
                                         Update Your Profile
                                     </Button>
+
                                 </Grid.Col>
                             </Grid>
                             <Grid gutter={"xl"}>

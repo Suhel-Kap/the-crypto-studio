@@ -25,7 +25,6 @@ export default function Discussions() {
     }
 
     useEffect(() => {
-        console.log("triggerd")
         logout()
     }, [isDisconnected])
 

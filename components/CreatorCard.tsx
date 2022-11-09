@@ -10,7 +10,7 @@ import {
 const useStyles = createStyles((theme) => ({
     user: {
         display: 'block',
-        width: '100%',
+        width: '95%',
         margin: theme.spacing.xl,
         padding: theme.spacing.md,
         color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,

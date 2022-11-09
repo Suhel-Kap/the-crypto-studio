@@ -32,6 +32,7 @@ export default function Space() {
     const [spaceName, setSpaceName] = useState("")
     const [creatorData, setCreatorData] = useState()
     const [mounted, setMounted] = useState(false)
+    const [renderCreator, setRenderCreator] = useState(<Text>Loading</Text>)
 
     const getProfile = async (address: string) => {
         let orbis = new Orbis()
@@ -46,7 +47,16 @@ export default function Space() {
         const {address} = router.query
         // @ts-ignore
         getProfile(address).then(res => {
-            setCreatorData(res)
+            // console.log(res)
+            // setCreatorData(res)
+            if(!res) return
+            if(typeof res["details"] === "string") {
+                {/*@ts-ignore*/}
+                setRenderCreator(<CreatorCard email={router.query.address}/>)
+            } else {
+                {/*@ts-ignore*/}
+                setRenderCreator(<CreatorCard image={res?.details?.profile.pfp} name={res?.username} email={res?.address}/>)
+            }
         })
     }, [router.isReady])
 
@@ -94,8 +104,7 @@ export default function Space() {
                     {mounted && <Stack>
                         <Grid>
                             <Grid.Col lg={8}>
-                                {/*@ts-ignore*/}
-                                <CreatorCard image={creatorData?.details?.profile.pfp} name={creatorData?.username} email={creatorData?.address}/>
+                                {renderCreator}
                             </Grid.Col>
                             <Grid.Col lg={2}>
                                     <Button component={"a"} href={query} target={"_blank"} color={"indigo"}

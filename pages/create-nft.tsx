@@ -41,7 +41,6 @@ export default function CreateNft() {
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         const tokenId = await getCurrentTokenId()
-        console.log("Token ID: ", tokenId)
         const updateHtml = await fetch("https://moog3.herokuapp.com/mint", {
             method: "POST",
             headers: {
@@ -152,7 +151,7 @@ export default function CreateNft() {
         const groupId = res.doc
 
         try {
-            await mintSpace(spacename)
+            await mintSpace(spacename, groupId, `https://ipfs.io/ipfs/${cid}`)
             showNotification({
                 title: "Success",
                 message: "Space has been created",
@@ -203,7 +202,7 @@ export default function CreateNft() {
                     <FileInput m={"md"} required label={"Upload your space image"} placeholder={"Upload image file"}
                                accept={"image/*"} icon={<IconUpload size={14}/>} value={spacePfp as any}
                                onChange={setSpacePfp as any}/>
-                    <Button disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Mint
+                    <Button color={"indigo"} disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Mint
                         Space </Button>
                 </Container>
 
@@ -230,7 +229,7 @@ export default function CreateNft() {
                                accept={"audio/*"} icon={<IconUpload size={14}/>} value={file}
                                onChange={setFile as any}/>
                     <Group>
-                        <Button disabled={loading} m={"md"} onClick={async () => await handlePreviewClick()}>Preview
+                        <Button color={"indigo"} disabled={loading} m={"md"} onClick={async () => await handlePreviewClick()}>Preview
                             NFTs</Button>
                         {loading && <Loader color="grape" variant="dots"/>}
                     </Group>
@@ -313,7 +312,7 @@ export default function CreateNft() {
                                 </label>
                             </div>
                             <Group>
-                                <Button disabled={loading} m={"md"} type={"submit"}>Mint NFT</Button>
+                                <Button color={"indigo"} disabled={loading} m={"md"} type={"submit"}>Mint NFT</Button>
                                 {loading && <Loader color="grape" variant="dots"/>}
                             </Group>
                         </form>

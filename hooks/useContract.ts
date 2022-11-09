@@ -35,8 +35,8 @@ export const useContract = () => {
         return await contract.spaceExists(spaceName)
     }
 
-    const mintSpace = async (spaceName: string) => {
-        const tx = await contract.mintSpace(spaceName)
+    const mintSpace = async (spaceName: string, groupId: string, imageCid: string) => {
+        const tx = await contract.SocialSpaceCreation(spaceName, groupId, imageCid)
         return await tx.wait()
     }
 

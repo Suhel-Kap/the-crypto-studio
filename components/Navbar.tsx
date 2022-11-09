@@ -12,8 +12,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
     const icon = getRef('icon');
     return {
         navbar: {
-            backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
-                .background,
+            backgroundColor: "#364FC7",
+            // backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.colors.indigo[8] })
+            //     .background,
             [theme.fn.smallerThan('md')]: {
                 display: 'none',
             }
@@ -21,10 +22,10 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
         version: {
             backgroundColor: theme.fn.lighten(
-                theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background!,
+                theme.fn.variant({ variant: 'filled', color: theme.colors.indigo[8] }).background!,
                 0.1
             ),
-            color: theme.white,
+            color: theme.colors.indigo[8],
             fontWeight: 700,
         },
 
@@ -59,7 +60,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
             '&:hover': {
                 backgroundColor: theme.fn.lighten(
-                    theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background!,
+                    theme.fn.variant({ variant: 'filled', color: theme.colors.gray[4] }).background!,
                     0.1
                 ),
             },

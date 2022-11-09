@@ -26,7 +26,7 @@ export default function ExploreSpaces() {
         renderSpaces = data?.map(nft => {
             return (
                 <Grid.Col lg={4} md={6}>
-                    <SpaceCard title={nft.spaceName} address={nft.space_owner} />
+                    <SpaceCard title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={nft.image} />
                 </Grid.Col>
             )
         })

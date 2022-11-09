@@ -156,7 +156,7 @@ export default function MyNft() {
                                                  email={user?.metadata?.address}/>
                                 </Grid.Col>
                                 <Grid.Col lg={3}>
-                                    <Button color={"teal"} className={classes.btn}
+                                    <Button color={"indigo"} className={classes.btn}
                                             onClick={() => setIsProfileModalOpen(true)}>
                                         Update Your Profile
                                     </Button>

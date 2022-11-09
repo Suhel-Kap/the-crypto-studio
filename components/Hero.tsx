@@ -117,12 +117,12 @@ export function Hero() {
                 </Container>
 
                 <div className={classes.controls}>
-                    <Button target={"_blank"} href={"https://github.com/Suhel-Kap/the-crypto-studio"} component={"a"}
-                            className={classes.control} size="lg" variant="default" color="gray">
+                    <Button target={"_blank"}  href={"https://github.com/Suhel-Kap/the-crypto-studio"} component={"a"}
+                            className={classes.control} size="lg" variant="default" color="indigo">
                         Source Code
                     </Button>
                     <Button target={"_blank"} href={"/create-nft"} component={"a"} className={classes.control}
-                            size="lg">
+                            size="lg" color={"indigo"}>
                         Mint Your NFT
                     </Button>
                 </div>

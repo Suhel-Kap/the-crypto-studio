@@ -10,7 +10,8 @@ import CreatorCard from "../components/CreatorCard";
 import {Orbis} from "@orbisclub/orbis-sdk";
 import Link from "next/link";
 
-let query = "https://testnets.opensea.io/collection/cryptostudio-nhfjonzwws?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
+let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
+let orbisGroup = "https://app.orbis.club/group/"
 
 const useStyles = createStyles((theme) => ({
     btn: {
@@ -51,8 +52,9 @@ export default function Space() {
 
     useEffect(() => {
         if (!router.isReady) return;
-        const {id} = router.query
+        const {id, groupId} = router.query
         query = query + id
+        orbisGroup = orbisGroup + groupId
         // @ts-ignore
         setSpaceName(id)
         // @ts-ignore
@@ -96,14 +98,14 @@ export default function Space() {
                                 <CreatorCard image={creatorData?.details?.profile.pfp} name={creatorData?.username} email={creatorData?.address}/>
                             </Grid.Col>
                             <Grid.Col lg={2}>
-                                    <Button component={"a"} href={query} target={"_blank"} color={"teal"}
+                                    <Button component={"a"} href={query} target={"_blank"} color={"indigo"}
                                             className={classes.btn}>
                                         View Space on Opensea
                                     </Button>
                             </Grid.Col>
                             <Grid.Col lg={2}>
-                                    <Button variant={"light"} component={"a"} href={query} target={"_blank"}
-                                            color={"teal"} className={classes.btn}>
+                                    <Button variant={"light"} component={"a"} href={orbisGroup} target={"_blank"}
+                                            color={"indigo"} className={classes.btn}>
                                         Go to Space Chat
                                     </Button>
                             </Grid.Col>

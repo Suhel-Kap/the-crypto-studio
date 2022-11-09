@@ -1,14 +1,15 @@
 interface NftCardProps {
     title: string;
     address: string;
+    groupId: string;
+    image: string;
 }
 
 import {
     Card,
     Text,
-    createStyles, Image, ActionIcon, Tooltip,
+    createStyles, Image, Tooltip,
 } from '@mantine/core';
-import makeBlockie from 'ethereum-blockies-base64';
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -42,16 +43,16 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-export default function SpaceCard({title, address}: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
+export default function SpaceCard({title, address, groupId, image}: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
 
-    const linkProps = {href: `/space/?id=${title}&address=${address}`, rel: 'noopener noreferrer'};
+    const linkProps = {href: `/space/?id=${title}&address=${address}&groupId=${groupId}`, rel: 'noopener noreferrer'};
 
     return (
         <Card withBorder radius="md" className={cx(classes.card)} m={"md"}>
             <Card.Section>
                 <a {...linkProps}>
-                    <Image height={350} width={350} src={makeBlockie(address)} alt={title}/>
+                    <Image height={350} width={350} src={image} alt={title}/>
                 </a>
             </Card.Section>
 

@@ -8,9 +8,12 @@ A space is nothing more that a pair (trait_type = SpaceName , value = "A name sp
 
 Artists can only mint an NFT on top of their space. If they dont grab a space they are not allowed to mint their creations.
 
-Our platform is open to everyone. For now, we are providing some precoded dynamic audio visualizers for newcomers to come and mint them with their preferred soundtrack and change it whenever they want to. In the near future we have plans to create a playground for anyone to come and create their scripts with 0 codings just from our UI! But also we can't wait for digital artists to join us and build cool things!
+Our platform is open to everyone. For now, we are providing some precoded dynamic audio visualizers for newcomers to come and mint them with their preferred soundtrack and change it whenever they want to.
+  * The future of CryptoStudio is to make it more accessible to the public. We want to make it so that anyone can create their own Dynamic NFTs with zero coding    experience by creating a free and open to use web-based tool for designing and developing dynamic 2D & 3D NFT models by introducing <The Studio Playground>
+  * We also want to make it so that digital artists can come and build cool things by providing a guide of how to use our native Dynamic features written   natively inside the CryptoStudio smart contract.
 
-Our NFTs are based on HTML files and a p5.js script for playing the visualizer and the sound.
+
+Our NFTs are based on HTML files and a p5.js script for playing the visualizer and the sound. In the upcoming versions we are going to use more libraries like p5.js.
 
 The HTML file is getting uploaded on IPFS and that derives the animation_url that is part of the NFT metadata.
 
@@ -25,24 +28,30 @@ Each user has his profile based on the ceramic network using orbis.club
 
 We also include a public grouChat for anyone into cryptoStudio to connect with each other. This is established by using Orbis.club and ceramic network which is an IPFS implementation!
 
-Each space in the next version of our application will contain a seperated group chat with tokengated access controll  by leveraging Orbis.club & lit.protocol for the spaceNFT owners and give them a decentralized discord experience.
+Each collection space contains a seperated group chat with tokengated access controll by leveraging Orbis.club & lit.protocol for the spaceNFT owners and give them a decentralized discord experience.
 
-## IPFS usage
-  
-  * NFT.STORAGE
-  
-    All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
-    The code snippets that are using NFT.STORAGE modules are located here:
+# Technologies Used
 
-  * Spheron usage
+  ## IPFS usage
+  
+    * NFT.STORAGE
 
-    We uploaded our frontend into IPFS using Spheron
-    our application url = 
+      All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
+      The code snippets that are using NFT.STORAGE modules are located here:
+
+    * Spheron usage
+
+      We uploaded our frontend into IPFS using Spheron
+      our application url = 
+
+    * Ceramic Network which is based on the IPFS stack
+
+      We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
+      but also a unified and open GroupChat for the Crypto Studio users!
+   
+  ## Tableland usage 
   
-  * Ceramic Network which is based on the IPFS stack
-  
-    We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
-    but also a unified and open GroupChat for the Crypto Studio users!
+    *Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
 
 
 

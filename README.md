@@ -36,25 +36,22 @@ Each collection space contains a seperated group chat with tokengated access con
 
   ## IPFS usage
   
-    * NFT.STORAGE
+    => NFT.STORAGE
        All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
        The code snippets that are using NFT.STORAGE modules are located here:
 
-     * Spheron usage
+    => Spheron usage
          We uploaded our frontend into IPFS using Spheron
          our application url = https://the-crypto-studio-20be90.spheron.app/
 
-     * Ceramic Network which is based on the IPFS stack
+    => Ceramic Network which is based on the IPFS stack
         We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
         but also a unified and open GroupChat for the Crypto Studio users!
 
-   ### Tableland usage 
-     *Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
+   ## Tableland usage 
+     =>Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
 
-
-
-
-
+  ## SmartContract
 
 Our contract is deployed and verified on polygon mumbai here is the mumbaiScan Link . 
 

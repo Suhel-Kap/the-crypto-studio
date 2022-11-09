@@ -5,8 +5,8 @@ Our application is hosted on those links
  * https://the-crypto-studio-20be90.spheron.app/
 
 Authors
- * @nijoe1
- * @Suhel-Kap
+ * [@nijoe1](https://github.com/nijoe1)
+ * [Suhel-Kap](https://github.com/Suhel-Kap)
 
 ## Description
 Crypto Studio is a Dynamic ERC721 Collection built for digital artists. Under the hood, we are utilizing tableland a new narrative that brings SQL into smart contracts that unlocked us to create a native dynamic experience.But also IPFS for storing (images - HTML - mp3) files for our NFTs into the network through NFT.STORAGE.

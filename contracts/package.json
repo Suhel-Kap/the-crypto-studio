@@ -1,5 +1,5 @@
 {
-    "name": "hello-oz-upgradeble",
+    "name": "The Crypto Studio",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -8,15 +8,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/t4sk/hello-oz-upgradeble.git"
+        "url": "git+https://github.com/Suhel-Kap/the-crypto-studio"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/t4sk/hello-oz-upgradeble/issues"
+        "url": "https://github.com/Suhel-Kap/the-crypto-studio"
     },
-    "homepage": "https://github.com/t4sk/hello-oz-upgradeble#readme",
+    "homepage": "https://github.com/Suhel-Kap/the-crypto-studio#readme",
     "devDependencies": {
         "@nomiclabs/hardhat-ethers": "^2.0.3",
         "@nomiclabs/hardhat-etherscan": "^3.1.0",
@@ -25,10 +25,8 @@
         "hardhat": "^2.8.0"
     },
     "dependencies": {
-        "@chainlink/contracts": "^0.4.2",
         "@openzeppelin/contracts": "^4.7.0",
         "@openzeppelin/contracts-upgradeable": "^4.4.1",
-        "@superfluid-finance/ethereum-contracts": "^1.4.0",
         "@tableland/evm": "^2.0.2"
     }
 }

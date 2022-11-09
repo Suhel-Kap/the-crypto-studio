@@ -11,15 +11,11 @@ Authors
 ## Description
 Crypto Studio is a Dynamic ERC721 Collection built for digital artists. Under the hood, we are utilizing tableland a new narrative that brings SQL into smart contracts that unlocked us to create a native dynamic experience.But also IPFS for storing (images - HTML - mp3) files for our NFTs into the network through NFT.STORAGE.
 
-Each Artist first has to mint a Space. A space is like his signature on top of his NFTs. Digital artists can create a whole collection based on their space.
-
-A space is nothing more that a pair (trait_type = SpaceName , value = "A name space") on top of every NFT
-
-Artists can only mint an NFT on top of their space. If they dont grab a space they are not allowed to mint their creations.
+Each Artist/User first has to mint a Space. A space is like his signature on top of his NFTs. Digital artists can create a whole collection based on their space.A space is nothing more that a pair (trait_type = SpaceName , value = "A name space") on top of every NFT. Artists can only mint an NFT on top of their space. If they dont grab a space they are not allowed to mint their creations.
 
 Our platform is open to everyone. For now, we are providing some precoded dynamic audio visualizers for newcomers to come and mint them with their preferred soundtrack and change it whenever they want to.
   * The future of CryptoStudio is to make it more accessible to the public. We want to make it so that anyone can create their own Dynamic NFTs with zero coding    experience by creating a free and open to use web-based tool for designing and developing dynamic 2D & 3D NFT models by introducing <The Studio Playground>
-  * We also want to make it so that digital artists can come and build cool things by providing a guide of how to use our native Dynamic features written   natively inside the CryptoStudio smart contract.
+  * We also want to make it so that digital artists can come and build cool things by providing a guide (DOCS) of how to use our native Dynamic features written   natively inside the CryptoStudio smart contract on top of their creations.
 
 
 Our NFTs are based on HTML files and a p5.js script for playing the visualizer and the sound. In the upcoming versions we are going to use more libraries like p5.js.
@@ -41,7 +37,7 @@ Each collection space contains a seperated group chat with tokengated access con
 
 # Technologies Used
 
-  ## IPFS usage
+  ## IPFS & FILECOIN usage
   
     => NFT.STORAGE
        All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE

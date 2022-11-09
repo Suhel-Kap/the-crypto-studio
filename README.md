@@ -5,7 +5,7 @@ Our application is hosted on those links
  * https://the-crypto-studio-20be90.spheron.app/
 
 Authors
- * [@nijoe1](https://github.com/nijoe1)
+ * [nijoe1](https://github.com/nijoe1)
  * [Suhel-Kap](https://github.com/Suhel-Kap)
 
 ## Description
@@ -27,12 +27,12 @@ Our NFTs are based on HTML files and a p5.js script for playing the visualizer a
 The HTML file is getting uploaded on IPFS and that derives the animation_url that is part of the NFT metadata.
 
 The dynamic features for changing the audio track of an NFT come into place by using the changeNFTaudio function which is located inside our contract. This function can be called only by the Owner of an NFT that wants to change the soundtrack of his NFT. The contract interacts with tableland to update the audio column of that NFT with the new audio CID!
+  * We also added the addAttribute & updateAttribute functions for users to monetize their NFTs us they want ( Add , remove , update ) attributes and create new   dynamic utilities
 
 NFT owners can add and update their NFT metadata by interacting with the cryptoStudio Smart contract as they want except the animationURL and the spaceName trait attributes, to keep the basic art and the creatorSignature immutable.
 
 ## SOCIAL_LAYER
-
-
+ 
 Each user has his profile based on the ceramic network using orbis.club
 
 We also include a public grouChat for anyone into cryptoStudio to connect with each other. This is established by using Orbis.club and ceramic network which is an IPFS implementation!
@@ -55,7 +55,7 @@ Each collection space contains a seperated group chat with tokengated access con
          our application url 
         * https://the-crypto-studio-20be90.spheron.app/
 
-    => Ceramic Network which is based on the IPFS stack
+    => Ceramic Network which is based on the IPFS libP2P stack
         We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
         but also a unified and open GroupChat for the Crypto Studio users!
  
@@ -71,6 +71,11 @@ Each collection space contains a seperated group chat with tokengated access con
 
   * https://mumbai.polygonscan.com/address/0xCa23f7a27bF973bb9E21a6FA8bA21cd4a89A51DD#code
 
+ 
+ 
+ 
+ 
+ 
 
 
 

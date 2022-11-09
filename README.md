@@ -11,6 +11,9 @@ Authors
 ## Description
 Crypto Studio is a Dynamic ERC721 Collection built for digital artists. Under the hood, we are utilizing tableland a new narrative that brings SQL into smart contracts that unlocked us to create a native dynamic experience.But also IPFS for storing (images - HTML - mp3) files for our NFTs into the network through NFT.STORAGE.
 
+Collection on OpenSea:
+ https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9
+
 Each Artist/User first has to mint a Space. A space is like his signature on top of his NFTs. Digital artists can create a whole collection based on their space.A space is nothing more that a pair (trait_type = SpaceName , value = "A name space") on top of every NFT. Artists can only mint an NFT on top of their space. If they dont grab a space they are not allowed to mint their creations.
 
 Our platform is open to everyone. For now, we are providing some precoded dynamic audio visualizers for newcomers to come and mint them with their preferred soundtrack and change it whenever they want to.

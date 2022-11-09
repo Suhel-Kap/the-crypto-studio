@@ -63,7 +63,13 @@ Each collection space contains a seperated group chat with tokengated access con
 
    ## Tableland usage 
      => Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
-     take a deeper look in the smartContract 
+     take a deeper look in the SmartContract 
+     
+     => Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
+     
+        main_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_3764
+        attribute_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_80001_3765
+        spaces_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_3766
 
   ## SmartContract
 

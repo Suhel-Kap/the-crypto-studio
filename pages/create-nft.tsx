@@ -41,7 +41,7 @@ export default function CreateNft() {
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         const tokenId = await getCurrentTokenId()
-        const updateHtml = await fetch("https://moog3.herokuapp.com/mint", {
+        const updateHtml = await fetch("https://the-crypto-studio-ydkcvwlbra-uc.a.run.app/mint", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -108,7 +108,7 @@ export default function CreateNft() {
         if (file && name && description && spaceName) {
             const cid = await upload(file)
             console.log(cid)
-            const updateHtml = await fetch("https://moog3.herokuapp.com/preview", {
+            const updateHtml = await fetch("https://the-crypto-studio-ydkcvwlbra-uc.a.run.app/preview", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

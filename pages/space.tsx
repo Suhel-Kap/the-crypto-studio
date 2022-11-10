@@ -1,4 +1,4 @@
-import {Button, Center, Container, createStyles, Grid, Stack, Text, Title} from "@mantine/core";
+import {Button, Center, Container, createStyles, Grid, Skeleton, Stack, Text, Title} from "@mantine/core";
 import Head from "next/head";
 import {Layout} from "../components/Layout";
 import {useRouter} from "next/router";
@@ -32,7 +32,12 @@ export default function Space() {
     const [spaceName, setSpaceName] = useState("")
     const [creatorData, setCreatorData] = useState()
     const [mounted, setMounted] = useState(false)
-    const [renderCreator, setRenderCreator] = useState(<Text>Loading</Text>)
+    const [renderCreator, setRenderCreator] = useState(<>
+        <Skeleton height={50} circle mb="xl" />
+        <Skeleton height={8} radius="xl" />
+        <Skeleton height={8} mt={6} radius="xl" />
+        <Skeleton height={8} mt={6} width="70%" radius="xl" />
+    </>)
 
     const getProfile = async (address: string) => {
         let orbis = new Orbis()

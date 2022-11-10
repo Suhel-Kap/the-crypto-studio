@@ -1,15 +1,9 @@
-import {Container, Grid, Text, Title} from "@mantine/core";
+import {Container, Grid, Skeleton, Text, Title} from "@mantine/core";
 import Head from "next/head";
 import {Layout} from "../components/Layout";
 import {useEffect, useState} from "react";
 import getAllSpaces from "../utils/getAllSpaces";
 import SpaceCard from "../components/SpaceCard";
-
-interface SpaceProps {
-    address: string;
-    name: string;
-    groupId: string;
-}
 
 export default function ExploreSpaces() {
     const [data, setData] = useState<any>(null)
@@ -26,12 +20,19 @@ export default function ExploreSpaces() {
         renderSpaces = data?.map(nft => {
             return (
                 <Grid.Col lg={4} md={6}>
-                    <SpaceCard title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={nft.image} />
+                    <SpaceCard title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={nft.image}/>
                 </Grid.Col>
             )
         })
     } else {
-        renderSpaces = <Text>Loading</Text>
+        renderSpaces = <>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+        </>
     }
 
     return (

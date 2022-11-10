@@ -58,10 +58,8 @@ export default function Discussions() {
         setLoading(true);
         let {data, error} = await orbis.getPosts({context: channel_id});
         if(error) {
-            console.log("Error getting posts: ", error);
             alert("Error getting posts.");
         } else {
-            console.log("Posts: ", data);
             setPosts(data);
         }
         setLoading(false);

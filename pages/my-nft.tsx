@@ -4,7 +4,7 @@ import {useAccount} from "wagmi";
 import {useContext, useEffect, useState} from "react";
 import {getNfts} from "../utils/getNfts";
 import NftCard from "../components/NftCard"
-import {Button, Center, Container, createStyles, Grid, Modal, Text} from "@mantine/core";
+import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Text} from "@mantine/core";
 import {UpdateAudio} from "../components/UpdateAudio";
 import {UpdateProfile} from "../components/UpdateProfile";
 import {GlobalContext} from "../contexts/GlobalContext";
@@ -47,7 +47,7 @@ export default function MyNft() {
     async function getProvider() {
         let provider = null;
 
-        if(window.ethereum) {
+        if (window.ethereum) {
             provider = window.ethereum;
 
             /** Return provider to use */
@@ -58,10 +58,10 @@ export default function MyNft() {
     const connect = async () => {
         let provider = await getProvider();
         let res = await orbis.connect_v2({provider, network: 'ethereum', lit: false});
-        if(res.status == 200) {
+        if (res.status == 200) {
             setUser(res.did);
             let {data, error} = await orbis.getIsGroupMember(group_id, res.did)
-            if (!data){
+            if (!data) {
                 await orbis.setGroupMember(group_id, true)
             }
         } else {
@@ -72,13 +72,13 @@ export default function MyNft() {
 
     const orbisConnect = async () => {
         let res = await orbis.isConnected()
-        if(res !== false) return
+        if (res !== false) return
         connect()
     }
 
     useEffect(() => {
-        if(!router.isReady) return
-        if(isDisconnected) return
+        if (!router.isReady) return
+        if (isDisconnected) return
         orbisConnect()
     }, [router.isReady])
 
@@ -103,8 +103,17 @@ export default function MyNft() {
                 </Grid.Col>
             )
         })
+    } else if(nfts?.length === 0){
+        renderNfts = <Text>You have 0 NFTs</Text>
     } else {
-        renderNfts = <Text>Loading</Text>
+        renderNfts = <>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+            <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
+        </>
     }
 
     const updateModal = (

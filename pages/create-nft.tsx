@@ -132,39 +132,44 @@ export default function CreateNft() {
 
     const handleMintSpace = async () => {
         setLoading(true)
-        const isSpace = await spaceExists(spacename)
-        if (isSpace) {
-            showNotification({
-                title: "Error",
-                message: "Space already exists",
+        if(spacename && spacePfp) {
+            const isSpace = await spaceExists(spacename)
+            if (isSpace) {
+                showNotification({
+                    title: "Error",
+                    message: "Space already exists",
+                })
+                setLoading(false)
+                return
+            }
+            const cid = await uploadImage(spacePfp!)
+            let orbis = new Orbis()
+            await orbis.connect()
+            const res = await orbis.createGroup({
+                pfp: `https://ipfs.io/ipfs/${cid}`,
+                name: spacename,
             })
-            setLoading(false)
-            return
-        }
-        const cid = await uploadImage(spacePfp!)
-        let orbis = new Orbis()
-        await orbis.connect()
-        const res = await orbis.createGroup({
-            pfp: `https://ipfs.io/ipfs/${cid}`,
-            name: spacename,
-        })
-        const groupId = res.doc
+            const groupId = res.doc
 
-        try {
-            await mintSpace(spacename, groupId, `https://ipfs.io/ipfs/${cid}`)
-            showNotification({
-                title: "Success",
-                message: "Space has been created",
-            })
-            setLoading(false)
-            router.reload()
-        } catch (e) {
-            console.log(e)
-            showNotification({
-                title: "Error",
-                // @ts-ignore
-                message: e.message,
-            })
+            try {
+                await mintSpace(spacename, groupId, `https://ipfs.io/ipfs/${cid}`)
+                showNotification({
+                    title: "Success",
+                    message: "Space has been created",
+                })
+                setLoading(false)
+                router.reload()
+            } catch (e) {
+                console.log(e)
+                showNotification({
+                    title: "Error",
+                    // @ts-ignore
+                    message: e.message,
+                })
+                setLoading(false)
+            }
+        } else {
+            alert("Please fill all fields")
             setLoading(false)
         }
     }

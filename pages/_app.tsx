@@ -72,6 +72,11 @@ export default function App(props: AppProps) {
             <Head>
                 <title>The Crypto Studio</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
+                <meta name={"description"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
+                <meta property={"og:title"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
+                <meta property={"og:description"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
+                <meta property={"og:url"} content={"https://the-crypto-studio-20be90.spheron.app"} />
+                <meta property="og:type" content="website" />
             </Head>
             <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis} as any}>
                 <WagmiConfig client={wagmiClient}>

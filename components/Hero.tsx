@@ -112,7 +112,7 @@ export function Hero() {
                 <Container p={0} size={600}>
                     <Text size="lg" color="dimmed" className={classes.description}>
                         This is a place where you can create tradable, digital assets from any piece of audio. What’s
-                        more, you don’t need to be an expert to use this great new app.
+                        more, you don’t need to be an expert to use The Crypto Studio.
                     </Text>
                 </Container>
 

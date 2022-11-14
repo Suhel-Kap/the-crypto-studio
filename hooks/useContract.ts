@@ -40,11 +40,23 @@ export const useContract = () => {
         return await tx.wait()
     }
 
+    const mintAudioNft = async ({name, image, audioCid, description, spaceName }: MintProps) => {
+        const tx = await contract.mint_your_Art(name, image, audioCid, audioCid, description, spaceName, {value: ethers.utils.parseEther("0.01")})
+        return await tx.wait()
+    }
+
+    const mintImageNft = async ({name, image, description, spaceName}: MintProps) => {
+        const tx = await contract.mint_your_Art(name, image, image, "", description, spaceName, {value: ethers.utils.parseEther("0.01")})
+        return await tx.wait()
+    }
+
     return {
         getCurrentTokenId,
         mint,
         changeAudio,
         spaceExists,
-        mintSpace
+        mintSpace,
+        mintAudioNft,
+        mintImageNft
     }
 }

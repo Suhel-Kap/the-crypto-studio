@@ -1,6 +1,6 @@
 # Welcome to CryptoStudio!
 
-<img src="./public/logo.webp" alt="alt text" width="450"/>
+<img src="./public/logo.webp" alt="alt text" width="150" height="150"/>
 
 Our application is hosted on those links 
  * https://the-crypto-studio-20be90.spheron.app/

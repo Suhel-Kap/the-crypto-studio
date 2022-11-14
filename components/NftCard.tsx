@@ -1,4 +1,4 @@
-import {IconPencil} from "@tabler/icons";
+import {IconCirclePlus, IconPencil} from "@tabler/icons";
 
 interface NftCardProps {
     title: string;
@@ -7,12 +7,13 @@ interface NftCardProps {
     animationUrl: string;
     image: any;
     setModalOpen: any;
+    setAddAttribute: any;
 }
 
 import {
     Card,
     Text,
-    createStyles, Image, ActionIcon, Tooltip,
+    createStyles, Image, ActionIcon, Tooltip, Group,
 } from '@mantine/core';
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
@@ -49,7 +50,15 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-export default function NftCard({title, animationUrl, description, tokenId, image, setModalOpen}: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
+export default function NftCard({
+                                    title,
+                                    animationUrl,
+                                    description,
+                                    tokenId,
+                                    image,
+                                    setModalOpen,
+                                    setAddAttribute
+                                }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
 
@@ -58,9 +67,9 @@ export default function NftCard({title, animationUrl, description, tokenId, imag
     const router = useRouter()
     const [isHome, setIsHome] = useState(false)
     useEffect(() => {
-        if(router.pathname === '/'){
+        if (router.pathname === '/') {
             setIsHome(true)
-        } else if (router.pathname === '/space'){
+        } else if (router.pathname === '/space') {
             setIsHome(true)
         } else {
             setIsHome(false)
@@ -86,11 +95,18 @@ export default function NftCard({title, animationUrl, description, tokenId, imag
             </Text>
 
             {!isHome && (
-                <Tooltip label={"Edit NFT Audio"}>
-                    <ActionIcon onClick={setModalOpen}>
-                        <IconPencil/>
-                    </ActionIcon>
-                </Tooltip>
+                <Group mt={"md"}>
+                    <Tooltip label={"Add attribute"}>
+                        <ActionIcon onClick={setAddAttribute}>
+                            <IconCirclePlus/>
+                        </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label={"Edit NFT Audio"}>
+                        <ActionIcon onClick={setModalOpen}>
+                            <IconPencil/>
+                        </ActionIcon>
+                    </Tooltip>
+                </Group>
             )}
 
         </Card>

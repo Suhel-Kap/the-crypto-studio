@@ -11,6 +11,12 @@ interface MintProps {
     spaceName: String
 }
 
+interface AttributeProps {
+    tokenId: number
+    traitType: string
+    value: string
+}
+
 export const useContract = () => {
     const {data: signer, isError, isLoading} = useSigner()
     const {address} = useAccount()
@@ -50,6 +56,16 @@ export const useContract = () => {
         return await tx.wait()
     }
 
+    const addAttribute = async({tokenId, traitType, value}: AttributeProps) => {
+        const tx = await contract.addAttribute(tokenId, traitType, value)
+        return await tx.wait()
+    }
+
+    const updateAttribute = async ({tokenId, traitType, value}: AttributeProps) => {
+        const tx = await contract.updateAttribute(tokenId, traitType, value, false)
+        return await tx.wait()
+    }
+
     return {
         getCurrentTokenId,
         mint,
@@ -57,6 +73,8 @@ export const useContract = () => {
         spaceExists,
         mintSpace,
         mintAudioNft,
-        mintImageNft
+        mintImageNft,
+        updateAttribute,
+        addAttribute
     }
 }

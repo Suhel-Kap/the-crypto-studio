@@ -10,6 +10,7 @@ import {UpdateProfile} from "../components/UpdateProfile";
 import {GlobalContext} from "../contexts/GlobalContext";
 import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
+import {AddAttribute} from "../components/AddAttribute";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -38,8 +39,10 @@ export default function MyNft() {
     const {address, isDisconnected, isConnected} = useAccount()
     const [nfts, setNfts] = useState<Array<any>>()
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isAttributeModalOpen, setIsAttributeModalOpen] = useState(false)
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
     const [tokenId, setTokenId] = useState("")
+    const [attributes, setAttributes] = useState([])
     const router = useRouter()
     // @ts-ignore
     const {user, setUser, orbis, group_id} = useContext(GlobalContext)
@@ -86,9 +89,17 @@ export default function MyNft() {
         setTokenId(tokenId)
         setIsModalOpen(true)
     }
+
+    const handleAddAttribute = (tokenId: string, attribues: []) => {
+        setTokenId(tokenId)
+        setAttributes(attribues)
+        setIsAttributeModalOpen(true)
+    }
+
     useEffect(() => {
         getNfts(address!).then(res => {
             setNfts(res)
+            console.log(res)
         })
     }, [address])
     let renderNfts
@@ -99,11 +110,12 @@ export default function MyNft() {
                 <Grid.Col lg={4} md={6}>
                     <NftCard key={nft.tokenID} title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
-                             image={nft.image} setModalOpen={() => handleClick(nft.tokenID)}/>
+                             image={nft.image} setAddAttribute={() => handleAddAttribute(nft.tokenID, nft.attributes)}
+                             setModalOpen={() => handleClick(nft.tokenID)}/>
                 </Grid.Col>
             )
         })
-    } else if(nfts?.length === 0){
+    } else if (nfts?.length === 0) {
         renderNfts = <Text>You have 0 NFTs</Text>
     } else {
         renderNfts = <>
@@ -127,6 +139,22 @@ export default function MyNft() {
         >
             <Center>
                 <UpdateAudio tokenId={tokenId}/>
+            </Center>
+        </Modal>
+    )
+
+    const attributeModal = (
+        <Modal
+            opened={isAttributeModalOpen}
+            className={classes.modal}
+            transition="fade"
+            transitionDuration={500}
+            transitionTimingFunction="ease"
+            onClose={() => setIsAttributeModalOpen(false)}
+        >
+            <Center>
+                {/*@ts-ignore*/}
+                <AddAttribute tokenId={tokenId} attributes={attributes} />
             </Center>
         </Modal>
     )
@@ -178,6 +206,7 @@ export default function MyNft() {
                         </Container>}
                     {updateModal}
                     {updateProfileModal}
+                    {attributeModal}
                 </Container>
             </Layout>
         </>

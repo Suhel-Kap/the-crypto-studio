@@ -28,9 +28,7 @@ export default function Home() {
         renderNfts = nfts?.map(nft => {
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
-                    <NftCard title={nft.name} tokenId={nft.tokenID}
-                             animationUrl={nft.animation_url} description={nft.description}
-                             image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
+                    <NftCard setAddAttribute={() => console.log("I'm clicked")} title={nft.name} tokenId={nft.tokenID} animationUrl={nft.animation_url} description={nft.description} image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
             )
         })

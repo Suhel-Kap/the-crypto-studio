@@ -104,14 +104,14 @@ export function Hero() {
                 <Title className={classes.title}>
                     Build{' '}
                     <Text component="span" className={classes.highlight} inherit>
-                        dynamic audio
+                        dynamic 
                     </Text>{' '}
                     NFTs
                 </Title>
 
                 <Container p={0} size={600}>
                     <Text size="lg" color="dimmed" className={classes.description}>
-                        This is a place where you can create tradable, digital assets from any piece of audio. What’s
+                        This is a place where you can create tradable, digital assets from any piece of audio or image. What’s
                         more, you don’t need to be an expert to use The Crypto Studio.
                     </Text>
                 </Container>

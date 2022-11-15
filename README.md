@@ -6,6 +6,8 @@
 <img src="./public/logo.webp" alt="alt text" width="200" height="200"/>
 </p>
 
+[Demo video](https://youtu.be/e4lI4cYYG3U)
+
 Our application is hosted on those links 
  * https://the-crypto-studio-20be90.spheron.app/
  * https://the-crypto-studio.vercel.app/
@@ -26,7 +28,7 @@ The Crypto Studio Collection supports all kind of NFTs like :
 We provide them all of them from our UI!
 
 Collection on OpenSea:
- **https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9**
+ **https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9
 
 Each Artist/User first has to mint a Space. A space is like his signature on top of his NFTs. Digital artists can create a whole Collection|Album based on their space.A space is nothing more that a pair (trait_type = SpaceName , value = "A name space") on top of every NFT. Artists can only mint an NFT on top of their owned spaces. If they dont grab a unique space they are not allowed to mint their creations.
 
@@ -48,7 +50,12 @@ NFT owners can add and update their NFT metadata by interacting with the cryptoS
 
 <p align="left">
 <img src="./public/architecture.png"/>
+Here is an HTML example :
+<br />
+https://github.com/Suhel-Kap/the-crypto-studio/blob/main/constants/nfts/nft7.html
 </p>
+
+
 
 ## SOCIAL_LAYER
  
@@ -100,7 +107,6 @@ Each collection space contains a seperated group chat with tokengated access con
          <br />
 
    ## Tableland usage 
-   <br />
   Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
      take a deeper look in the SmartContract 
      <br />

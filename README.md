@@ -1,8 +1,8 @@
-<h1 style="text-align: center;">
+<h1>
  Welcome to The Crypto Studio
 </h1>
 
-<p align="center">
+<p>
 <img src="./public/logo.webp" alt="alt text" width="200" height="200"/>
 </p>
 
@@ -106,7 +106,7 @@ Each collection space contains a seperated group chat with tokengated access con
   Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
   Check our decentralized databases content :
      <br />
-  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_37**
+  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_3764**
         
   attribute_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_80001_3765**
         

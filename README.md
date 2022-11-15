@@ -26,7 +26,7 @@ The Crypto Studio Collection supports all kind of NFTs like :
 We provide them all of them from our UI!
 
 Collection on OpenSea:
- https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9
+ **https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9**
 
 Each Artist/User first has to mint a Space. A space is like his signature on top of his NFTs. Digital artists can create a whole Collection|Album based on their space.A space is nothing more that a pair (trait_type = SpaceName , value = "A name space") on top of every NFT. Artists can only mint an NFT on top of their owned spaces. If they dont grab a unique space they are not allowed to mint their creations.
 
@@ -63,44 +63,60 @@ Each collection space contains a seperated group chat with tokengated access con
   ## IPFS & FILECOIN usage
   
   This is how we used IPFS & FILECOIN
-    ---
+   <br />
+   <br />
      **NFT.STORAGE**
+     <br />
        All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
        The code snippets that are using NFT.STORAGE modules are located here:
+       <br />
         **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/hooks/useNftStorage.ts**
+        <br />
         **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/pages/create-nft.tsx**
-    ---
+    <br />
+    <br />
     **SPHERON**
+    <br />
          We uploaded our frontend into IPFS using Spheron.
          Here is the Spheron IPFS hosted frontend url of The Crypto Studio :
+         <br />
          **https://the-crypto-studio-20be90.spheron.app/**
-    ---
+    <br />
+    <br />
     **CERAMIC NETWORK** which is based on the IPFS libP2P stack
+    <br />
         We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
         but also a unified and open GroupChat for the Crypto Studio users!
+        <br />
          **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/ChatContent.tsx**
+         <br />
          **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/ChatBox.jsx**
+         <br />
          **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/pages/create-nft.tsx**
+         <br />
          **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/UpdateProfile.tsx**
+         <br />
 
    ## Tableland usage 
+   <br />
   Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
      take a deeper look in the SmartContract 
+     <br />
      
   Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
   Check our decentralized databases content :
-     
-  main_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_3764
+     <br />
+  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_37**
         
-  attribute_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_80001_3765
+  attribute_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_80001_3765**
         
-  spaces_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_3766
-
+  spaces_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_3766**
+<br />
   ## SmartContract
-
+<br />
   Our contract is deployed and verified on polygon mumbai here is the mumbaiScan Link . 
-
-   - https://mumbai.polygonscan.com/address/0xCa23f7a27bF973bb9E21a6FA8bA21cd4a89A51DD#code
+<br />
+https://mumbai.polygonscan.com/address/0xCa23f7a27bF973bb9E21a6FA8bA21cd4a89A51DD#code
 
  
  

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Crypto Studio</title>
+    <script>
+        document.documentElement.className = "js"
+    </script>
+</head>
+
+<body class="The Crypto Studio" overflow="hidden">
+    <main class="site-wrapper"></main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        let audio, audioFile
+
+        function gotData(data) {
+            audioFile = data[0].audio
+            audio = loadSound(audioFile)
+            createCanvas(windowWidth, windowHeight)
+
+            analyzer = new p5.Amplitude()
+            fft = new p5.FFT()
+            audio.loop()
+
+        }
+        //orderly hard edge iteration tool
+        //use for pixel paintings and triangle paintings
+        var colors = [
+            [111, 191, 183],
+            [242, 198, 65],
+            [242, 149, 68],
+            [242, 102, 102],
+            [3, 101, 140],
+            [80, 191, 191]
+        ];
+        var tw = 70;
+        var th = 70;
+
+        function setup() {
+            loadJSON("https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3641%20where%20tokenId=5", gotData)
+        }
+        let counter = 0
+        let counter1 = 0
+
+        function draw() {
+            if (audio) {
+                amp1 = fft.getEnergy("bass")
+                if (amp1 > 100) {
+                    counter1++
+
+                }
+                if ((abs(counter - counter1) > 100 || counter == 0) && (audio.isPlaying() || counter == 0)) {
+                    //   strokeWeight(1);
+                    counter = 0
+                    noStroke();
+
+                    for (var x = 0; x < width; x += tw) {
+                        for (var y = 0; y < height; y += th) {
+
+                            /* logic for squares - pixel images */
+                            drawSquare(x, y, tw, th);
+                            /* logic for two triangles per box */
+                            let rando = random();
+                            console.log(rando);
+                            drawTriangles(x, y, rando);
+                        }
+                    }
+                }
+                counter++
+            }
+
+            function drawSquare(x, y, w, h) {
+                if (random() < 0.8) {
+                    fill(colors[parseInt(random() * colors.length)]);
+                    rect(x, y, w, h);
+                } else {
+                    fill(100);
+                    rect(x, y, w, h);
+                }
+            }
+            //for splitting squares into two trianges
+            function drawTriangles(x, y, dir) {
+
+                //define triangle points
+                let ulx = x;
+                let uly = y;
+                let llx = x;
+                let lly = y + th;
+                let urx = x + tw;
+                let ury = y;
+                let lrx = x + tw;
+                let lry = y + th;
+
+                //draw triangles by dir
+                if (dir > .5) {
+                    fill(getColor());
+                    triangle(ulx, uly, llx, lly, urx, ury);
+                    fill(getColor());
+                    triangle(llx, lly, urx, ury, lrx, lry);
+                } else if (dir <= .5) {
+                    fill(getColor());
+                    triangle(ulx, uly, llx, lly, lrx, lry);
+                    fill(getColor());
+                    triangle(ulx, uly, urx, ury, lrx, lry);
+                }
+            }
+        }
+
+        function getColor() {
+            // grab a fil color
+            let col;
+
+            if (random() < 0.8) {
+                col = colors[parseInt(random(colors.length))];
+            } else {
+                col = 100;
+            }
+            stroke(col);
+            return col;
+        }
+
+        function mousePressed() {
+            if (audio.isPlaying()) {
+                audio.pause()
+            } else {
+                audio.play()
+            }
+        }
+
+        function touchPressed() {
+            if (audio.isPlaying()) {
+                audio.pause()
+            } else {
+                audio.play()
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight)
+        }
+    </script>
+</body>
+
+</html>

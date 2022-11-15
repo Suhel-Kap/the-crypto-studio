@@ -150,7 +150,7 @@ contract CryptoStudio is ERC721
     /// @notice Minting function 
     /// @dev retrieves the values for the NFT that is going to be Minted.
     /// the caller must mint an NFT on top of his pre taken SpaceName otherwise he cannot mint
-    function mint_your_Art(string memory name , string memory image , string memory animation , string memory audioCID, string memory description ,string memory spaceName) public payable {
+    function mint_your_Art(string memory name , string memory imageCID , string memory animationCID , string memory audioCID, string memory description ,string memory spaceName) public payable {
         require(msg.value >= mintPrice , "Not enough ETH sent to mint: check price.");
         require(spaceMap[spaceName] == msg.sender, "anothorized space to mint");
 

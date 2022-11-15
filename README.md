@@ -44,6 +44,12 @@ The dynamic features for changing the audio track of an NFT come into place by u
 
 NFT owners can add and update their NFT metadata by interacting with the cryptoStudio Smart contract as they want except the animationURL and the spaceName trait attributes, to keep the basic art and the creatorSignature immutable.
 
+**Here is the prototype Architecture of our NFTs** 
+
+<p align="left">
+<img src="./public/architecture.png"/>
+</p>
+
 ## SOCIAL_LAYER
  
 Each user has his profile based on the ceramic network using orbis.club
@@ -56,40 +62,39 @@ Each collection space contains a seperated group chat with tokengated access con
 
   ## IPFS & FILECOIN usage
   
-    => NFT.STORAGE <=
+  This is how we used IPFS & FILECOIN
+    ---
+     **NFT.STORAGE**
        All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
        The code snippets that are using NFT.STORAGE modules are located here:
- 
-        - https://github.com/Suhel-Kap/the-crypto-studio/blob/main/hooks/useNftStorage.ts
-        - https://github.com/Suhel-Kap/the-crypto-studio/blob/main/pages/create-nft.tsx
-
-    => Spheron usage <=
+        **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/hooks/useNftStorage.ts**
+        **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/pages/create-nft.tsx**
+    ---
+    **SPHERON**
          We uploaded our frontend into IPFS using Spheron.
          Here is the Spheron IPFS hosted frontend url of The Crypto Studio :
-         
-          - https://the-crypto-studio-20be90.spheron.app/
-
-    => Ceramic Network which is based on the IPFS libP2P stack <=
+         **https://the-crypto-studio-20be90.spheron.app/**
+    ---
+    **CERAMIC NETWORK** which is based on the IPFS libP2P stack
         We are leveraging Orbis.club for our users Profiles and for creating communication discord like channels for each Space
         but also a unified and open GroupChat for the Crypto Studio users!
-        
-         - https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/ChatContent.tsx
-         - https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/ChatBox.jsx
-         - https://github.com/Suhel-Kap/the-crypto-studio/blob/main/pages/create-nft.tsx
-         - https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/UpdateProfile.tsx
+         **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/ChatContent.tsx**
+         **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/ChatBox.jsx**
+         **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/pages/create-nft.tsx**
+         **https://github.com/Suhel-Kap/the-crypto-studio/blob/main/components/UpdateProfile.tsx**
 
    ## Tableland usage 
-     => Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
+  Tableand is used to create the metadata layer of the Crypto Studio NFTs inside the Smart Contract
      take a deeper look in the SmartContract 
      
-     => Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
-        Check our decentralized databases content :
+  Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
+  Check our decentralized databases content :
      
-        main_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_3764
+  main_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_3764
         
-        attribute_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_80001_3765
+  attribute_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_80001_3765
         
-        spaces_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_3766
+  spaces_table = https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_3766
 
   ## SmartContract
 

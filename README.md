@@ -27,8 +27,7 @@ The Crypto Studio Collection supports all kind of NFTs like :
   
 We provide them all of them from our UI!
 
-Collection on OpenSea:
- **https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9
+[Collection on OpenSea](https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9)
 
 Each Artist/User first has to mint a Space. A space is like his signature on top of his NFTs. Digital artists can create a whole Collection|Album based on their space.A space is nothing more that a pair (trait_type = SpaceName , value = "A name space") on top of every NFT. Artists can only mint an NFT on top of their owned spaces. If they dont grab a unique space they are not allowed to mint their creations.
 

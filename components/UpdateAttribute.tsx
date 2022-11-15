@@ -44,6 +44,7 @@ export function UpdateAttribute({attrName, value, tokenId}: AttributeProps) {
         <Container>
             <Title>Update Attribute</Title>
             <Stack spacing={"md"}>
+                <TextInput disabled label={"Token ID"} value={tokenId}/>
                 <TextInput disabled label={"Attribute name"} value={name}/>
                 <TextInput label={"Value"} value={aVal}
                            onChange={(event) => setAVal(event.currentTarget.value)}/>

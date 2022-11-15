@@ -96,11 +96,11 @@ export default function NftCard({
 
             {!isHome && (
                 <Group mt={"md"}>
-                    <Tooltip label={"Add attribute"}>
-                        <ActionIcon onClick={setAddAttribute}>
-                            <IconCirclePlus/>
-                        </ActionIcon>
-                    </Tooltip>
+                    {/*<Tooltip label={"Add attribute"}>*/}
+                    {/*    <ActionIcon onClick={setAddAttribute}>*/}
+                    {/*        <IconCirclePlus/>*/}
+                    {/*    </ActionIcon>*/}
+                    {/*</Tooltip>*/}
                     <Tooltip label={"Edit NFT Audio"}>
                         <ActionIcon onClick={setModalOpen}>
                             <IconPencil/>

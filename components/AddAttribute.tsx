@@ -94,6 +94,7 @@ export function AddAttribute(props: AttributeProps) {
             return
         }
         try {
+            console.log(props.tokenId)
             await addAttribute({
                 tokenId: parseInt(props.tokenId), traitType: trait, value: tValue
             })

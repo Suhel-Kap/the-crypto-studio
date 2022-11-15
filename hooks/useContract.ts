@@ -57,6 +57,7 @@ export const useContract = () => {
     }
 
     const addAttribute = async({tokenId, traitType, value}: AttributeProps) => {
+        console.log("addAttribute", tokenId, traitType, value)
         const tx = await contract.addAttribute(tokenId, traitType, value)
         return await tx.wait()
     }

@@ -9,8 +9,10 @@
 [Demo video](https://youtu.be/e4lI4cYYG3U)
 
 Our application is hosted on those links 
- * https://the-crypto-studio-20be90.spheron.app/
- * https://the-crypto-studio.vercel.app/
+ * [stable dapp link](https://the-crypto-studio.vercel.app/)
+ * [Valist IPFS link](https://bafybeieekfc5qpb5253kom33wlw3hb75w62ug3ob34upylkwf22ikf7axu.ipfs.gateway.valist.io/)
+ * [Spheron IPFS link](https://the-crypto-studio-20be90.spheron.app/)
+ 
 
 Authors
  * [nijoe1](https://github.com/nijoe1)
@@ -89,6 +91,14 @@ Each collection space contains a seperated group chat with tokengated access con
          Here is the Spheron IPFS hosted frontend url of The Crypto Studio :
          <br />
          **https://the-crypto-studio-20be90.spheron.app/**
+    <br />
+    <br />
+    **VALIST**
+    <br />
+         We uploaded our frontend into IPFS using Valist.
+         Here is the Valist IPFS hosted frontend url of The Crypto Studio :
+         <br />
+         **https://bafybeieekfc5qpb5253kom33wlw3hb75w62ug3ob34upylkwf22ikf7axu.ipfs.gateway.valist.io/**
     <br />
     <br />
     **CERAMIC NETWORK** which is based on the IPFS libP2P stack

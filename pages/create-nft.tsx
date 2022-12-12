@@ -55,7 +55,7 @@ export default function CreateNft() {
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         const tokenId = await getCurrentTokenId()
-        const updateHtml = await fetch("https://the-crypto-studio-ydkcvwlbra-uc.a.run.app/mint", {
+        const updateHtml = await fetch("/api/updateHtml", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -122,7 +122,7 @@ export default function CreateNft() {
         if (file && name && description && spaceName) {
             const cid = await upload(file)
             console.log(cid)
-            const updateHtml = await fetch("https://the-crypto-studio-ydkcvwlbra-uc.a.run.app/preview", {
+            const updateHtml = await fetch("/api/updateHtml", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -133,7 +133,7 @@ export default function CreateNft() {
                 })
             })
             const dataCid = await updateHtml.json()
-            const animationCid = dataCid.jsonCid
+            const animationCid = dataCid.res
             setTempCid(animationCid)
             console.log("dataCid", dataCid)
             setLoading(false)
@@ -303,6 +303,7 @@ export default function CreateNft() {
                             <Accordion.Panel>
                                 <Container>
                                     <Title order={1}>Create Audio Visual NFT</Title>
+                                    <Text sx={{color: "crimson", fontStyle: "italic"}}>You won't be able to mint the audio visual NFT for some time. Apologies for the inconvenience.</Text>
                                     <TextInput m={"md"} label={"NFT Name"} value={name as any}
                                                onChange={(event) => setName(event.currentTarget.value)}
                                                placeholder="Name" required/>

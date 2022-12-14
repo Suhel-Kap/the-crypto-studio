@@ -1,6 +1,6 @@
 import {AppProps} from 'next/app';
 import Head from 'next/head';
-import {MantineProvider} from '@mantine/core';
+import {ColorScheme, ColorSchemeProvider, MantineProvider} from '@mantine/core';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
     getDefaultWallets,
@@ -23,6 +23,7 @@ import {GlobalContext} from "../contexts/GlobalContext";
 /** Import Orbis SDK */
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
+import {useHotkeys, useLocalStorage} from "@mantine/hooks";
 
 let orbis = new Orbis();
 const GROUP_ID = "kjzl6cwe1jw14axp80vka5y7ca38y09datmcu4bz0tz8xzntvn9la91292wfnhb";
@@ -67,31 +68,44 @@ export default function App(props: AppProps) {
         }
     }
 
+    const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+        key: 'mantine-color-scheme',
+        defaultValue: 'dark',
+        getInitialValueInEffect: true,
+    });
+    const toggleColorScheme = (value?: ColorScheme) =>
+        setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+    useHotkeys([['mod+J', () => toggleColorScheme()]]);
+
+
     return (
         <>
             <Head>
                 <title>The Crypto Studio</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
-                <meta name={"description"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
-                <meta property={"og:title"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
-                <meta property={"og:description"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
-                <meta property={"og:url"} content={"https://the-crypto-studio-20be90.spheron.app"} />
-                <meta property="og:type" content="website" />
+                <meta name={"description"}
+                      content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
+                <meta property={"og:title"}
+                      content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
+                <meta property={"og:description"}
+                      content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
+                <meta property={"og:url"} content={"https://the-crypto-studio-20be90.spheron.app"}/>
+                <meta property="og:type" content="website"/>
             </Head>
             <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis} as any}>
                 <WagmiConfig client={wagmiClient}>
                     <RainbowKitProvider chains={chains} theme={darkTheme()}>
-                        <MantineProvider
-                            withGlobalStyles
-                            withNormalizeCSS
-                            theme={{
-                                colorScheme: 'dark',
-                            }}
-                        >
-                            <NotificationsProvider>
-                                <Component {...pageProps} />
-                            </NotificationsProvider>
-                        </MantineProvider>
+                        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                            <MantineProvider
+                                withGlobalStyles
+                                withNormalizeCSS
+                                theme={{ colorScheme }}
+                            >
+                                <NotificationsProvider>
+                                    <Component {...pageProps} />
+                                </NotificationsProvider>
+                            </MantineProvider>
+                        </ColorSchemeProvider>
                     </RainbowKitProvider>
                 </WagmiConfig>
             </GlobalContext.Provider>

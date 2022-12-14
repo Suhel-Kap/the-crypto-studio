@@ -4,6 +4,7 @@ export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default function useVocdoni() {
     const initClient = async (signer: any) => {
+        if(!signer) return
         const client = new VocdoniSDKClient({
             env: EnvironmentInitialitzationOptions.DEV,
             wallet: signer,
@@ -12,6 +13,7 @@ export default function useVocdoni() {
         console.log('Creating account...');
         const info = await client.createAccount()
         if (info.balance === 0) {
+            console.log('Funding account...');
             await client.collectFaucetTokens()
         }
         console.log('Account created:', info);
@@ -44,31 +46,31 @@ export default function useVocdoni() {
         questions.map((question) => addQuestion(election, question.title, question.description, question.options))
         console.log('Questions added');
 
-        await client.createElection(election).then((electionId: string) => {
+        await client!.createElection(election).then((electionId: string) => {
             console.log('Election created with id: ' + electionId);
-            client.setElectionId(electionId);
+            client!.setElectionId(electionId);
             console.log('Waiting for block confirmation...');
             return delay(14000);
         })
     }
 
-    const vote = async (signer: any,electionId: string, choice: any[]) => {
-        const client = await initClient(signer);
-        client.setElectionId(electionId);
-        const vote = new Vote([...choice])
-        const info = await client.fetchElection()
-        console.log(info)
-        try {
-            await client.submitVote(vote)
-            console.log('Vote submitted');
-        } catch (e) {
-            console.log(e);
-        }
-    }
+    // const vote = async (signer: any,electionId: string, choice: any[]) => {
+    //     const client = await initClient(signer);
+    //     client.setElectionId(electionId);
+    //     const vote = new CastVote([...choice])
+    //     const info = await client.fetchElection()
+    //     console.log(info)
+    //     try {
+    //         await client.submitVote(vote)
+    //         console.log('CastVote submitted');
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 
     return {
         initClient,
         initElection,
-        vote
+        // vote
     }
 }

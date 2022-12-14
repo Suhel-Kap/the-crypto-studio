@@ -3,12 +3,13 @@ import {
     Header,
     Group,
     Image,
-    Burger, Title, Transition, Paper, Stack,
+    Burger, Title, Transition, Paper, Stack, useMantineColorScheme, useMantineTheme, Switch,
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {ConnectButton} from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 import {useRouter} from "next/router";
+import {IconMoonStars, IconSun} from "@tabler/icons";
 
 const HEADER_HEIGHT = 60;
 
@@ -128,6 +129,9 @@ export function HeaderSimple() {
     const [opened, {toggle, close}] = useDisclosure(false)
     const router = useRouter()
 
+    const {colorScheme, toggleColorScheme} = useMantineColorScheme();
+    const darkTheme = useMantineTheme();
+
     const items = links.map((link) => (
         <Link href={link.link} key={link.label} className={classes.link}>
             {link.label}
@@ -138,12 +142,22 @@ export function HeaderSimple() {
         <Header height={100} p="md">
             <Group position="apart" p={"md"} sx={{height: '100%'}}>
                 <Group>
-                    <Image src="/logo.webp" width={50} height={50} alt="logo" radius={"xl"} style={{cursor: "pointer"}} onClick={() => router.push('/')}/>
+                    <Image src="/logo.webp" width={50} height={50} alt="logo" radius={"xl"} style={{cursor: "pointer"}}
+                           onClick={() => router.push('/')}/>
                     <Title onClick={() => router.push("/")} className={classes.title}>
                         The Crypto Studio
                     </Title>
                 </Group>
                 <Group className={classes.hiddenMobile}>
+                    <Group position="center" mb={15}>
+                        <Switch
+                            checked={colorScheme === 'dark'}
+                            onChange={() => toggleColorScheme()}
+                            size="lg"
+                            onLabel={<IconSun color={darkTheme.white} size={20} stroke={1.5}/>}
+                            offLabel={<IconMoonStars color={darkTheme.colors.gray[6]} size={20} stroke={1.5}/>}
+                        />
+                    </Group>
                     <ConnectButton
                         accountStatus={{
                             smallScreen: 'avatar',
@@ -158,7 +172,19 @@ export function HeaderSimple() {
                         <Paper className={classes.dropdown} withBorder style={styles}>
                             <Stack pl={"2%"} align={"flex-start"} justify={"flex-start"}>
                                 {items}
-                                <ConnectButton showBalance={false}/>
+                                <Group position="center" mb={15} px={10}>
+                                    <Switch
+                                        checked={colorScheme === 'dark'}
+                                        onChange={() => toggleColorScheme()}
+                                        size="lg"
+                                        onLabel={<IconSun color={darkTheme.white} size={20} stroke={1.5}/>}
+                                        offLabel={<IconMoonStars color={darkTheme.colors.gray[6]} size={20}
+                                                                 stroke={1.5}/>}
+                                    />
+                                </Group>
+                                <div style={{padding: 10}}>
+                                    <ConnectButton showBalance={false}/>
+                                </div>
                             </Stack>
                         </Paper>
                     )}

@@ -1,4 +1,4 @@
-import {Button, Center, Container, createStyles, Grid, Skeleton, Stack, Text, Title} from "@mantine/core";
+import {Button, Center, Container, createStyles, Grid, Skeleton, Stack, Tabs, Text, Title} from "@mantine/core";
 import Head from "next/head";
 import {Layout} from "../components/Layout";
 import {useRouter} from "next/router";
@@ -9,6 +9,9 @@ import CreatorCard from "../components/CreatorCard";
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
 import Link from "next/link";
+import StyledTabs from "../components/StyledTabs";
+import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
+import PollCreationForm from "../components/PollCreationForm";
 
 let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
 let orbisGroup = "https://app.orbis.club/group/"
@@ -33,10 +36,10 @@ export default function Space() {
     const [creatorData, setCreatorData] = useState()
     const [mounted, setMounted] = useState(false)
     const [renderCreator, setRenderCreator] = useState(<>
-        <Skeleton height={50} circle mb="xl" />
-        <Skeleton height={8} radius="xl" />
-        <Skeleton height={8} mt={6} radius="xl" />
-        <Skeleton height={8} mt={6} width="70%" radius="xl" />
+        <Skeleton height={50} circle mb="xl"/>
+        <Skeleton height={8} radius="xl"/>
+        <Skeleton height={8} mt={6} radius="xl"/>
+        <Skeleton height={8} mt={6} width="70%" radius="xl"/>
     </>)
 
     const getProfile = async (address: string) => {
@@ -54,13 +57,14 @@ export default function Space() {
         getProfile(address).then(res => {
             // console.log(res)
             // setCreatorData(res)
-            if(!res) return
-            if(typeof res["details"] === "string") {
+            if (!res) return
+            if (typeof res["details"] === "string") {
                 {/*@ts-ignore*/}
                 setRenderCreator(<CreatorCard email={router.query.address}/>)
             } else {
                 {/*@ts-ignore*/}
-                setRenderCreator(<CreatorCard image={res?.details?.profile.pfp} name={res?.username} email={res?.address}/>)
+                setRenderCreator(<CreatorCard image={res?.details?.profile.pfp} name={res?.username}
+                                              email={res?.address}/>)
             }
         })
     }, [router.isReady])
@@ -112,22 +116,43 @@ export default function Space() {
                                 {renderCreator}
                             </Grid.Col>
                             <Grid.Col lg={2}>
-                                    <Button component={"a"} href={query} target={"_blank"} color={"indigo"}
-                                            className={classes.btn}>
-                                        View Space on Opensea
-                                    </Button>
+                                <Button component={"a"} href={query} target={"_blank"} color={"indigo"}
+                                        className={classes.btn}>
+                                    View Space on Opensea
+                                </Button>
                             </Grid.Col>
                             <Grid.Col lg={2}>
-                                    <Button variant={"light"} component={"a"} href={orbisGroup} target={"_blank"}
-                                            color={"indigo"} className={classes.btn}>
-                                        Go to Space Chat
-                                    </Button>
+                                <Button variant={"light"} component={"a"} href={orbisGroup} target={"_blank"}
+                                        color={"indigo"} className={classes.btn}>
+                                    Go to Space Chat
+                                </Button>
                             </Grid.Col>
                         </Grid>
                     </Stack>}
-                    <Grid gutter={"xl"}>
-                        {renderNfts}
-                    </Grid>
+                    <Stack>
+                        <StyledTabs defaultValue={"nfts"}>
+                            <Tabs.List>
+                                <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
+                                <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16} />}>Polls</Tabs.Tab>
+                                <Tabs.Tab value={"create"} icon={<IconFilePencil size={16} />}>Create Poll</Tabs.Tab>
+                                <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16} />} disabled>Group Chat</Tabs.Tab>
+                            </Tabs.List>
+                            <Tabs.Panel value={"nfts"}>
+                                <Grid gutter={"xl"}>
+                                    {renderNfts}
+                                </Grid>
+                            </Tabs.Panel>
+                            <Tabs.Panel value={"polls"}>
+                                Polls
+                            </Tabs.Panel>
+                            <Tabs.Panel value={"create"}>
+                                <PollCreationForm />
+                            </Tabs.Panel>
+                            <Tabs.Panel value={"chat"}>
+                                Group Chat
+                            </Tabs.Panel>
+                        </StyledTabs>
+                    </Stack>
                 </Container>
             </Layout>
         </>

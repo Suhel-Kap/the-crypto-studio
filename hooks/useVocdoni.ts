@@ -46,27 +46,12 @@ export default function useVocdoni() {
         questions.map((question) => addQuestion(election, question.title, question.description, question.options))
         console.log('Questions added');
 
-        await client!.createElection(election).then((electionId: string) => {
-            console.log('Election created with id: ' + electionId);
-            client!.setElectionId(electionId);
-            console.log('Waiting for block confirmation...');
-            return delay(14000);
-        })
+        const electionId = await client!.createElection(election)
+        console.log('Election created:', electionId);
+        client!.setElectionId(electionId)
+        await delay(14000)
+        return electionId;
     }
-
-    // const vote = async (signer: any,electionId: string, choice: any[]) => {
-    //     const client = await initClient(signer);
-    //     client.setElectionId(electionId);
-    //     const vote = new CastVote([...choice])
-    //     const info = await client.fetchElection()
-    //     console.log(info)
-    //     try {
-    //         await client.submitVote(vote)
-    //         console.log('CastVote submitted');
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // }
 
     return {
         initClient,

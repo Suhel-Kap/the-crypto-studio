@@ -4,9 +4,12 @@ import {Layout} from "../components/Layout";
 import {useEffect, useState} from "react";
 import getAllSpaces from "../utils/getAllSpaces";
 import SpaceCard from "../components/SpaceCard";
+import {useSigner} from "wagmi";
 
 export default function ExploreSpaces() {
     const [data, setData] = useState<any>(null)
+    const {data: signer} = useSigner()
+    console.log(signer)
     useEffect(() => {
         getAllSpaces().then(res => {
             console.log(res)
@@ -20,7 +23,7 @@ export default function ExploreSpaces() {
         renderSpaces = data?.map(nft => {
             return (
                 <Grid.Col lg={4} md={6}>
-                    <SpaceCard title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={nft.image}/>
+                    <SpaceCard signer={signer} title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={nft.image}/>
                 </Grid.Col>
             )
         })

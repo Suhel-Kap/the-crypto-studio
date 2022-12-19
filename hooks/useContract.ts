@@ -20,7 +20,6 @@ interface AttributeProps {
 export const useContract = () => {
     const {data: signer, isError, isLoading} = useSigner()
     const {address} = useAccount()
-
     const contract = new ethers.Contract(tcsContractAddress["the-crypto-studio"], tcsAbi, signer!)
 
     const getCurrentTokenId = async () => {

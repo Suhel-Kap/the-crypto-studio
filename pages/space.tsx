@@ -7,11 +7,14 @@ import getSpaceNfts from "../utils/getSpaceNfts";
 import NftCard from "../components/NftCard";
 import CreatorCard from "../components/CreatorCard";
 // @ts-ignore
-import {Orbis} from "@orbisclub/orbis-sdk";
-import Link from "next/link";
+import {Orbis} from "@orbisclub/orbis-sdk"
 import StyledTabs from "../components/StyledTabs";
 import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
 import PollCreationForm from "../components/PollCreationForm";
+import {useAccount, useSigner} from "wagmi";
+import {GlobalContext} from "../contexts/GlobalContext";
+import {showNotification} from "@mantine/notifications";
+import Polls from "../components/Polls";
 
 let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
 let orbisGroup = "https://app.orbis.club/group/"
@@ -24,56 +27,85 @@ const useStyles = createStyles((theme) => ({
         },
         height: "-webkit-fill-available",
         marginTop: theme.spacing.xl,
-        marginBottom: theme.spacing.xl
+        marginBottom: theme.spacing.xl,
+        width: "100%"
     }
 }))
 
 export default function Space() {
-    const {classes} = useStyles();
+    const {classes} = useStyles()
     const router = useRouter()
+    const {isConnected, isConnecting, isDisconnected, address} = useAccount()
     const [nfts, setNfts] = useState()
     const [spaceName, setSpaceName] = useState("")
-    const [creatorData, setCreatorData] = useState()
     const [mounted, setMounted] = useState(false)
+    const [groupId, setGroupId] = useState<string>("")
+    const [isGroupMember, setIsGroupMember] = useState(false)
     const [renderCreator, setRenderCreator] = useState(<>
         <Skeleton height={50} circle mb="xl"/>
         <Skeleton height={8} radius="xl"/>
         <Skeleton height={8} mt={6} radius="xl"/>
         <Skeleton height={8} mt={6} width="70%" radius="xl"/>
     </>)
+    // @ts-ignore
+    const {orbis, user, setUser} = useContext(GlobalContext)
+    useEffect(() => {
+        if (isDisconnected) {
+            alert("Please connect your wallet")
+            router.back()
+            return
+        }
+    }, [isConnected, isConnecting, isDisconnected])
 
     const getProfile = async (address: string) => {
         let orbis = new Orbis()
-        let {data, error} = await orbis.getProfile(`did:pkh:eip155:80001:${address}`)
+        let {data: dids} = await orbis.getDids(address)
+        let {data, error} = await orbis.getProfile(dids[0].did)
         if (data) {
             return data
         }
         return error
     }
+
     useEffect(() => {
         if (!router.isReady) return
         const {address} = router.query
         // @ts-ignore
         getProfile(address).then(res => {
-            // console.log(res)
-            // setCreatorData(res)
             if (!res) return
             if (typeof res["details"] === "string") {
                 {/*@ts-ignore*/}
                 setRenderCreator(<CreatorCard email={router.query.address}/>)
             } else {
-                {/*@ts-ignore*/}
-                setRenderCreator(<CreatorCard image={res?.details?.profile.pfp} name={res?.username}
+                {/*@ts-ignore*/
+                }
+                setRenderCreator(<CreatorCard image={res?.details?.profile?.pfp} name={res?.username}
                                               email={res?.address}/>)
             }
         })
     }, [router.isReady])
 
     useEffect(() => {
+        (async () => {
+            if (!router.isReady) return
+            let {data: dids} = await orbis.getDids(address)
+            const user = dids[0].did
+            const {groupId} = router.query
+            setGroupId(groupId as string)
+            let {data, error} = await orbis.getIsGroupMember(groupId, user)
+            if (data) {
+                setIsGroupMember(data)
+            }
+        })()
+    }, [router.isReady, isConnected, address])
+
+    useEffect(() => {
         if (!router.isReady) return;
         const {id, groupId} = router.query
         query = query + id
-        orbisGroup = orbisGroup + groupId
+        if(orbisGroup.length < 92) {
+            orbisGroup = orbisGroup + groupId
+        }
         // @ts-ignore
         setSpaceName(id)
         // @ts-ignore
@@ -90,7 +122,7 @@ export default function Space() {
         renderNfts = nfts?.map(nft => {
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
-                    <NftCard setAddAttribute={() => console.log("I'm clicked")} title={nft.name} tokenId={nft.tokenID}
+                    <NftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
                              image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
@@ -98,6 +130,40 @@ export default function Space() {
         })
     } else {
         renderNfts = <Text m={"xl"}>There are no NFTs in this space</Text>
+    }
+
+    const handleJoin = async () => {
+        const {groupId} = router.query
+        const res = await orbis.setGroupMember(groupId, true)
+        if (res.status === 200) {
+            showNotification({
+                title: "Success",
+                message: "You have successfully joined the group",
+            })
+            router.reload()
+        } else {
+            showNotification({
+                title: "Error",
+                message: "Something went wrong",
+            })
+            router.reload()
+        }
+    }
+
+    const handleLeave = async () => {
+        const {groupId} = router.query
+        const res = await orbis.setGroupMember(groupId, false)
+        if (res.status === 200) {
+            showNotification({
+                title: "Success",
+                message: "You have successfully left the group",
+            })
+        } else {
+            showNotification({
+                title: "Error",
+                message: "Something went wrong",
+            })
+        }
     }
 
     return (
@@ -112,7 +178,7 @@ export default function Space() {
                     <Title>{spaceName}</Title>
                     {mounted && <Stack>
                         <Grid>
-                            <Grid.Col lg={8}>
+                            <Grid.Col lg={6}>
                                 {renderCreator}
                             </Grid.Col>
                             <Grid.Col lg={2}>
@@ -121,21 +187,38 @@ export default function Space() {
                                     View Space on Opensea
                                 </Button>
                             </Grid.Col>
+                            {!user && <Grid.Col lg={2}>
+                                <Button onClick={() => router.push('/discussions')} color={"indigo"} variant={"light"} className={classes.btn}>
+                                    Connect to Orbis
+                                </Button>
+                            </Grid.Col>}
+                            {user && isGroupMember && <Grid.Col lg={2}>
+                                <Button variant={"light"} onClick={handleLeave} color={"indigo"} className={classes.btn}>
+                                    Leave Space
+                                </Button>
+                            </Grid.Col>}
+                            {user && !isGroupMember && <Grid.Col lg={2}>
+                                <Button variant={"light"} onClick={handleJoin} color={"indigo"} className={classes.btn}>
+                                    Join Space
+                                </Button>
+                            </Grid.Col>}
                             <Grid.Col lg={2}>
-                                <Button variant={"light"} component={"a"} href={orbisGroup} target={"_blank"}
+                                <Button variant={"subtle"} component={"a"} href={orbisGroup} target={"_blank"}
                                         color={"indigo"} className={classes.btn}>
                                     Go to Space Chat
                                 </Button>
                             </Grid.Col>
                         </Grid>
                     </Stack>}
+                    {!isGroupMember && <Text sx={{fontStyle: "italic", color: "red"}} mb={"md"}>Join space to make collaboration requests and give your opinions on the polls.</Text>}
                     <Stack>
                         <StyledTabs defaultValue={"nfts"}>
                             <Tabs.List>
                                 <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
-                                <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16} />}>Polls</Tabs.Tab>
-                                <Tabs.Tab value={"create"} icon={<IconFilePencil size={16} />}>Create Poll</Tabs.Tab>
-                                <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16} />} disabled>Group Chat</Tabs.Tab>
+                                <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16}/>} disabled={!isGroupMember}>Polls</Tabs.Tab>
+                                <Tabs.Tab value={"create"} icon={<IconFilePencil size={16}/>} disabled={!isGroupMember}>Create Poll</Tabs.Tab>
+                                <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>} disabled>Group
+                                    Chat</Tabs.Tab>
                             </Tabs.List>
                             <Tabs.Panel value={"nfts"}>
                                 <Grid gutter={"xl"}>
@@ -143,7 +226,7 @@ export default function Space() {
                                 </Grid>
                             </Tabs.Panel>
                             <Tabs.Panel value={"polls"}>
-                                Polls
+                                <Polls groupId={groupId}/>
                             </Tabs.Panel>
                             <Tabs.Panel value={"create"}>
                                 <PollCreationForm />

@@ -99,7 +99,7 @@ export default function MyNft() {
     useEffect(() => {
         getNfts(address!).then(res => {
             setNfts(res)
-            console.log(res)
+            console.log("res",res)
         })
     }, [address])
     let renderNfts
@@ -107,8 +107,8 @@ export default function MyNft() {
     if (nfts?.length > 0) {
         renderNfts = nfts?.map(nft => {
             return (
-                <Grid.Col lg={4} md={6}>
-                    <NftCard key={nft.tokenID} title={nft.name} tokenId={nft.tokenID}
+                <Grid.Col key={nft.tokenID} lg={4} md={6}>
+                    <NftCard title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
                              image={nft.image} setAddAttribute={() => handleAddAttribute(nft.tokenID, nft.attributes)}
                              setModalOpen={() => handleClick(nft.tokenID)}/>

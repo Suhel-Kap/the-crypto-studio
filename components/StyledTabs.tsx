@@ -50,6 +50,9 @@ export default function StyledTabs(props: TabsProps) {
 
                 tabsList: {
                     display: 'flex',
+                    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                        overflowX: 'auto',
+                    },
                 },
             })}
             {...props}

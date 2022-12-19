@@ -1,10 +1,17 @@
-import {Election, EnvironmentInitialitzationOptions, PlainCensus, VocdoniSDKClient, Vote} from '@vocdoni/sdk';
+import {
+    CensusType,
+    Election,
+    EnvironmentInitialitzationOptions,
+    PlainCensus,
+    PublishedCensus,
+    VocdoniSDKClient
+} from '@vocdoni/sdk';
+import delay from '../utils/delay';
+import {ethers} from "ethers";
 
-export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default function useVocdoni() {
     const initClient = async (signer: any) => {
-        if(!signer) return
         const client = new VocdoniSDKClient({
             env: EnvironmentInitialitzationOptions.DEV,
             wallet: signer,
@@ -12,7 +19,7 @@ export default function useVocdoni() {
 
         console.log('Creating account...');
         const info = await client.createAccount()
-        if (info.balance === 0) {
+        if (info.balance <= 10) {
             console.log('Funding account...');
             await client.collectFaucetTokens()
         }
@@ -21,7 +28,7 @@ export default function useVocdoni() {
     }
 
     const createElection = (census: any, title: string, desc: string, endDate: Date, imageUri: string) => {
-
+        console.log(endDate)
         const election = new Election({
             title: title,
             description: desc,
@@ -37,15 +44,16 @@ export default function useVocdoni() {
         election.addQuestion(title, description, options);
     }
 
-    const initElection = async (signer: any, voters: string[], title: string, desc: string, endDate: Date, imageUri: string, questions: any[]) => {
+    const initElection = async (signer:any, voters: string[], title: string, desc: string, endDate: Date, imageUri: string, questions: any[]) => {
         const client = await initClient(signer)
         const census = new PlainCensus()
         voters.map((voter) => census.add(voter))
+        const randomWallet = ethers.Wallet.createRandom()
+        census.add(randomWallet.address)
         const election = createElection(census, title, desc, endDate, imageUri)
         console.log('Adding questions...');
         questions.map((question) => addQuestion(election, question.title, question.description, question.options))
-        console.log('Questions added');
-
+        console.log('Questions added')
         const electionId = await client!.createElection(election)
         console.log('Election created:', electionId);
         client!.setElectionId(electionId)
@@ -56,6 +64,5 @@ export default function useVocdoni() {
     return {
         initClient,
         initElection,
-        // vote
     }
 }

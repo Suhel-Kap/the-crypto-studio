@@ -30,7 +30,6 @@
     "nft.storage": "^7.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-p5": "^1.3.33",
     "tabler-icons-react": "^1.56.0",
     "typescript": "4.8.4",
     "wagmi": "^0.7.10"

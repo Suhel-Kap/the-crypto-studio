@@ -28,6 +28,7 @@ export default function CastVote(props: any) {
             disallowClose: true,
         })
         try {
+            // @ts-ignore
             const vid = await client!.submitVote(vote)
             console.log(vid)
             updateNotification({

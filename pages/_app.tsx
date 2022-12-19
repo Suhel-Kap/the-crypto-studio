@@ -29,28 +29,30 @@ let orbis = new Orbis();
 const GROUP_ID = "kjzl6cwe1jw14axp80vka5y7ca38y09datmcu4bz0tz8xzntvn9la91292wfnhb";
 const CHANNEL_ID = "kjzl6cwe1jw14b9kogz1as83u05pswa5fs4pzbejlr55f8njn108punvyyrymk5"
 
+const {chains, provider, webSocketProvider} = configureChains(
+    [chain.polygonMumbai],
+    [
+        alchemyProvider({apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}),
+        publicProvider()
+    ]
+);
+const {connectors} = getDefaultWallets({
+    appName: 'Dynamic Audio NFTs',
+    chains
+});
+const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+    webSocketProvider
+})
+
 export default function App(props: AppProps) {
     const [user, setUser] = useState(null);
     const group_id = GROUP_ID;
     const channel_id = CHANNEL_ID;
     const {Component, pageProps} = props;
-    const {chains, provider, webSocketProvider} = configureChains(
-        [chain.polygonMumbai],
-        [
-            alchemyProvider({apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}),
-            publicProvider()
-        ]
-    );
-    const {connectors} = getDefaultWallets({
-        appName: 'Dynamic Audio NFTs',
-        chains
-    });
-    const wagmiClient = createClient({
-        autoConnect: true,
-        connectors,
-        provider,
-        webSocketProvider
-    })
+
 
     useEffect(() => {
         if (!user) {
@@ -102,7 +104,7 @@ export default function App(props: AppProps) {
                                 theme={{ colorScheme }}
                             >
                                 <NotificationsProvider>
-                                    <Component {...pageProps} />
+                                    <Component {...pageProps} wagmiClient={wagmiClient} />
                                 </NotificationsProvider>
                             </MantineProvider>
                         </ColorSchemeProvider>

@@ -19,6 +19,7 @@ export default function Discussions() {
             let res = await orbis.isConnected()
             if (res.status == 200) {
                 await orbis.logout()
+                setUser(null)
                 console.log("User is connected: ", res);
             }
         }
@@ -66,6 +67,7 @@ export default function Discussions() {
     }
 
     useEffect(() => {
+        console.log("user", user)
         getPosts()
     }, [])
 

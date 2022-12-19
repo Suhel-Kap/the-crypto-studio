@@ -1,22 +1,34 @@
 import {useForm} from "@mantine/form"
-import {ActionIcon, Button, Center, Container, Group, Paper, Stack, Text, Textarea, TextInput} from "@mantine/core";
+import {
+    ActionIcon,
+    Button,
+    Group,
+    NumberInput,
+    Paper,
+    Stack,
+    Text,
+    Textarea,
+    TextInput
+} from "@mantine/core";
 import {ImageInput} from "./ImageInput";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {DatePicker} from "@mantine/dates";
 import {IconCircleMinus} from "@tabler/icons";
 import useNftStorage from "../hooks/useNftStorage";
 import {showNotification, updateNotification} from "@mantine/notifications";
-import {useSigner} from "wagmi";
 import useVocdoni from "../hooks/useVocdoni";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {useRouter} from "next/router";
 import dayjs from "dayjs";
+import {useSigner} from "wagmi";
+import {useIsMounted} from "../hooks/useIsMounted";
 
-export default function PollCreationForm() {
+export default function PollCreationForm(props: any) {
     const [image, setImage] = useState<File>()
     const {uploadImage} = useNftStorage();
-    const {data: signer} = useSigner()
     const {initElection} = useVocdoni()
+    const {data: signer} = useSigner()
+    const mounted = useIsMounted()
     const [submitting, setSubmitting] = useState(false)
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
@@ -28,6 +40,8 @@ export default function PollCreationForm() {
             description: "",
             imageUri: "",
             endDate: "",
+            endHour: 0,
+            endMinute: 0,
             questions: [
                 {
                     title: "",
@@ -74,17 +88,21 @@ export default function PollCreationForm() {
                 const {data, error} = await orbis.getGroupMembers(groupId)
                 const groupMembers = data.map((member: any) => member.did.slice(-42))
                 try {
-                    const endDate = new Date(form.values.endDate)
-                    const electionId = await initElection(signer, groupMembers, form.values.topic, form.values.description, endDate, imageUri, form.values.questions)
+                    const endDate = new Date(values.endDate)
+                    endDate.setHours(values.endHour)
+                    endDate.setMinutes(values.endMinute)
+                    const electionId = await initElection(signer, groupMembers, values.topic, values.description, endDate, imageUri, values.questions)
                     console.log(electionId)
                     const res = await orbis.createPost(
                         {
-                            context: `${groupId}/poll`,
+                            context: `${groupId}`,
                             body: `${electionId}`,
-                            tags: ["thecryptostudio", "poll"],
+                            tags: [{
+                                slug: "poll",
+                                title: "Poll"
+                            }],
                         }
                     )
-                    console.log(res)
                     if (res.status === 200) {
                         updateNotification({
                             title: "Poll created",
@@ -93,7 +111,7 @@ export default function PollCreationForm() {
                             autoClose: 5000,
                         })
                         setSubmitting(false)
-                        // router.reload()
+                        form.reset()
                     } else {
                         updateNotification({
                             title: "Error",
@@ -128,6 +146,8 @@ export default function PollCreationForm() {
                 <DatePicker my={"md"} label={"End Date"}
                             minDate={dayjs(new Date()).toDate()}
                             placeholder={"When should this pole end?"} {...form.getInputProps("endDate")} required/>
+                <NumberInput my={"md"} label={"End Hour (24 hour format)"} placeholder={"10"} {...form.getInputProps("endHour")} required min={0} max={23} />
+                <NumberInput my={"md"} label={"End Minute"} placeholder={"10"} {...form.getInputProps("endMinute")} required min={0} max={59} />
                 <Text>Questions</Text>
                 {
                     form.values.questions.map((question: any, index: number) => {

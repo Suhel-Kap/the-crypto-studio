@@ -3,6 +3,7 @@ interface NftCardProps {
     address: string;
     groupId: string;
     image: string;
+    signer: any;
 }
 
 import {
@@ -43,7 +44,7 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-export default function SpaceCard({title, address, groupId, image}: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
+export default function SpaceCard({signer, title, address, groupId, image}: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
 
     const linkProps = {href: `/space/?id=${title}&address=${address}&groupId=${groupId}`, rel: 'noopener noreferrer'};

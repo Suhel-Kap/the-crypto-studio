@@ -86,6 +86,8 @@ export default function PollCreationForm(props: any) {
                 const imageUri = `https://${cid}.ipfs.nftstorage.link`
                 const {groupId} = router.query
                 const {data, error} = await orbis.getGroupMembers(groupId)
+                console.log(data)
+                const mentions = data.map((member: any) => ({did: member.profile_details.did, username: member.profile_details.profile.username}))
                 const groupMembers = data.map((member: any) => member.did.slice(-42))
                 try {
                     const endDate = new Date(values.endDate)
@@ -97,6 +99,7 @@ export default function PollCreationForm(props: any) {
                         {
                             context: `${groupId}`,
                             body: `${electionId}`,
+                            mentions: mentions,
                             tags: [{
                                 slug: "poll",
                                 title: "Poll"

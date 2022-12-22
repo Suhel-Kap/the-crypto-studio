@@ -9,7 +9,6 @@ import {useSigner} from "wagmi";
 export default function ExploreSpaces() {
     const [data, setData] = useState<any>(null)
     const {data: signer} = useSigner()
-    console.log(signer)
     useEffect(() => {
         getAllSpaces().then(res => {
             console.log(res)

@@ -1,11 +1,4 @@
-import {
-    CensusType,
-    Election,
-    EnvironmentInitialitzationOptions,
-    PlainCensus,
-    PublishedCensus,
-    VocdoniSDKClient
-} from '@vocdoni/sdk';
+import {Election, EnvOptions, PlainCensus, VocdoniSDKClient} from '@vocdoni/sdk';
 import delay from '../utils/delay';
 import {ethers} from "ethers";
 
@@ -13,7 +6,7 @@ import {ethers} from "ethers";
 export default function useVocdoni() {
     const initClient = async (signer: any) => {
         const client = new VocdoniSDKClient({
-            env: EnvironmentInitialitzationOptions.DEV,
+            env: EnvOptions.STG,
             wallet: signer,
         });
 
@@ -28,8 +21,7 @@ export default function useVocdoni() {
     }
 
     const createElection = (census: any, title: string, desc: string, endDate: Date, imageUri: string) => {
-        console.log(endDate)
-        const election = new Election({
+        const election = Election.from({
             title: title,
             description: desc,
             header: imageUri,

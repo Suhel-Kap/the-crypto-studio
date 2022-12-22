@@ -1,19 +1,29 @@
 import {useAccount, useSigner} from "wagmi";
 import {useRouter} from "next/router";
-import useVocdoni from "../hooks/useVocdoni";
-import {useEffect, useState} from "react";
-import {Badge, Container, Group, Image, Text, Title} from "@mantine/core";
-import {EnvironmentInitialitzationOptions, VocdoniSDKClient} from "@vocdoni/sdk";
+import {useContext, useEffect, useState} from "react";
+import {Badge, Button, Container, Group, Image, Text, Title} from "@mantine/core";
+import {EnvOptions, VocdoniSDKClient, Vote} from "@vocdoni/sdk";
 import {Layout} from "../components/Layout";
 import CastVote from "../components/CastVote";
+import {showNotification, updateNotification} from "@mantine/notifications";
+import useVocdoni from "../hooks/useVocdoni";
+import { GlobalContext } from "../contexts/GlobalContext";
+import { useIsMounted } from "../hooks/useIsMounted";
 
 export default function Voting() {
     const router = useRouter()
     const {data: signer} = useSigner()
+    const {initClient} = useVocdoni()
     const {isConnected, isConnecting, address, isDisconnected} = useAccount()
     const [data, setData] = useState<any>()
     const [electionId, setElectionId] = useState<string>()
-
+    const [streamId, setStreamId] = useState<string>()
+    const [votes, setVotes] = useState<any>([])
+    const [submitting, setSubmitting] = useState<boolean>(false)
+    const [hasVoted, setHasVoted] = useState<boolean>(false)
+    // @ts-ignore
+    const {orbis, user} = useContext(GlobalContext)
+    const mounted = useIsMounted()
     useEffect(() => {
         if (isDisconnected) {
             alert("Please connect your wallet")
@@ -23,10 +33,24 @@ export default function Voting() {
 
     useEffect(() => {
         (async () => {
+           if(!mounted) return
+            if(!user) return
+           const res = await orbis.getPosts({
+               master: router.query.streamId,
+               tag: "vote",
+               did: user.did
+           })
+            res.data.length > 0 && setHasVoted(true)
+        })()
+    }, [orbis, mounted, user])
+
+    useEffect(() => {
+        (async () => {
             if (!router.query.electionID) return
             setElectionId(router.query.electionID as string)
+            setStreamId(router.query.streamId as string)
             const client = new VocdoniSDKClient({
-                env: EnvironmentInitialitzationOptions.DEV,
+                env: EnvOptions.STG,
                 // @ts-ignore
                 wallet: signer,
             });
@@ -34,23 +58,75 @@ export default function Voting() {
             client.setElectionId(router.query.electionID)
             const info = await client!.fetchElection()
             setData(info)
-            console.log(info)
+            // @ts-ignore
+            setVotes(Array.from({length: info._questions.length}, () => 0))
         })()
     }, [router.isReady, signer, isConnected, isConnecting, isDisconnected])
 
     const now = new Date()
-    const endDate = new Date(data?.endDate)
+    const endDate = new Date(data?._endDate)
     const isLive = now.getTime() < endDate.getTime()
     const timeRemaining = (endDate.getTime() - now.getTime())/1000
     let hours = Math.floor(timeRemaining / 3600) % 24;
 
+    const handleVote = (index: number, choice: number) => {
+        const newVotes = [...votes]
+        newVotes[index] = choice
+        setVotes(newVotes)
+    }
 
+    const submitVote = async () => {
+        setSubmitting(true)
+        const client = await initClient(signer)
+        const vote = new Vote(votes)
+        client?.setElectionId(electionId!)
+        showNotification({
+            title: "Casting vote...",
+            message: "Please wait while we cast your vote",
+            id: 'load-data',
+            loading: true,
+            autoClose: false,
+            disallowClose: true,
+        })
+        try {
+            // @ts-ignore
+            await client!.submitVote(vote)
+            await orbis.createPost(
+                {
+                    master: `${streamId}`,
+                    body: `Voted in a space in The Crypto Studio`,
+                    tags: [{
+                        slug: "vote",
+                        title: "Vote"
+                    }],
+                }
+            )
+            updateNotification({
+                id: 'load-data',
+                title: "Vote casted",
+                message: "Your vote has been casted",
+                autoClose: 5000
+            })
+            setSubmitting(false)
+        } catch (e) {
+            console.log(e)
+            updateNotification({
+                id: 'load-data',
+                title: "Error casting vote",
+                message: "There was an error casting your vote",
+                color: "red",
+                autoClose: 5000
+            })
+            setSubmitting(false)
+        }
+        setSubmitting(false)
+    }
 
     return (
         <Layout>
             <Container size={"xl"}>
                 <Image
-                    src={data?.metadata?.media?.header}
+                    src={data?._header}
                     height={400}
                     width={"100%"}
                     radius={"lg"}
@@ -58,7 +134,7 @@ export default function Voting() {
                     my={"md"}
                 />
                 <Group>
-                    <Title>{data?.metadata?.title?.default}</Title>
+                    <Title>{data?._title?.default}</Title>
                     <Badge>{isLive ? "Live" : "Ended"}</Badge>
                     {
                         isLive && (
@@ -68,12 +144,19 @@ export default function Voting() {
                         )
                     }
                 </Group>
-                <Text>{data?.metadata?.description?.default}</Text>
-                {data?.metadata?.questions?.map((question: any, index: number) => {
+                <Text>{data?._description?.default}</Text>
+                {data?._questions?.map((question: any, index: number) => {
                     return (
-                        <CastVote key={index} isLive={isLive} result={data?.result[index]} electionId={electionId} question={question} />
+                        <CastVote key={index} qno={index} isLive={isLive} handleSubmit={handleVote} result={data?._results[index]} electionId={electionId} streamId={streamId} question={question} />
                     )
                 })}
+                <Button
+                    fullWidth
+                    disabled={!isLive || submitting || hasVoted}
+                    onClick={submitVote}
+                >
+                    {hasVoted ? "You have already voted or the election has ended" : "Submit Vote"}
+                </Button>
             </Container>
         </Layout>
     )

@@ -4,22 +4,20 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import ElectionCard from "./ElectionCard";
 import SpaceCard from "./SpaceCard";
 import {useIsMounted} from "../hooks/useIsMounted";
+import { useRouter } from "next/router";
 
-interface PropsType {
-    groupId: string
-}
-
-export default function Polls(props: PropsType){
+export default function Polls(){
     const [data, setData] = useState<any>([])
+    const router = useRouter()
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
     const mounted = useIsMounted()
     useEffect(() => {
         (async() => {
-            const polls = await orbis.getPosts({context: props.groupId, tag: "poll"})
+            const polls = await orbis.getPosts({context: router.query.groupId, tag: "poll"})
             setData(polls.data)
         })()
-    }, [props])
+    }, [router.isReady])
 
     let renderPolls
     if (data?.length > 0) {

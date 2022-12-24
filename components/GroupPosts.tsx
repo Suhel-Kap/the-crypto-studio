@@ -1,0 +1,46 @@
+import {Container} from "@mantine/core";
+import {useRouter} from "next/router";
+import {useContext, useEffect, useState} from "react";
+import PostInput from "./PostInput";
+import {useIsMounted} from "../hooks/useIsMounted";
+import { GlobalContext } from "../contexts/GlobalContext";
+import PostCard from "./PostCard";
+
+export default function GroupPosts() {
+    const router = useRouter()
+    const {groupId} = router.query
+    const [data, setData] = useState<any>()
+    const isMounted = useIsMounted()
+    // @ts-ignore
+    const {orbis} = useContext(GlobalContext)
+    const getPosts = async () => {
+        const res = await orbis.getPosts({context: groupId, tag: "tcspost"})
+        if(res.status === 200) {
+            setData(res.data)
+        } else {
+            setData([])
+        }
+    }
+    useEffect(() => {
+        if(!isMounted) return
+        getPosts()
+    }, [isMounted])
+    console.log(data)
+
+    return (
+        <Container>
+            <PostInput groupId={groupId as string} />
+            <div style={{
+                marginTop: -60
+            }}>
+            {
+                data?.map((post: any) => {
+                    return (
+                        <PostCard post={post} />
+                    )
+                })
+            }
+            </div>
+        </Container>
+    )
+}

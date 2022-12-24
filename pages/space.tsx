@@ -10,11 +10,16 @@ import CreatorCard from "../components/CreatorCard";
 import {Orbis} from "@orbisclub/orbis-sdk"
 import StyledTabs from "../components/StyledTabs";
 import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
-import PollCreationForm from "../components/PollCreationForm";
+// import PollCreationForm from "../components/PollCreationForm";
 import {useAccount, useSigner} from "wagmi";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification} from "@mantine/notifications";
-import Polls from "../components/Polls";
+// import Polls from "../components/Polls";
+import dynamic from "next/dynamic";
+import GroupPosts from "../components/GroupPosts";
+
+const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
+const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
 
 let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
 let orbisGroup = "https://app.orbis.club/group/"
@@ -213,26 +218,28 @@ export default function Space() {
                     {!isGroupMember && <Text sx={{fontStyle: "italic", color: "red"}} mb={"md"}>Join space to make collaboration requests and give your opinions on the polls.</Text>}
                     <Stack>
                         <StyledTabs defaultValue={"nfts"}>
+                            <Center>
                             <Tabs.List>
                                 <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
                                 <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16}/>} disabled={!isGroupMember}>Polls</Tabs.Tab>
                                 <Tabs.Tab value={"create"} icon={<IconFilePencil size={16}/>} disabled={!isGroupMember}>Create Poll</Tabs.Tab>
-                                <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>} disabled>Group
+                                <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>} disabled={!isGroupMember}>Group
                                     Chat</Tabs.Tab>
                             </Tabs.List>
+                            </Center>
                             <Tabs.Panel value={"nfts"}>
                                 <Grid gutter={"xl"}>
                                     {renderNfts}
                                 </Grid>
                             </Tabs.Panel>
                             <Tabs.Panel value={"polls"}>
-                                <Polls groupId={groupId}/>
+                                <Polls />
                             </Tabs.Panel>
                             <Tabs.Panel value={"create"}>
                                 <PollCreationForm />
                             </Tabs.Panel>
                             <Tabs.Panel value={"chat"}>
-                                Group Chat
+                                <GroupPosts />
                             </Tabs.Panel>
                         </StyledTabs>
                     </Stack>

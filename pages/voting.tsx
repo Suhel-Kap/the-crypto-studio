@@ -19,6 +19,7 @@ export default function Voting() {
     const [electionId, setElectionId] = useState<string>()
     const [streamId, setStreamId] = useState<string>()
     const [votes, setVotes] = useState<any>([])
+    const [hasChosenAll, setHasChosenAll] = useState<any>([])
     const [submitting, setSubmitting] = useState<boolean>(false)
     const [hasVoted, setHasVoted] = useState<boolean>(false)
     // @ts-ignore
@@ -60,6 +61,8 @@ export default function Voting() {
             setData(info)
             // @ts-ignore
             setVotes(Array.from({length: info._questions.length}, () => 0))
+            // @ts-ignore
+            setHasChosenAll(Array.from({length: info._questions.length}, () => false))
         })()
     }, [router.isReady, signer, isConnected, isConnecting, isDisconnected])
 
@@ -71,8 +74,11 @@ export default function Voting() {
 
     const handleVote = (index: number, choice: number) => {
         const newVotes = [...votes]
+        const newHasChosenAll = [...hasChosenAll]
         newVotes[index] = choice
+        newHasChosenAll[index] = true
         setVotes(newVotes)
+        setHasChosenAll(newHasChosenAll)
     }
 
     const submitVote = async () => {
@@ -152,10 +158,10 @@ export default function Voting() {
                 })}
                 <Button
                     fullWidth
-                    disabled={!isLive || submitting || hasVoted}
+                    disabled={!isLive || submitting || hasVoted || hasChosenAll.includes(false)}
                     onClick={submitVote}
                 >
-                    {hasVoted ? "You have already voted or the election has ended" : "Submit Vote"}
+                    Submit Vote
                 </Button>
             </Container>
         </Layout>

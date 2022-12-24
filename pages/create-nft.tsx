@@ -195,6 +195,18 @@ export default function CreateNft() {
                 name: spacename,
             })
             const groupId = res.doc
+            console.log(groupId)
+            try{
+                const groupRes = await orbis.createChannel(groupId, {
+                    group_id: groupId,
+                    name: "General",
+                    description: "General channel for the group",
+                    type: "feed"
+                })
+                console.log(groupRes)
+            } catch (e) {
+                console.log(e)
+            }
 
             try {
                 await mintSpace(spacename, groupId, `https://ipfs.io/ipfs/${cid}`)
@@ -206,7 +218,7 @@ export default function CreateNft() {
                     autoClose: 5000
                 })
                 setLoading(false)
-                router.reload()
+                // router.reload()
             } catch (e) {
                 console.log(e)
                 updateNotification({

@@ -40,7 +40,7 @@ export default function CastVote(props: any) {
                                             handleVote(option.value)
                                             setChosenOption(index)
                                         }}>
-                                        {chosenOption === index ? "Chosen" : "Vote"}
+                                        {chosenOption === index ? "Selected" : "Select"}
                                     </Button>}
                                     {!props.isLive &&
                                         <Tooltip label={`${votePercentage[index]}% votes`}>

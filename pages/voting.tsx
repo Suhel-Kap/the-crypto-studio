@@ -23,8 +23,24 @@ export default function Voting() {
     const [submitting, setSubmitting] = useState<boolean>(false)
     const [hasVoted, setHasVoted] = useState<boolean>(false)
     // @ts-ignore
-    const {orbis, user} = useContext(GlobalContext)
+    const {orbis, user, setUser} = useContext(GlobalContext)
     const mounted = useIsMounted()
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
+
     useEffect(() => {
         if (isDisconnected) {
             alert("Please connect your wallet")

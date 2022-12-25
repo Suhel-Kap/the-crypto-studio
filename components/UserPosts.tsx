@@ -53,7 +53,7 @@ export default function UserPosts() {
                 }
                 {
                     data?.length === 0 && (
-                        <Center mt={"md"}>
+                        <Center mt={45}>
                             <Title order={3}>No posts yet</Title>
                         </Center>
                     )

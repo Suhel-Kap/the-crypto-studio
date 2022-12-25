@@ -5,6 +5,7 @@ interface NftCardProps {
     description: string;
     tokenId: string;
     animationUrl: string;
+    spaceName?: string;
     image: any;
     setModalOpen?: any;
     setAddAttribute?: any;
@@ -17,6 +18,8 @@ import {
 } from '@mantine/core';
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
+import getSpaceDetails from "../utils/getSpaceDetails";
+import {useIsMounted} from "../hooks/useIsMounted";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -57,12 +60,25 @@ export default function NftCard({
                                     tokenId,
                                     image,
                                     setModalOpen,
-                                    setAddAttribute
+                                    spaceName
                                 }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+    const mounted = useIsMounted()
+    const [spaceLink, setSpaceLink] = useState("")
 
     const linkProps = {href: gatewayUrl, target: '_blank', rel: 'noopener noreferrer'};
+
+    const getSpaceLink = async () => {
+        const res = await getSpaceDetails(spaceName!)
+        setSpaceLink(`/space?id=${spaceName}&address=${res[0].space_owner}&groupId=${res[0].groupID}`)
+    }
+
+    useEffect(() => {
+        if (!mounted) return
+        if (!spaceName) return
+        getSpaceLink()
+    }, [spaceName, mounted])
 
     const router = useRouter()
     const [isHome, setIsHome] = useState(false)
@@ -71,7 +87,7 @@ export default function NftCard({
             setIsHome(true)
         } else if (router.pathname === '/space') {
             setIsHome(true)
-        } else if(router.pathname === '/user'){
+        } else if (router.pathname === '/user') {
             setIsHome(true)
         } else {
             setIsHome(false)
@@ -91,7 +107,9 @@ export default function NftCard({
                     {title} <span className={classes.rating}>#{tokenId}</span>
                 </Text>
             </Tooltip>
-
+            <Text size="sm" color="dimmed" lineClamp={4} component={"a"} href={spaceLink}>
+                {spaceName}
+            </Text>
             <Text size="sm" color="dimmed" lineClamp={4}>
                 {description}
             </Text>

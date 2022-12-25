@@ -13,6 +13,7 @@ import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@ta
 import UserPosts from "../components/UserPosts";
 import {useAccount} from "wagmi";
 import {showNotification, updateNotification} from "@mantine/notifications";
+import {getProvider} from "@wagmi/core";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -31,7 +32,7 @@ const useStyles = createStyles((theme) => ({
             height: 50,
             margin: theme.spacing.md
         },
-        width: "50%",
+        width: "75%",
         height: "-webkit-fill-available",
         margin: theme.spacing.xl
     }
@@ -40,20 +41,59 @@ const useStyles = createStyles((theme) => ({
 export default function User() {
     const {classes} = useStyles();
     const [nfts, setNfts] = useState<Array<any>>()
-    const {address: guestAddress} = useAccount()
+    const {address: guestAddress, isDisconnected} = useAccount()
     const [isFollowing, setIsFollowing] = useState(false)
     const [username, setUsername] = useState("User")
     const [userDid, setUserDid] = useState("")
     const mounted = useIsMounted()
     const router = useRouter()
-    const [user, setUser] = useState<any>(<>
+    const [renderUser, setUserRender] = useState<any>(<>
         <Skeleton height={50} circle mb="xl"/>
         <Skeleton height={8} radius="xl"/>
         <Skeleton height={8} mt={6} radius="xl"/>
         <Skeleton height={8} mt={6} width="70%" radius="xl"/>
     </>)
     // @ts-ignore
-    const {orbis} = useContext(GlobalContext)
+    const {orbis, setUser, user} = useContext(GlobalContext)
+    const provider = getProvider()
+
+    async function getProvider() {
+        let provider = null;
+
+        if (window.ethereum) {
+            provider = window.ethereum;
+
+            /** Return provider to use */
+            return provider;
+        }
+    }
+
+    const connect = async () => {
+        if (user) return
+        let provider = await getProvider();
+        let res = await orbis.connect_v2({provider, network: 'ethereum', lit: false});
+        if (res.status == 200) {
+            setUser(res.did);
+        } else {
+            console.log("Error connecting to Ceramic: ", res);
+            alert("Error connecting to Ceramic.");
+        }
+    }
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
 
     const getIsFollowing = async (address: `0x${string}`) => {
         let {data: guestDids} = await orbis.getDids(guestAddress)
@@ -66,13 +106,12 @@ export default function User() {
     }
     const getProfile = async (address: `0x${string}`) => {
         let {data: dids} = await orbis.getDids(address)
-        console.log(dids)
         let {data, error} = await orbis.getProfile(dids[0].did)
         if (typeof data["details"] === "string") {
-            setUser(<CreatorCard email={address} />)
+            setUserRender(<CreatorCard email={address}/>)
             setUsername("User")
         } else {
-            setUser(<CreatorCard email={address} image={data.details.profile.pfp} name={data.username} />)
+            setUserRender(<CreatorCard email={address} image={data.details.profile.pfp} name={data.username}/>)
             setUsername(data.username)
         }
     }
@@ -86,6 +125,7 @@ export default function User() {
             disallowClose: true,
             autoClose: false
         })
+        await connect()
         let res = await orbis.setFollow(userDid, !isFollowing)
         if (res.status === 200) {
             updateNotification({
@@ -102,6 +142,58 @@ export default function User() {
                 title: "Error",
                 message: "Something went wrong",
                 color: "red",
+                autoClose: 5000
+            })
+        }
+    }
+
+    const handleChat = async () => {
+        showNotification({
+            id: "chat",
+            title: "Opening chat...",
+            message: "Please wait while we open the chat",
+            loading: true,
+            disallowClose: true,
+            autoClose: false
+        })
+        console.log(userDid)
+        await connect()
+        const {data, error} = await orbis.getConversations({
+            did: userDid,
+            context: "tcs-init-conversation"
+        })
+        if (data.length === 0) {
+            const res = await orbis.createConversation({
+                recipients: [userDid, user.did],
+                title: `Chat with ${username}`,
+                description: `Chat created from The Crypto Studio`,
+                context: "tcs-init-conversation"
+            })
+            if (res.status === 200) {
+                updateNotification({
+                    id: "chat",
+                    title: "Success!",
+                    message: "Chat created",
+                    color: "green",
+                    autoClose: 5000
+                })
+                window.open(`https://app.orbis.club/messages/${res.doc}`, "_blank")
+            } else {
+                updateNotification({
+                    id: "chat",
+                    title: "Error",
+                    message: "Something went wrong",
+                    color: "red",
+                    autoClose: 5000
+                })
+            }
+        } else {
+            window.open(`https://app.orbis.club/messages/${data[0].stream_id}`, "_blank")
+            updateNotification({
+                id: "chat",
+                title: "Success!",
+                message: "Chat created",
+                color: "green",
                 autoClose: 5000
             })
         }
@@ -124,17 +216,18 @@ export default function User() {
     // @ts-ignore
     if (nfts?.length > 0) {
         renderNfts = nfts?.map(nft => {
+            const spaceName = nft.attributes.filter((trait: any) => trait.trait_type === "spaceName")[0].value
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
                     <NftCard title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
-                             image={nft.image}
+                             image={nft.image} spaceName={spaceName}
                     />
                 </Grid.Col>
             )
         })
     } else if (nfts?.length === 0) {
-        renderNfts = <div style={{margin: 30}}><Text>User has 0 NFTs</Text></div>
+        renderNfts = <Container mt={50}><Center><Title order={3}>User has 0 NFTs</Title></Center></Container>
     } else {
         renderNfts = <>
             <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
@@ -159,14 +252,18 @@ export default function User() {
                     <Title>{username}'s Profile</Title>
                     <Container size={"xl"}>
                         <Grid>
-                            <Grid.Col lg={9}>
-                                {user}
+                            <Grid.Col lg={6}>
+                                {renderUser}
                             </Grid.Col>
                             <Grid.Col lg={3}>
                                 <Button color={"indigo"} className={classes.btn} onClick={handleFollow}>
-                                    {isFollowing? "Unfollow" : "Follow"}
+                                    {isFollowing ? "Unfollow" : "Follow"}
                                 </Button>
-
+                            </Grid.Col>
+                            <Grid.Col lg={3}>
+                                <Button color={"indigo"} className={classes.btn} variant={"light"} onClick={handleChat}>
+                                    Connect Over Chat
+                                </Button>
                             </Grid.Col>
                         </Grid>
                         <Stack>
@@ -174,7 +271,8 @@ export default function User() {
                                 <Center>
                                     <Tabs.List>
                                         <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
-                                        <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>User Posts</Tabs.Tab>
+                                        <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>User
+                                            Posts</Tabs.Tab>
                                     </Tabs.List>
                                 </Center>
                                 <Tabs.Panel value={"nfts"}>
@@ -183,7 +281,7 @@ export default function User() {
                                     </Grid>
                                 </Tabs.Panel>
                                 <Tabs.Panel value={"chat"}>
-                                    <UserPosts />
+                                    <UserPosts/>
                                 </Tabs.Panel>
                             </StyledTabs>
                         </Stack>

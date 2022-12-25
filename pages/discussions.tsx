@@ -6,6 +6,7 @@ import {Center, Button, Stack} from "@mantine/core";
 import {GlobalContext} from "../contexts/GlobalContext";
 import ChatContent from '../components/ChatContent';
 import ChatBox from "../components/ChatBox";
+// import {getProvider} from "@wagmi/core";
 
 export default function Discussions() {
     // @ts-ignore
@@ -68,6 +69,7 @@ export default function Discussions() {
 
     useEffect(() => {
         console.log("user", user)
+        if(!user) return
         getPosts()
     }, [])
 

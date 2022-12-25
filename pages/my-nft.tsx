@@ -51,6 +51,21 @@ export default function MyNft() {
     // @ts-ignore
     const {user, setUser, orbis, group_id} = useContext(GlobalContext)
 
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
+
     async function getProvider() {
         let provider = null;
 
@@ -103,17 +118,19 @@ export default function MyNft() {
     useEffect(() => {
         getNfts(address!).then(res => {
             setNfts(res)
+            console.log("NFTS: ", res);
         })
     }, [address])
     let renderNfts
     // @ts-ignore
     if (nfts?.length > 0) {
         renderNfts = nfts?.map(nft => {
+            const spaceName = nft.attributes.filter((trait: any) => trait.trait_type === "spaceName")[0].value
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
                     <NftCard title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
-                             image={nft.image} setAddAttribute={() => handleAddAttribute(nft.tokenID, nft.attributes)}
+                             image={nft.image} setAddAttribute={() => handleAddAttribute(nft.tokenID, nft.attributes)} spaceName={spaceName}
                              setModalOpen={() => handleClick(nft.tokenID)}/>
                 </Grid.Col>
             )

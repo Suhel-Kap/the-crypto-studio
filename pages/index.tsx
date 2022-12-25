@@ -4,15 +4,35 @@ import {Layout} from "../components/Layout";
 import {Hero} from "../components/Hero";
 import {Features} from "../components/Features";
 import {IconCheck} from "@tabler/icons";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {getTcsNfts} from "../utils/getTcsNfts";
 import NftCard from "../components/NftCard";
 import ComingSoon1 from "../components/ComingSoon1";
 import ComingSoon from "../components/ComingSoon";
+import { GlobalContext } from '../contexts/GlobalContext';
+import {useAccount} from "wagmi";
 
 
 export default function Home() {
     const [nfts, setNfts] = useState();
+    const {isDisconnected} = useAccount()
+    // @ts-ignore
+    const {orbis, user, setUser} = useContext(GlobalContext)
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
 
     useEffect(() => {
         getTcsNfts().then((nfts) => {
@@ -26,9 +46,10 @@ export default function Home() {
     if (nfts?.length > 0) {
         // @ts-ignore
         renderNfts = nfts?.map(nft => {
+            const spaceName = nft.attributes.filter((trait: any) => trait.trait_type === "spaceName")[0].value
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
-                    <NftCard setAddAttribute={() => console.log("I'm clicked")} title={nft.name} tokenId={nft.tokenID} animationUrl={nft.animation_url} description={nft.description} image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
+                    <NftCard spaceName={spaceName} setAddAttribute={() => console.log("I'm clicked")} title={nft.name} tokenId={nft.tokenID} animationUrl={nft.animation_url} description={nft.description} image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
             )
         })

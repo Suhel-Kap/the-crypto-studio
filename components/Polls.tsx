@@ -21,9 +21,9 @@ export default function Polls(){
     let renderPolls
     if (data?.length > 0) {
         // @ts-ignore
-        renderPolls = data?.map(poll => {
+        renderPolls = data?.map((poll:any, index: number) => {
             return (
-                <Grid.Col lg={4} md={6}>
+                <Grid.Col key={index} lg={4} md={6}>
                     <ElectionCard electionId={poll.content.body} streamId={poll.stream_id} />
                 </Grid.Col>
             )

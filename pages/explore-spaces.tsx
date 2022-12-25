@@ -1,20 +1,40 @@
 import {Container, Grid, Skeleton, Text, Title} from "@mantine/core";
 import Head from "next/head";
 import {Layout} from "../components/Layout";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import getAllSpaces from "../utils/getAllSpaces";
 import SpaceCard from "../components/SpaceCard";
-import {useSigner} from "wagmi";
+import {useAccount, useSigner} from "wagmi";
+import {GlobalContext} from "../contexts/GlobalContext";
 
 export default function ExploreSpaces() {
     const [data, setData] = useState<any>(null)
     const {data: signer} = useSigner()
+    const {isDisconnected} = useAccount()
     useEffect(() => {
         getAllSpaces().then(res => {
             console.log(res)
             setData(res)
         })
     }, [])
+
+    // @ts-ignore
+    const {orbis, user, setUser} = useContext(GlobalContext)
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
 
     let renderSpaces
     if (data?.length > 0) {

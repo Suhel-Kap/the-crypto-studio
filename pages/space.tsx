@@ -60,6 +60,21 @@ export default function Space() {
         }
     }, [isConnected, isConnecting, isDisconnected])
 
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
+
     const getProfile = async (address: string) => {
         let orbis = new Orbis()
         let {data: dids} = await orbis.getDids(address)

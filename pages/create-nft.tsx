@@ -46,12 +46,27 @@ export default function CreateNft() {
     const router = useRouter()
     const [tempCid, setTempCid] = useState<String>()
     const [spaces, setSpaces] = useState([])
-    const {address} = useAccount()
+    const {address, isDisconnected} = useAccount()
     const [disabled, setDisabled] = useState(false)
     const [spacePfp, setSpacePfp] = useState<File>()
     const {data: signer} = useSigner()
     // @ts-ignore
-    const {orbis} = useContext(GlobalContext)
+    const {orbis, user, setUser} = useContext(GlobalContext)
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedNft(e.target.value)

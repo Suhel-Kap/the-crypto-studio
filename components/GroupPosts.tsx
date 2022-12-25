@@ -29,14 +29,14 @@ export default function GroupPosts() {
 
     return (
         <Container>
-            <PostInput groupId={groupId as string} />
+            <PostInput fetchPost={getPosts} groupId={groupId as string} tag={"tcspost"} />
             <div style={{
                 marginTop: -60
             }}>
             {
-                data?.map((post: any) => {
+                data?.map((post: any, index: number) => {
                     return (
-                        <PostCard post={post} />
+                        <PostCard key={index} post={post} />
                     )
                 })
             }

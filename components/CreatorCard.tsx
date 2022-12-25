@@ -37,7 +37,7 @@ const useStyles = createStyles((theme) => ({
 
 interface UserButtonProps extends UnstyledButtonProps {
     image?: string;
-    name: string;
+    name?: string;
     email: string;
     icon?: React.ReactNode;
 }
@@ -46,7 +46,7 @@ export default function CreatorCard({ image, name, email, icon, ...others }: Use
     const { classes } = useStyles();
 
     return (
-        <Paper className={classes.user} {...others}>
+        <Paper className={classes.user} {...others} component={"a"} href={`/user/?address=${email}`}>
             <Group>
                 <Avatar src={image} radius="xl" />
 

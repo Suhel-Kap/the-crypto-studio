@@ -7,9 +7,11 @@ import {showNotification, updateNotification} from "@mantine/notifications";
 
 interface PostInputProps {
     groupId: string
+    tag: string
+    fetchPost: any
 }
 
-export default function PostInput({groupId}: PostInputProps) {
+export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
     const [content, setContent] = useInputState("")
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
@@ -26,7 +28,7 @@ export default function PostInput({groupId}: PostInputProps) {
             body: content,
             context: groupId,
             tags: [{
-                slug: "tcspost",
+                slug: tag,
                 title: "TCS Post",
             }]
         })
@@ -38,6 +40,7 @@ export default function PostInput({groupId}: PostInputProps) {
                 autoClose: 5000,
             })
             setContent("")
+            await fetchPost()
         } else {
             updateNotification({
                 id: "post-input",
@@ -64,7 +67,7 @@ export default function PostInput({groupId}: PostInputProps) {
             <Grid.Col span={1}>
                 <Center style={{ width: 24, height: 180 }}>
                     <ActionIcon onClick={handleSubmit}>
-                        <IconSend size={32} color={"cyan"} />
+                        <IconSend size={32} color={"blue"} />
                     </ActionIcon>
                 </Center>
             </Grid.Col>

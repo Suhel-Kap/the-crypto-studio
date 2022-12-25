@@ -76,11 +76,11 @@ export default function PostCard(props: any) {
     }
 
     return (
-        <Paper my={"md"} p={"md"}>
+        <Paper my={"md"} p={"md"} radius={"lg"}>
             <Stack>
                 <Group position={"apart"}>
                     <Group>
-                        <Avatar size={45} radius={45}
+                        <Avatar size={45} radius={45} component={"a"} href={`/user/?address=${props.post.creator_details.metadata.address}`}
                                 src={props.post.creator_details.profile.pfp || makeBlockie(props.post.creator_details.metadata.address)}/>
                         <div>
                             <Text size={"sm"}>

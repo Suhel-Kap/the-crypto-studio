@@ -90,7 +90,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 const data = [
     { link: '/create-nft', label: 'Create NFT', icon: IconHammer },
-    { link: '/my-nft', label: 'View your NFTs', icon: IconArtboard },
+    { link: '/my-nft', label: 'Your Profile', icon: IconArtboard },
     { link: '/discussions', label: 'Group Chat', icon: IconMessageDots },
     { link: '/explore-spaces', label: "Explore Spaces", icon: IconMapSearch },
 ];

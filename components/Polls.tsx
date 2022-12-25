@@ -2,7 +2,6 @@ import {Grid, Skeleton, Title} from "@mantine/core";
 import {useContext, useEffect, useState} from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
 import ElectionCard from "./ElectionCard";
-import SpaceCard from "./SpaceCard";
 import {useIsMounted} from "../hooks/useIsMounted";
 import { useRouter } from "next/router";
 

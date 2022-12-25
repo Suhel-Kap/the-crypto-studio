@@ -6,8 +6,8 @@ interface NftCardProps {
     tokenId: string;
     animationUrl: string;
     image: any;
-    setModalOpen: any;
-    setAddAttribute: any;
+    setModalOpen?: any;
+    setAddAttribute?: any;
 }
 
 import {
@@ -70,6 +70,8 @@ export default function NftCard({
         if (router.pathname === '/') {
             setIsHome(true)
         } else if (router.pathname === '/space') {
+            setIsHome(true)
+        } else if(router.pathname === '/user'){
             setIsHome(true)
         } else {
             setIsHome(false)

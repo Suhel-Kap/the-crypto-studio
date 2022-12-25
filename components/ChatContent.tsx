@@ -25,8 +25,7 @@ export default function ChatContent(props: any) {
                     <div>
                         <Group>
                             {post.creator_details.profile &&
-                                <Text size={"xs"} weight={500}
-                                      color={"dimmed"}>{post.creator_details.profile.username}</Text>}
+                                <Text size={"xs"} weight={500} sx={{cursor: "pointer"}} color={"dimmed"} component={"a"} href={`/user/?address=${post.creator_details.metadata.address}`}>{post.creator_details.profile.username}</Text>}
                             <Badge onClick={() => {
                                 clipboard.copy(post.creator_details.metadata.address)
                                 showNotification({

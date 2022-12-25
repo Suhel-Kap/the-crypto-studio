@@ -4,13 +4,17 @@ import {useAccount} from "wagmi";
 import {useContext, useEffect, useState} from "react";
 import {getNfts} from "../utils/getNfts";
 import NftCard from "../components/NftCard"
-import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Text} from "@mantine/core";
+import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Tabs, Text} from "@mantine/core";
 import {UpdateAudio} from "../components/UpdateAudio";
 import {UpdateProfile} from "../components/UpdateProfile";
 import {GlobalContext} from "../contexts/GlobalContext";
 import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
 import {AddAttribute} from "../components/AddAttribute";
+import StyledTabs from "../components/StyledTabs";
+import {Ce} from "tabler-icons-react";
+import {IconAlbum, IconMessageChatbot} from "@tabler/icons";
+import UserPosts from "../components/UserPosts";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -99,7 +103,6 @@ export default function MyNft() {
     useEffect(() => {
         getNfts(address!).then(res => {
             setNfts(res)
-            console.log("res",res)
         })
     }, [address])
     let renderNfts
@@ -116,7 +119,7 @@ export default function MyNft() {
             )
         })
     } else if (nfts?.length === 0) {
-        renderNfts = <Text>You have 0 NFTs</Text>
+        renderNfts = <div style={{margin: 30}}><Text>You have 0 NFTs</Text></div>
     } else {
         renderNfts = <>
             <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
@@ -200,9 +203,22 @@ export default function MyNft() {
 
                                 </Grid.Col>
                             </Grid>
-                            <Grid gutter={"xl"}>
-                                {renderNfts}
-                            </Grid>
+                            <StyledTabs defaultValue={"nfts"}>
+                                <Center>
+                                    <Tabs.List>
+                                        <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
+                                        <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>Your Posts</Tabs.Tab>
+                                    </Tabs.List>
+                                </Center>
+                                <Tabs.Panel value={"nfts"}>
+                                    <Grid gutter={"xl"}>
+                                        {renderNfts}
+                                    </Grid>
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"chat"}>
+                                    <UserPosts />
+                                </Tabs.Panel>
+                            </StyledTabs>
                         </Container>}
                     {updateModal}
                     {updateProfileModal}

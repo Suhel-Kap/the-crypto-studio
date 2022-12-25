@@ -10,11 +10,9 @@ import CreatorCard from "../components/CreatorCard";
 import {Orbis} from "@orbisclub/orbis-sdk"
 import StyledTabs from "../components/StyledTabs";
 import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
-// import PollCreationForm from "../components/PollCreationForm";
 import {useAccount, useSigner} from "wagmi";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification} from "@mantine/notifications";
-// import Polls from "../components/Polls";
 import dynamic from "next/dynamic";
 import GroupPosts from "../components/GroupPosts";
 
@@ -79,7 +77,7 @@ export default function Space() {
         getProfile(address).then(res => {
             if (!res) return
             if (typeof res["details"] === "string") {
-                {/*@ts-ignore*/}
+                // @ts-ignore
                 setRenderCreator(<CreatorCard email={router.query.address}/>)
             } else {
                 {/*@ts-ignore*/
@@ -108,7 +106,7 @@ export default function Space() {
         if (!router.isReady) return;
         const {id, groupId} = router.query
         query = query + id
-        if(orbisGroup.length < 92) {
+        if (orbisGroup.length < 92) {
             orbisGroup = orbisGroup + groupId
         }
         // @ts-ignore
@@ -127,7 +125,8 @@ export default function Space() {
         renderNfts = nfts?.map(nft => {
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
-                    <NftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name} tokenId={nft.tokenID}
+                    <NftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name}
+                             tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
                              image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
@@ -193,12 +192,14 @@ export default function Space() {
                                 </Button>
                             </Grid.Col>
                             {!user && <Grid.Col lg={2}>
-                                <Button onClick={() => router.push('/discussions')} color={"indigo"} variant={"light"} className={classes.btn}>
+                                <Button onClick={() => router.push('/discussions')} color={"indigo"} variant={"light"}
+                                        className={classes.btn}>
                                     Connect to Orbis
                                 </Button>
                             </Grid.Col>}
                             {user && isGroupMember && <Grid.Col lg={2}>
-                                <Button variant={"light"} onClick={handleLeave} color={"indigo"} className={classes.btn}>
+                                <Button variant={"light"} onClick={handleLeave} color={"indigo"}
+                                        className={classes.btn}>
                                     Leave Space
                                 </Button>
                             </Grid.Col>}
@@ -215,17 +216,22 @@ export default function Space() {
                             </Grid.Col>
                         </Grid>
                     </Stack>}
-                    {!isGroupMember && <Text sx={{fontStyle: "italic", color: "red"}} mb={"md"}>Join space to make collaboration requests and give your opinions on the polls.</Text>}
+                    {!isGroupMember &&
+                        <Text sx={{fontStyle: "italic", color: "red"}} mb={"md"}>Join space to make collaboration
+                            requests and give your opinions on the polls.</Text>}
                     <Stack>
                         <StyledTabs defaultValue={"nfts"}>
                             <Center>
-                            <Tabs.List>
-                                <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
-                                <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16}/>} disabled={!isGroupMember}>Polls</Tabs.Tab>
-                                <Tabs.Tab value={"create"} icon={<IconFilePencil size={16}/>} disabled={!isGroupMember}>Create Poll</Tabs.Tab>
-                                <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>} disabled={!isGroupMember}>Group
-                                    Chat</Tabs.Tab>
-                            </Tabs.List>
+                                <Tabs.List>
+                                    <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
+                                    <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16}/>}
+                                              disabled={!isGroupMember}>Polls</Tabs.Tab>
+                                    <Tabs.Tab value={"create"} icon={<IconFilePencil size={16}/>}
+                                              disabled={!isGroupMember}>Create Poll</Tabs.Tab>
+                                    <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}
+                                              disabled={!isGroupMember}>Group
+                                        Chat</Tabs.Tab>
+                                </Tabs.List>
                             </Center>
                             <Tabs.Panel value={"nfts"}>
                                 <Grid gutter={"xl"}>
@@ -233,13 +239,13 @@ export default function Space() {
                                 </Grid>
                             </Tabs.Panel>
                             <Tabs.Panel value={"polls"}>
-                                <Polls />
+                                <Polls/>
                             </Tabs.Panel>
                             <Tabs.Panel value={"create"}>
-                                <PollCreationForm />
+                                <PollCreationForm/>
                             </Tabs.Panel>
                             <Tabs.Panel value={"chat"}>
-                                <GroupPosts />
+                                <GroupPosts/>
                             </Tabs.Panel>
                         </StyledTabs>
                     </Stack>

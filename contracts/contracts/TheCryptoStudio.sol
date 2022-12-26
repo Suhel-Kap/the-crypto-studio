@@ -111,7 +111,7 @@ contract TheCryptoStudio is ERC1155
     // A space can represent a whole collection of NFTs.
 
     /// @notice creation of a unique Space for a user. 
-    /// This user is the only one that can mint NFTs
+    /// This user is the only one that can mint NFTs or Declare other space Artists to mint beside him
     /// with his spaceName as a unique attribute (trait_type)
     /// @dev retrieves the value of the spaceName and the created Orbis.group ID
     /// Then it stores this information inside the Space_Table
@@ -119,7 +119,7 @@ contract TheCryptoStudio is ERC1155
     /// @param space_group the spaceGroupID "where decentralized discord experiences begins"
     /// @param imageCID the spaceGroup image stored on IPFS
 
-    function SocialSpaceCreation(string memory spaceName , string memory space_group , string memory imageCID) public payable{
+    function socialSpaceCreation(string memory spaceName , string memory space_group , string memory imageCID) public payable{
         require(msg.value >= spaceMintPrice);
         require(!spaceExists(spaceName));
         spaceInfoMap[spaceName].spaceAdmin = msg.sender;
@@ -128,6 +128,7 @@ contract TheCryptoStudio is ERC1155
         runSQL(space_tableID,insert_statement);
     }
 
+    /// @notice function to get if a spaceName is already exists
     function spaceExists(string memory spaceName)public view returns(bool){
         if(spaceInfoMap[spaceName].spaceAdmin == address(0)){
             return false;
@@ -135,10 +136,10 @@ contract TheCryptoStudio is ERC1155
         return true;
     }
 
-    /// @notice Minting function 
-    /// @dev retrieves the values for the NFT that is going to be Minted.
-    /// the caller must mint an NFT on top of his pre taken SpaceName otherwise he cannot mint
-    function DeclareNFT(string memory name , string memory imageCID , string memory animationCID , string memory description ,string memory spaceName, uint256 mintPrice, bool token_type, uint256 maxSupply) public  returns(uint256) {
+    /// @notice Declare NFT function 
+    /// @dev retrieves the values for the NFT that is going to be Declared.
+    /// the caller must be the spaceAdmin or a granted space artist by the space Artist!
+    function declareNFT(string memory name , string memory imageCID , string memory animationCID , string memory description ,string memory spaceName, uint256 mintPrice, bool token_type, uint256 maxSupply) public  returns(uint256) {
         require(spaceInfoMap[spaceName].spaceArtists.contains(msg.sender));
         tokenID.increment();
         spaceInfoMap[spaceName].spaceTokens.add(tokenID.current());
@@ -155,7 +156,9 @@ contract TheCryptoStudio is ERC1155
         return tokenID.current();
     }
 
-    function Mint(uint256 tokenid) public payable {
+    /// @notice Mint Function each address needs to have a 0 balance of that NFT tokenID to mint it
+    // Also each NFT has a defined number of copies and a certain price defined by the creator of that tokenID in the declareNFT function
+    function mint(uint256 tokenid) public payable {
         require(tokenInfoMap[tokenid].maxCap > 0);
         require(tokenid <= tokenID.current() && tokenInfoMap[tokenid].price <= msg.value);
         require(balanceOf(msg.sender,tokenid) < 1);
@@ -169,7 +172,7 @@ contract TheCryptoStudio is ERC1155
         runSQL(mainTableID,Update_statement);
     }
 
-
+    /// @notice Function to change the mint price of a tokenID can only be called by the creator of the NFT
     function setTokenMintPrice(uint256 tokenid ,uint256 tokenPrice) public {
         onlyCreator(tokenid, msg.sender);
         tokenInfoMap[tokenid].price = tokenPrice;
@@ -192,9 +195,8 @@ contract TheCryptoStudio is ERC1155
     
 
     /// @notice Function to dynamically update attributes to an NFT only owners of that NFT can make that ACTION
-    /// Also the animation_url and the trait_type="spaceName" cannot change 
+    /// Also the animation_url and the trait_type="spaceName" cannot change and this is validated by thhe allowedInput function
     /// @dev retrieves the value of the tokenID , the new attributeName , the value of the new attribute
-    /// and a bool param
     /// Dynamically update an attribute to the NFT with a specific tokenID
     function updateAttribute(uint256 tokenid , string memory attributeName , string memory value) public {
         onlyCreator(tokenid, msg.sender);
@@ -205,6 +207,9 @@ contract TheCryptoStudio is ERC1155
         runSQL(attributeTableID,Update_statement);
     }
 
+    /// @notice NFTs with tokenType==true can change the animationURL only once this is happening to let the 
+    // Artists - Designers to add as many attributes to their visualizers by fetching their value from the corresponding table 
+    // and create the needed queries inside their animation scripts
     function assignAnimationURI(uint256 tokenid , string memory animationURL) public {
         onlyCreator(tokenid, msg.sender);
         require(tokenInfoMap[tokenid].tokenType);
@@ -215,23 +220,26 @@ contract TheCryptoStudio is ERC1155
         runSQL(mainTableID,Update_statement);
     }     
   
+    /// @notice The spaceOwner can hire others to join their Space and add their artistic touch by declaring more NFTs 
     function addSpaceArtist(string memory spaceName, address artist) public {
         onlySpaceAdmin(spaceName,msg.sender);
         spaceInfoMap[spaceName].spaceArtists.add(artist);
     }
 
+    /// @notice The spaceOwner can remove not well behaved artists from te space
     function deleteSpaceArtist(string memory spaceName, address artist) public {
         onlySpaceAdmin(spaceName,msg.sender);
         spaceInfoMap[spaceName].spaceArtists.remove(artist);
     }
 
-    // Lit Action Encryption for Orbis Encrypted channel
+    /// @notice Function to check if an address isArtist inside a certain space
+    // Is used for custom Lit Actions to encrypt content that only the spaceArtists can decrypt!
     function isSpaceArtist(string memory spaceName, address sender ) public view returns (bool){
         return spaceInfoMap[spaceName].spaceArtists.contains(sender);
     }
 
-
-    // Used for the Lit Action Encryption Rule for Posts-Proposal channels only granted to Space NFT holders and Artists
+    /// @notice Function to check if an address isSpaceMember inside a certain space
+    // Used for Lit Actions as the Encryption Rule for Posts-Proposal channels only granted to Space NFT holders , Artists and the space Admin
     function isSpaceMember(string memory spaceName, address sender) public view returns (bool){
         uint256 size = spaceInfoMap[spaceName].spaceTokens.length();
         uint256 index;
@@ -352,7 +360,7 @@ contract TheCryptoStudio is ERC1155
         if(spaceInfoMap[spaceName].spaceAdmin != sender){ revert(); }
     }
 
-    //     /// @dev Function to check if 2 on memory string are equal
+    //Is used to check if a string is equal to spaceName or creator 
     function allowedInput(string memory s1) internal pure returns (bool) {
         bytes memory b1 = bytes(s1);
         bytes memory b2 = bytes("spaceName");

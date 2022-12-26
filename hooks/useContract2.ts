@@ -30,27 +30,20 @@ export const useContract2 = () => {
         return await contract.totalSupply()
     }
 
-    const getTokenMintPrice = async () => {
-        return await contract.getTokenMintPrice()
-    }
 
     const setTokenMintPrice = async (tokenId:number , mintPrice:BigNumber) => {
         const tx = await contract.setTokenMintPrice(tokenId, mintPrice)
         return await tx.wait()
     }
 
-    const getTokenRemainingSuply = async (tokenId:number) => {
-        return await contract.getTokenRemainingSuply(tokenId)
-    }
-
     const declareNFT = async ({name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply}: DeclareProps) => {
-        const tx = await contract.DeclareNFT(name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply, {value: ethers.utils.parseEther("0.01")})
+        const tx = await contract.declareNFT(name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply, {value: ethers.utils.parseEther("0.01")})
         return await tx.wait()
     }
 
 
     const mint = async (tokenid:number, mintPrice:string) => {
-        const tx = await contract.Mint(tokenid, {value: ethers.utils.parseEther(mintPrice)})
+        const tx = await contract.mint(tokenid, {value: ethers.utils.parseEther(mintPrice)})
         return await tx.wait()
     }
 
@@ -77,7 +70,7 @@ export const useContract2 = () => {
     }
 
     const mintSpace = async (spaceName: string, groupId: string, imageCid: string) => {
-        const tx = await contract.SocialSpaceCreation(spaceName, groupId, imageCid,{value: ethers.utils.parseEther("0.01")})
+        const tx = await contract.socialSpaceCreation(spaceName, groupId, imageCid,{value: ethers.utils.parseEther("0.01")})
         return await tx.wait()
     }
 
@@ -104,7 +97,6 @@ export const useContract2 = () => {
 
     return {
         getCurrentTokenId,
-        getTokenMintPrice,
         setTokenMintPrice,
         spaceExists,
         mintSpace,
@@ -116,7 +108,6 @@ export const useContract2 = () => {
         assignAnimationURI,
         declareNFT,
         updateAttribute,
-        getTokenRemainingSuply,
         addAttribute
     }
 }

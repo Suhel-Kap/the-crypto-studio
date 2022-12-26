@@ -3,7 +3,7 @@ const { ethers } = require("hardhat");
 
 async function main() {
 
-    const CryptoStudio = await ethers.getContractFactory("CryptoStudio");
+    const CryptoStudio = await ethers.getContractFactory("TheCryptoStudio");
     console.log("Deploying cryptoStudio...");
     const cryptoStudio = await CryptoStudio.deploy();
 

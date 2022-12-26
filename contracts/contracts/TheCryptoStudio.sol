@@ -159,8 +159,9 @@ contract TheCryptoStudio is ERC1155
     /// @notice Mint Function each address needs to have a 0 balance of that NFT tokenID to mint it
     // Also each NFT has a defined number of copies and a certain price defined by the creator of that tokenID in the declareNFT function
     function mint(uint256 tokenid) public payable {
+        exists(tokenid);
         require(tokenInfoMap[tokenid].maxCap > 0);
-        require(tokenid <= tokenID.current() && tokenInfoMap[tokenid].price <= msg.value);
+        require(tokenInfoMap[tokenid].price <= msg.value);
         require(balanceOf(msg.sender,tokenid) < 1);
         address payable to = payable(tokenInfoMap[tokenid].creator);
         to.transfer(msg.value);
@@ -182,7 +183,6 @@ contract TheCryptoStudio is ERC1155
         runSQL(mainTableID,Update_statement);
     }
 
-
     /// @notice dynamically add a trait attribute to the NFT only owners of that NFT can make that action
     /// @dev retrieves the value of the tokenID and the new trait type and the value of the new trait
     /// Dynamically add an attribute to the NFT with a specific tokenID
@@ -192,15 +192,14 @@ contract TheCryptoStudio is ERC1155
         runSQL(attributeTableID,insert_statement);
     }
 
-    
-
-    /// @notice Function to dynamically update attributes to an NFT only owners of that NFT can make that ACTION
-    /// Also the animation_url and the trait_type="spaceName" cannot change and this is validated by thhe allowedInput function
+    /// @notice Function to dynamically update attributes to an NFT only the creator of that NFT can make that ACTION
+    /// Also the animation_url and the trait_type="spaceName" cannot change that is checked by the allowedInput function
     /// @dev retrieves the value of the tokenID , the new attributeName , the value of the new attribute
+    /// and a bool param
     /// Dynamically update an attribute to the NFT with a specific tokenID
     function updateAttribute(uint256 tokenid , string memory attributeName , string memory value) public {
         onlyCreator(tokenid, msg.sender);
-        require(allowedInput(attributeName));
+        require(SQLHelpers.allowedInput(attributeName));
         string memory set = string.concat("value='",value,"'");
         string memory filter = string.concat("tokenID=",Strings.toString(tokenid)," and trait_type='",attributeName,"'");
         string memory Update_statement = SQLHelpers.toUpdate(ATTRIBUTE_TABLE_PREFIX, attributeTableID, set, filter);
@@ -282,8 +281,7 @@ contract TheCryptoStudio is ERC1155
     /// @dev retrieves the value of the tokenID
     /// @return the tokenURI link for the specific NFT metadata
 	function uri(uint256 tokenId) public view virtual override returns (string memory) {
-		require( tokenId <= tokenID.current());
-		
+		exists(tokenId);
 		string memory query = string(
 			abi.encodePacked(
 				'SELECT%20',
@@ -360,29 +358,10 @@ contract TheCryptoStudio is ERC1155
         if(spaceInfoMap[spaceName].spaceAdmin != sender){ revert(); }
     }
 
-    //Is used to check if a string is equal to spaceName or creator 
-    function allowedInput(string memory s1) internal pure returns (bool) {
-        bytes memory b1 = bytes(s1);
-        bytes memory b2 = bytes("spaceName");
-        bytes memory b3 = bytes("creator");
-        bool flag = false;
-        bool flag2 = false;
-        uint256 l1 = b1.length;
-        for (uint256 i=0; i<l1; i++) {
-            if (b1[i] != b3[i]){
-                flag = true;
-            } 
-        }
-        for (uint256 i=0; i<l1; i++) {
-            if (b1[i] != b2[i]){
-                flag2 = true;
-            } 
-        }
-        if(flag && flag2){
-            return true;
-        }
-        return false;
+    function exists(uint256 tokenid) internal view{
+        if(tokenid > tokenID.current()){ revert();}
     }
+
 
     function transferOwnership(address newOwner) public {
         ownerCheck(msg.sender);

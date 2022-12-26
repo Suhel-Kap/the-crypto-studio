@@ -118,26 +118,6 @@ library SQLHelpers {
             string.concat("UPDATE ", name, " SET ", setters, filter);
     }
 
-    /**
-     * @dev Generates a Delete statement based on table prefix, tableId, and filters.
-     *
-     * prefix - the user generated table prefix as a string.
-     * tableId - the Tableland generated tableId as a uint256.
-     * filters - a string encoded list of filters. Example: "id<2 and name!='jerry'".
-     *
-     * Requirements:
-     *
-     * - block.chainid must refer to a supported chain.
-     */
-    function toDelete(
-        string memory prefix,
-        uint256 tableId,
-        string memory filters
-    ) internal view returns (string memory) {
-        string memory name = toNameFromId(prefix, tableId);
-        return
-            string.concat("DELETE FROM ", name, " WHERE ", filters);
-    }
 
     /**
      * @dev Add single quotes around a string value
@@ -224,5 +204,30 @@ library SQLHelpers {
             )
     );
     }
+
+        //Is used to check if a string is equal to spaceName or creator 
+    function allowedInput(string memory s1) internal pure returns (bool) {
+        bytes memory b1 = bytes(s1);
+        bytes memory b2 = bytes("spaceName");
+        bytes memory b3 = bytes("creator");
+        bool flag = false;
+        bool flag2 = false;
+        uint256 l1 = b1.length;
+        for (uint256 i=0; i<l1; i++) {
+            if (b1[i] != b3[i]){
+                flag = true;
+            } 
+        }
+        for (uint256 i=0; i<l1; i++) {
+            if (b1[i] != b2[i]){
+                flag2 = true;
+            } 
+        }
+        if(flag && flag2){
+            return true;
+        }
+        return false;
+    }
+
 
 }

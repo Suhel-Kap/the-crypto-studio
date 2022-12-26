@@ -138,7 +138,7 @@ contract TheCryptoStudio is ERC1155
 
     /// @notice Declare NFT function 
     /// @dev retrieves the values for the NFT that is going to be Declared.
-    /// the caller must be the spaceAdmin or a granted space artist by the space Artist!
+    /// the caller must be the spaceAdmin or a granted space artist by the space admin!
     function declareNFT(string memory name , string memory imageCID , string memory animationCID , string memory description ,string memory spaceName, uint256 mintPrice, bool token_type, uint256 maxSupply) public  returns(uint256) {
         require(spaceInfoMap[spaceName].spaceArtists.contains(msg.sender));
         tokenID.increment();

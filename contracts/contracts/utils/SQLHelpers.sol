@@ -129,7 +129,7 @@ library SQLHelpers {
         return string.concat("'", input, "'");
     }
 
-    function insertMainStatement(string memory MAIN_TABLE_PREFIX, uint256 mainTableID,uint256 tokenid ,string memory description, string memory imageCID,string memory name, string memory animationCID, uint256 maxSupply, uint256 mintPrice) internal view returns(string memory){
+    function insertMainStatement(string memory MAIN_TABLE_PREFIX, uint256 mainTableID,uint256 tokenid ,string memory description, string memory imageCID,string memory name,string memory audio , string memory animationCID, uint256 maxSupply, uint256 mintPrice) internal view returns(string memory){
     return
     toInsert(
             MAIN_TABLE_PREFIX,
@@ -144,7 +144,7 @@ library SQLHelpers {
                 ",",
                 quote(name),
                 ",",
-                quote(animationCID),
+                quote(audio),
                 ",",
                 quote(animationCID),
                 ",",
@@ -228,6 +228,7 @@ library SQLHelpers {
         }
         return false;
     }
+
 
 
 }

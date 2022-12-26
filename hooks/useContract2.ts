@@ -5,13 +5,14 @@ import { UpdateAttribute } from './../components/UpdateAttribute';
 
 interface DeclareProps {
     name: String
-    description: String
     image: String
+    audioCID: String
     animation: String
+    description: String
     spaceName: String
     mintPrice: BigNumber
-    tokenType: boolean
     maxSupply: number
+    currentToken: number
 }
 
 interface AttributeProps {
@@ -36,10 +37,24 @@ export const useContract2 = () => {
         return await tx.wait()
     }
 
-    const declareNFT = async ({name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply}: DeclareProps) => {
-        const tx = await contract.declareNFT(name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply, {value: ethers.utils.parseEther("0.01")})
+    const declareVisualizer = async ({name, image, audioCID, animation, description, spaceName, mintPrice, maxSupply,currentToken}: DeclareProps) => {
+        const tx = await contract.declareNFT(name, image,audioCID, animation, description, spaceName, mintPrice, maxSupply,currentToken)
         return await tx.wait()
     }
+    const declarePFP = async (name: String,image: String,description: String,spaceName: String,mintPrice: BigNumber,maxSupply: number,currentToken: number) =>{
+        const tx = await contract.declareNFT(name, image,"", "", description, spaceName, mintPrice, maxSupply,currentToken)
+        return await tx.wait()
+    }
+    const declareAudio = async (name: String,image: String,animation:string ,description: String,spaceName: String,mintPrice: BigNumber,maxSupply: number,currentToken: number) => {
+        const tx = await contract.declareNFT(name, image,"", animation, description, spaceName, mintPrice, maxSupply,currentToken)
+        return await tx.wait()
+    }
+
+    const declareTicket = async (name: String,image: String,description: String,spaceName: String,mintPrice: BigNumber,maxSupply: number,currentToken: number) =>{
+        const tx = await contract.declareNFT(name, image,"TICKET", "TICKET", description, spaceName, mintPrice, maxSupply,currentToken)
+        return await tx.wait()
+    }
+
 
 
     const mint = async (tokenid:number, mintPrice:string) => {
@@ -59,8 +74,8 @@ export const useContract2 = () => {
         return await tx.wait()
     }
 
-    const assignAnimationURI = async(tokenId:number, animationURI:string) => {
-        const tx = await contract.assignAnimationURI(tokenId, animationURI)
+    const updateAudio = async(tokenId:number, audioCID:string) => {
+        const tx = await contract.updateAudio(tokenId, audioCID)
         return await tx.wait()
     }
 
@@ -105,8 +120,11 @@ export const useContract2 = () => {
         isSpaceMember,
         deleteSpaceArtist,
         addSpaceArtist,
-        assignAnimationURI,
-        declareNFT,
+        updateAudio,
+        declareAudio,
+        declarePFP,
+        declareVisualizer,
+        declareTicket,
         updateAttribute,
         addAttribute
     }

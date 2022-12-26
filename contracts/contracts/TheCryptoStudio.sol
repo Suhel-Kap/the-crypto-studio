@@ -41,7 +41,7 @@ contract TheCryptoStudio is ERC1155
         address creator;
         uint256 maxCap;
         uint256 price;
-        bool    tokenType;//true == "visualizers" false == "simple nfts || tickets || audio nfts"
+        bool changable;
     }
 
     Counters.Counter private tokenID;
@@ -139,21 +139,20 @@ contract TheCryptoStudio is ERC1155
     /// @notice Declare NFT function 
     /// @dev retrieves the values for the NFT that is going to be Declared.
     /// the caller must be the spaceAdmin or a granted space artist by the space admin!
-    function declareNFT(string memory name , string memory imageCID , string memory animationCID , string memory description ,string memory spaceName, uint256 mintPrice, bool token_type, uint256 maxSupply) public  returns(uint256) {
+    function declareNFT(string memory name , string memory imageCID ,string memory audioCID , string memory animationCID , string memory description ,string memory spaceName, uint256 mintPrice, uint256 maxSupply,uint256 current) public   {
         require(spaceInfoMap[spaceName].spaceArtists.contains(msg.sender));
+        require(current == tokenID.current()+1);
         tokenID.increment();
         spaceInfoMap[spaceName].spaceTokens.add(tokenID.current());
         tokenInfoMap[tokenID.current()].creator = msg.sender;
-        tokenInfoMap[tokenID.current()].tokenType = token_type;
         tokenInfoMap[tokenID.current()].price = mintPrice;
         tokenInfoMap[tokenID.current()].maxCap = maxSupply;
-        string memory insert_statement =  SQLHelpers.insertMainStatement(MAIN_TABLE_PREFIX, mainTableID,tokenID.current(),description,imageCID,name,animationCID,maxSupply,mintPrice);
+        string memory insert_statement  =  SQLHelpers.insertMainStatement(MAIN_TABLE_PREFIX, mainTableID,tokenID.current(),description,imageCID,name,audioCID,animationCID,maxSupply,mintPrice);
         string memory insert_statement2 = SQLHelpers.insertAttributeStatement(ATTRIBUTE_TABLE_PREFIX, attributeTableID,tokenID.current() ,"spaceName", spaceName);
         string memory insert_statement3 = SQLHelpers.insertAttributeStatement(ATTRIBUTE_TABLE_PREFIX, attributeTableID,tokenID.current() ,"creator", Strings.toHexString(msg.sender));   
         runSQL(mainTableID,insert_statement);
         runSQL(attributeTableID,insert_statement2);
         runSQL(attributeTableID,insert_statement3);
-        return tokenID.current();
     }
 
     /// @notice Mint Function each address needs to have a 0 balance of that NFT tokenID to mint it
@@ -176,6 +175,7 @@ contract TheCryptoStudio is ERC1155
     /// @notice Function to change the mint price of a tokenID can only be called by the creator of the NFT
     function setTokenMintPrice(uint256 tokenid ,uint256 tokenPrice) public {
         onlyCreator(tokenid, msg.sender);
+        isImmutable(tokenid);
         tokenInfoMap[tokenid].price = tokenPrice;
         string memory set = string.concat("mintPrice='",Strings.toString(tokenPrice),"'");
         string memory filter = string.concat("tokenID=",Strings.toString(tokenid));
@@ -183,11 +183,17 @@ contract TheCryptoStudio is ERC1155
         runSQL(mainTableID,Update_statement);
     }
 
+    function setTokenToImmutable( uint256 tokenid) public {
+        onlyCreator(tokenid,msg.sender);
+        tokenInfoMap[tokenid].changable = true;
+    }
+
     /// @notice dynamically add a trait attribute to the NFT only owners of that NFT can make that action
     /// @dev retrieves the value of the tokenID and the new trait type and the value of the new trait
     /// Dynamically add an attribute to the NFT with a specific tokenID
     function addAttribute(uint256 tokenid , string memory trait_type , string memory value) public {
         onlyCreator(tokenid, msg.sender);
+        isImmutable(tokenid);
         string memory insert_statement = SQLHelpers.addAttribute(ATTRIBUTE_TABLE_PREFIX,attributeTableID,tokenid,trait_type,value);
         runSQL(attributeTableID,insert_statement);
     }
@@ -199,6 +205,7 @@ contract TheCryptoStudio is ERC1155
     /// Dynamically update an attribute to the NFT with a specific tokenID
     function updateAttribute(uint256 tokenid , string memory attributeName , string memory value) public {
         onlyCreator(tokenid, msg.sender);
+        isImmutable(tokenid);
         require(SQLHelpers.allowedInput(attributeName));
         string memory set = string.concat("value='",value,"'");
         string memory filter = string.concat("tokenID=",Strings.toString(tokenid)," and trait_type='",attributeName,"'");
@@ -209,11 +216,10 @@ contract TheCryptoStudio is ERC1155
     /// @notice NFTs with tokenType==true can change the animationURL only once this is happening to let the 
     // Artists - Designers to add as many attributes to their visualizers by fetching their value from the corresponding table 
     // and create the needed queries inside their animation scripts
-    function assignAnimationURI(uint256 tokenid , string memory animationURL) public {
+    function updateAudio(uint256 tokenid , string memory audioCID) public {
         onlyCreator(tokenid, msg.sender);
-        require(tokenInfoMap[tokenid].tokenType);
-        tokenInfoMap[tokenid].tokenType = false;
-        string memory set = string.concat("animation_url","='",animationURL,"'");
+        isImmutable(tokenid);
+        string memory set = string.concat("audio","='",audioCID,"'");
         string memory filter = string.concat("tokenID=",Strings.toString(tokenid));
         string memory Update_statement = SQLHelpers.toUpdate(MAIN_TABLE_PREFIX, mainTableID, set, filter);
         runSQL(mainTableID,Update_statement);
@@ -360,6 +366,10 @@ contract TheCryptoStudio is ERC1155
 
     function exists(uint256 tokenid) internal view{
         if(tokenid > tokenID.current()){ revert();}
+    }
+
+    function isImmutable(uint256 tokenid) internal view{
+        if(tokenInfoMap[tokenid].changable == true) { revert(); }
     }
 
 

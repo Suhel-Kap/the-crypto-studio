@@ -106,9 +106,7 @@ Each collection space contains a seperated group chat with tokengated access con
         We are using Gitcoin Passport by leveraging the Orbis SDK to display to each UserProfile their Verifiable Credentials but also we are using the VCs to lock content and finally to assign into a Vocdoni Proposal only members with the isHuman Verifiable Credential to be sure that no bot is able to vote into that proposal.
         <br/>
         
-   <br />
-   <br />
-     **NFT.STORAGE**
+  **NFT.STORAGE**
      <br />
        All the files that consist an NFT are stored on the IPFS network using NFT.STORAGE
        The code snippets that are using NFT.STORAGE modules are located here:
@@ -130,17 +128,17 @@ Each collection space contains a seperated group chat with tokengated access con
   Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
   Check our decentralized databases content :
      <br />
-  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_4559**
+  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_4575**
         
-  attribute_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_4560**
+  attribute_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_4576**
         
-  spaces_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_4561**
+  spaces_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_4577**
 <br />
   ## SmartContract
 <br />
   Our contract is deployed and verified on polygon mumbai here is the mumbaiScan Link . 
 <br />
-####https://mumbai.polygonscan.com/address/0xBA856527529887c121AC2FF301901dB8a302D554#code
+####https://mumbai.polygonscan.com/address/0x4e44B3dA6431684A33bF4DD92e3192e1C72886F6#code
 
  
  ---

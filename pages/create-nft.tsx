@@ -25,9 +25,7 @@ import {useAccount, useSigner} from "wagmi";
 import getSpaces from "../utils/getSpaces";
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
-import {getProvider} from "@wagmi/core";
 import {GlobalContext} from "../contexts/GlobalContext";
-import delay from "../utils/delay";
 
 export default function CreateNft() {
     const [file, setFile] = useState<File>()

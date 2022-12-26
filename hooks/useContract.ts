@@ -107,14 +107,14 @@ export const useContract = () => {
         setTokenMintPrice,
         spaceExists,
         mintSpace,
-        Mint: mint,
+        mint,
         isSpaceArtist,
         isSpaceMember,
         deleteSpaceArtist,
         addSpaceArtist,
         assignAnimationURI,
-        DeclareNFT: declareNFT,
-        UpdateAttribute: updateAttribute,
+        declareNFT,
+        updateAttribute,
         getTokenRemainingSuply,
         addAttribute
     }

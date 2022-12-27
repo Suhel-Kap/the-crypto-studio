@@ -19,7 +19,7 @@ Authors
  * [Suhel-Kap](https://github.com/Suhel-Kap)
 
 ## Description
-Crypto Studio is a Dynamic ERC1155 Collection built for digital artists - Influencers and Everyone that wants to create a decentralized and a tokenGated Community . Under the hood, we are utilizing tableland a new narrative that brings SQL into smart contracts that unlocked us to create a native dynamic experience for our users NFTs. We are also leveraging IPFS for storing (images - HTML - mp3) files for our NFTs into the network through NFT.STORAGE. 
+Crypto Studio is a Dynamic ERC1155 Collection built for digital artists - Influencers and Everyone that wants to create a decentralized and a tokenGated Community with the help of the CERAMIC network , the Orbis.club intergration and the vocdoniSDK. Under the hood, we are utilizing tableland a new narrative that brings SQL into smart contracts that unlocked us to create a native dynamic experience for our users NFTs. We are also leveraging IPFS for storing (images - HTML - mp3) files for our NFTs into the network through NFT.STORAGE. 
 
 The Crypto Studio Collection supports all kind of NFTs like :
 
@@ -128,17 +128,17 @@ Each collection space contains a seperated group chat with tokengated access con
   Here are the data inside the SQL Tables. Only our SmartContract has access control on the tables!!!
   Check our decentralized databases content :
      <br />
-  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_4575**
+  main_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20main_80001_4601**
         
-  attribute_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_4576**
+  attribute_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20attribute_4602**
         
-  spaces_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_4577**
+  spaces_table = **https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_4603**
 <br />
   ## SmartContract
 <br />
   Our contract is deployed and verified on polygon mumbai here is the mumbaiScan Link . 
 <br />
-####https://mumbai.polygonscan.com/address/0x4e44B3dA6431684A33bF4DD92e3192e1C72886F6#code
+####https://mumbai.polygonscan.com/address/0x19f1C98534C647Bc8a33F14c777a959BFA9f14dD#code
 
  
  ---

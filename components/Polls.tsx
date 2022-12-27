@@ -14,6 +14,7 @@ export default function Polls(){
     useEffect(() => {
         (async() => {
             const polls = await orbis.getPosts({context: router.query.groupId, tag: "poll"})
+            console.log(polls.data)
             setData(polls.data)
         })()
     }, [router.isReady])
@@ -24,7 +25,7 @@ export default function Polls(){
         renderPolls = data?.map((poll:any, index: number) => {
             return (
                 <Grid.Col key={index} lg={4} md={6}>
-                    <ElectionCard electionId={poll.content.body} streamId={poll.stream_id} />
+                    <ElectionCard creator={poll.creator} electionId={poll.content.body} streamId={poll.stream_id} />
                 </Grid.Col>
             )
         })

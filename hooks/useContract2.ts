@@ -1,7 +1,6 @@
 import {BigNumber, ethers} from "ethers";
-import {tcsAbi,tcsContractAddress} from "../constants"
+import {tcsAbi, tcsContractAddress} from "../constants"
 import {useAccount, useSigner} from "wagmi";
-import { UpdateAttribute } from './../components/UpdateAttribute';
 
 interface DeclareProps {
     name: String
@@ -10,7 +9,7 @@ interface DeclareProps {
     animation: String
     description: String
     spaceName: String
-    mintPrice: BigNumber
+    mintPrice: number
     maxSupply: number
     currentToken: number
 }
@@ -38,27 +37,33 @@ export const useContract2 = () => {
     }
 
     const declareVisualizer = async ({name, image, audioCID, animation, description, spaceName, mintPrice, maxSupply,currentToken}: DeclareProps) => {
-        const tx = await contract.declareNFT(name, image,audioCID, animation, description, spaceName, mintPrice, maxSupply,currentToken)
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,audioCID, animation, description, spaceName, price, maxSupply,currentToken)
         return await tx.wait()
     }
-    const declarePFP = async (name: String,image: String,description: String,spaceName: String,mintPrice: BigNumber,maxSupply: number,currentToken: number) =>{
-        const tx = await contract.declareNFT(name, image,"", "", description, spaceName, mintPrice, maxSupply,currentToken)
+    const declarePFP = async (name: String,image: String,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) =>{
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,"", "", description, spaceName, price, maxSupply,currentToken)
         return await tx.wait()
     }
-    const declareAudio = async (name: String,image: String,animation:string ,description: String,spaceName: String,mintPrice: BigNumber,maxSupply: number,currentToken: number) => {
-        const tx = await contract.declareNFT(name, image,"", animation, description, spaceName, mintPrice, maxSupply,currentToken)
+    const declareAudio = async (name: String,image: String,animation:string ,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) => {
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,"", animation, description, spaceName, price, maxSupply,currentToken)
         return await tx.wait()
     }
 
-    const declareTicket = async (name: String,image: String,description: String,spaceName: String,mintPrice: BigNumber,maxSupply: number,currentToken: number) =>{
-        const tx = await contract.declareNFT(name, image,"TICKET", "TICKET", description, spaceName, mintPrice, maxSupply,currentToken)
+    const declareTicket = async (name: String,image: String,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) =>{
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,"TICKET", "TICKET", description, spaceName, price, maxSupply,currentToken)
         return await tx.wait()
     }
 
-
+    const balanceOf = async (address :string , tokenId: number) => {
+        return await contract.balanceOf(address, tokenId)
+    }
 
     const mint = async (tokenid:number, mintPrice:string) => {
-        const tx = await contract.mint(tokenid, {value: ethers.utils.parseEther(mintPrice)})
+        const tx = await contract.mint(tokenid, {value: mintPrice})
         return await tx.wait()
     }
 
@@ -85,7 +90,7 @@ export const useContract2 = () => {
     }
 
     const mintSpace = async (spaceName: string, groupId: string, imageCid: string) => {
-        const tx = await contract.socialSpaceCreation(spaceName, groupId, imageCid,{value: ethers.utils.parseEther("0.01")})
+        const tx = await contract.socialSpaceCreation(spaceName, groupId, imageCid,{value: ethers.utils.parseEther("0.01"), gasLimit: 1000000})
         return await tx.wait()
     }
 
@@ -126,6 +131,7 @@ export const useContract2 = () => {
         declareVisualizer,
         declareTicket,
         updateAttribute,
-        addAttribute
+        addAttribute,
+        balanceOf
     }
 }

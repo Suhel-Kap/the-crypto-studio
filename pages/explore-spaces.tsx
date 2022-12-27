@@ -42,7 +42,7 @@ export default function ExploreSpaces() {
         renderSpaces = data?.map(nft => {
             return (
                 <Grid.Col lg={4} md={6}>
-                    <SpaceCard signer={signer} title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={nft.image}/>
+                    <SpaceCard signer={signer} title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={`https://${nft.image}.ipfs.nftstorage.link`}/>
                 </Grid.Col>
             )
         })

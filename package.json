@@ -18,7 +18,7 @@
     "@mantine/hooks": "^5.6.4",
     "@mantine/next": "^5.6.4",
     "@mantine/notifications": "^5.6.4",
-    "@orbisclub/orbis-sdk": "0.4.3",
+    "@orbisclub/orbis-sdk": "0.4.9",
     "@rainbow-me/rainbowkit": "^0.7.4",
     "@tabler/icons": "^1.109.0",
     "@vocdoni/sdk": "^0.0.2-alpha",

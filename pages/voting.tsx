@@ -9,6 +9,7 @@ import {showNotification, updateNotification} from "@mantine/notifications";
 import useVocdoni from "../hooks/useVocdoni";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { useIsMounted } from "../hooks/useIsMounted";
+import CreatorCard from "../components/CreatorCard";
 
 export default function Voting() {
     const router = useRouter()
@@ -22,6 +23,7 @@ export default function Voting() {
     const [hasChosenAll, setHasChosenAll] = useState<any>([])
     const [submitting, setSubmitting] = useState<boolean>(false)
     const [hasVoted, setHasVoted] = useState<boolean>(false)
+    const [creator, setCreator] = useState<any>()
     // @ts-ignore
     const {orbis, user, setUser} = useContext(GlobalContext)
     const mounted = useIsMounted()
@@ -66,6 +68,11 @@ export default function Voting() {
             if (!router.query.electionID) return
             setElectionId(router.query.electionID as string)
             setStreamId(router.query.streamId as string)
+            const creatorProf = await orbis.getProfile(router.query.creator as string)
+            setCreator(creatorProf.data)
+            console.log(creatorProf.data)
+            const res = await orbis.getPosts({context: router.query.streamId})
+            console.log("res", res)
             const client = new VocdoniSDKClient({
                 env: EnvOptions.STG,
                 // @ts-ignore
@@ -147,6 +154,7 @@ export default function Voting() {
     return (
         <Layout>
             <Container size={"xl"}>
+                <CreatorCard email={creator?.address} name={creator?.details?.profile?.username} image={creator?.details?.profile?.pfp} />
                 <Image
                     src={data?._header}
                     height={400}

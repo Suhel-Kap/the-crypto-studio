@@ -9,17 +9,21 @@ interface NftCardProps {
     image: any;
     setModalOpen?: any;
     setAddAttribute?: any;
+    remaining?: string;
+    total?: string;
+    price?: string;
 }
 
 import {
     Card,
     Text,
-    createStyles, Image, ActionIcon, Tooltip, Group,
+    createStyles, Image, ActionIcon, Tooltip, Group, Button,
 } from '@mantine/core';
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import getSpaceDetails from "../utils/getSpaceDetails";
 import {useIsMounted} from "../hooks/useIsMounted";
+import {ethers} from "ethers";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -60,7 +64,7 @@ export default function NftCard({
                                     tokenId,
                                     image,
                                     setModalOpen,
-                                    spaceName
+                                    spaceName,
                                 }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
@@ -116,11 +120,6 @@ export default function NftCard({
 
             {!isHome && (
                 <Group mt={"md"}>
-                    {/*<Tooltip label={"Add attribute"}>*/}
-                    {/*    <ActionIcon onClick={setAddAttribute}>*/}
-                    {/*        <IconCirclePlus/>*/}
-                    {/*    </ActionIcon>*/}
-                    {/*</Tooltip>*/}
                     <Tooltip label={"Edit NFT Audio"}>
                         <ActionIcon onClick={setModalOpen}>
                             <IconPencil/>

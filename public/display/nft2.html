@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visualizer_4</title>
+    <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
+    <script>
+        document.documentElement.className = "js"
+    </script>
+</head>
+
+<body class="The Crypto Studio" overflow="hidden">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        let arrowlength = 150
+        let startpoint, endpoint
+        let number
+        let radius
+        let rad
+        let amplitude
+        var pieces,
+            fft,
+            mapMouseX,
+            mapMouseY,
+            toggleBtn,
+            audio,
+            uploadBtn,
+            uploadedAudio,
+            uploadAnim
+        var colorPalette = ["#000", "rgba(22, 59, 72, 0.5)", "#00a6e0", "#002a38"]
+        var uploadLoading = false
+        var particles = []
+
+        function preload() {
+            audio = loadSound(
+                "../preview.mp3"
+            )
+        }
+
+        // loader του νέου mp3 file απο το file system
+        function uploaded(file) {
+            uploadLoading = true
+            uploadedAudio = loadSound(
+                "../preview.mp3",
+                uploadedAudioPlay
+            )
+        }
+
+        function mousePressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function touchPressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL)
+            gui = createGui()
+            b = createButton("Button", 50, 50)
+
+            amplitude = new p5.Amplitude()
+
+            amplitude.setInput(audio)
+            fft = new p5.FFT()
+            background(0)
+            number = 20
+            stroke(24, 202, 230, 0.5)
+            strokeWeight(1)
+            noFill()
+            radius = 250
+            rad = 0
+            for (let i = 0; i < 100; i++) {
+                particles[i] = new particle3d(
+                    random(0, windowWidth),
+                    random(0, windowHeight),
+                    random(5),
+                    random(1, 255),
+                    random(1, 255),
+                    random(1, 255)
+                )
+            }
+        }
+
+        let r = 0
+        let counter = 0
+
+        function draw() {
+            newCursor()
+
+            // prosthetei ena loading animation otan fortwnete ena neo track
+            //  apo to file system i otan allazei to visualizer
+            // -----------------------------------------------
+
+            // Εδω δημιουργειται το μπλε 3d σχήμα με την βοήθεια της webGL βιβλιοθήκης
+            // το κάθε line διαστρεβλώνεται ανάλογα με το waveform που μας δίνεται
+            // απο τον αλγόριθμο Fast Fourier Transform
+            waveform = fft.waveform()
+
+            background(0, 0, 0, 0.9)
+            counter += 0.01
+            for (let i = 0; i <= number; i++) {
+                radius = 350 //noise(counter) * 15;
+                rad += 0.03
+                let speed = i / (number * 8)
+                let angle = radians(rad)
+                push()
+                bass = fft.getEnergy("bass")
+                var treble = fft.getEnergy(50, 110)
+                var mid = fft.getEnergy("mid")
+                    // περιστροφή γυρω απο τους x,y,z άξονεσ
+                    // η περιστροφή εξαρτάται απο το treble του ήχου
+                    // απο τα mid και το  bass του ήχου
+                rotateZ(PI / (1 / mid))
+                rotateX(PI / (1 / (3 * bass)))
+                rotateY(PI / (1 / treble))
+                beginShape()
+                    //---------------αρχή
+                curveVertex(0, -windowHeight / 5, 0)
+                curveVertex(0, -windowHeight / 2.9, 0)
+                    //---------------μέσεο τμήμα
+                curveVertex(
+                    radius * 0.4 * sin(angle * speed),
+                    20 * sin(angle * 3 * waveform[i] * 0.5) + 40,
+                    radius * 0.6 * cos(angle * speed)
+                )
+
+                //---------------τέλος
+                curveVertex(0, windowHeight / 2 - 120, 0)
+                curveVertex(0, windowHeight / 2 - 120, 0)
+                endShape()
+                pop()
+
+                sphere(15)
+            }
+            push()
+            translate(0, 0)
+            r++
+            fill(0)
+            var locX = mouseX - width / 2
+            var locY = mouseY - height / 2
+            pointLight(random(255), random(255), random(255), locX, locY, 50)
+            noStroke()
+            particles.forEach((p, i) => {
+                displayParicles(p.getX(), p.getY(), p.getSize(), color(100), true, false)
+                p.change(mouseX, mouseY)
+                p.move(amplitude)
+            })
+            pop()
+        }
+
+        function toggleAudio() {
+            if (audio.isPlaying()) {
+                audio.pause()
+            } else {
+                audio.play()
+            }
+        }
+
+        function newCursor() {
+            push()
+            translate(-windowWidth / 2, -windowHeight / 2)
+            noStroke()
+            fill(255)
+            ellipse(pmouseX, pmouseY, 10, 10)
+
+            pop()
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight)
+        }
+
+        function displayParicles(x, y, s, rgb, hasStroke, hasFill) {
+            if (hasStroke == true) {
+                stroke(255)
+            } else {
+                noStroke()
+            }
+            if (hasFill == true) {
+                fill(color(random(255), random(255), random(255)))
+            } else {
+                noStroke()
+            }
+            push()
+            translate(-windowWidth / 2, -windowHeight / 2)
+            var locX = mouseX - width / 2
+            var locY = mouseY - height / 2
+            pointLight(random(255), random(255), random(255), locX, locY, 50)
+            ambientMaterial(random(100, 250))
+
+            translate(x, y)
+            sphere(s)
+            pop()
+        }
+
+        class particle3d {
+            constructor(x, y, s, r, g, b) {
+                this.x = x
+                this.y = y
+                this.s = s
+                this.r = r
+                this.g = g
+                this.b = b
+                this.location = createVector(this.x, this.y)
+                this.velocity = createVector(this.x, this.y)
+                this.acceleration = 0
+                this.avoidTarget = 0
+                this.avoidAcceleration = 0
+                this.speed = 7
+                this.target = 0
+                this.targetX = random(0, windowWidth)
+                this.targetY = random(0, windowHeight)
+                this.changeTime = random(0, 60)
+                this.detectedTouch = false
+                this.mouseIsNear = false
+                this.changeRate = Math.floor(Math.random() * Math.floor(20))
+            }
+
+            change(mx, my) {
+                if (
+                    this.detectedTouch === true &&
+                    dist(mouseX, mouseY, this.getX(), this.getY()) < 200
+                ) {
+                    this.mouseIsNear = true
+                    this.speed = 7
+                    this.mapMouseDistToColor()
+                    this.targetX = mx
+                    this.targetY = my
+                } else {
+                    this.mouseIsNear = false
+                    this.speed = 3
+                    if (new Date().getSeconds() % this.changeRate === 0) {
+                        this.targetX = random(0, windowWidth)
+                        this.targetY = random(0, windowHeight)
+                    } else {
+                        this.targetX = random(0, windowWidth)
+                        this.targetY = random(0, windowHeight)
+                    }
+                }
+            }
+
+            move(amplitude) {
+                this.target = createVector(this.targetX, this.targetY)
+                if (this.mouseIsNear === true) {
+                    this.acceleration = p5.Vector.sub(this.location, this.target)
+                } else {
+                    this.acceleration = p5.Vector.sub(this.target, this.location)
+                }
+                this.changespeed(this.speed++)
+                this.acceleration.setMag(0.1)
+                this.velocity.add(this.acceleration)
+                this.velocity.limit(this.speed)
+                this.location.add(this.velocity)
+                this.x = this.location.x + 0.01
+                this.y = this.location.y + 0.01
+                if (amplitude > 50) {
+                    this.changetargets()
+                }
+            }
+
+            changespeed(speed) {
+                this.speed = speed
+            }
+
+            changetargets() {
+                this.targetX = random(windowWidth)
+                this.targetY = random(windowHeight)
+            }
+
+            avoidOther(xOther, yOther) {
+                if (dist(this.x, this.y, xOther, yOther) < this.s) {
+                    this.avoidTarget = createVector(xOther, yOther)
+                    this.avoidAcceleration = p5.Vector.sub(this.location, this.avoidTarget)
+                    this.avoidAcceleration.setMag(5)
+                    this.velocity.add(this.avoidAcceleration)
+                    this.velocity.limit(10)
+                    this.location.add(this.velocity)
+                    this.x = this.location.x
+                    this.y = this.location.y
+                }
+            }
+
+            mapMouseDistToColor() {
+                dist(mouseX, mouseY, this.x, this.y)
+                this.r = random(255)
+                this.g = random(255)
+                this.b = random(255)
+            }
+
+            setDetectedTouch(isTouch) {
+                this.detectedTouch = isTouch
+            }
+
+            getX() {
+                return this.x
+            }
+
+            getY() {
+                return this.y
+            }
+
+            getSize() {
+                return this.s
+            }
+
+            getColor() {
+                return [this.r, this.g, this.b]
+            }
+        }
+    </script>
+</body>
+
+</html>

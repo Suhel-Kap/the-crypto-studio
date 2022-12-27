@@ -6,7 +6,7 @@ const endpoint = "https://api.nft.storage" as any
 const token = process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY as string
 
 const regex = /https:\/\/ipfs\.io\/ipfs\/.*"/g
-const finalRegex = /https:\/\/testnet.tableland.network\/query\?s=SELECT%20%22audio%22%20FROM%20main_80001_3641%20where%20tokenId=.*"/g
+const finalRegex = /https:\/\/testnet.tableland.network\/query\?s=SELECT%20%22audio%22%20FROM%20main_80001_4575%20where%20tokenId=.*"/g
 
 function updateHtml(html: String, cid: String) {
     let toReplace = "https://ipfs.io/ipfs/" + cid + '"'
@@ -14,7 +14,7 @@ function updateHtml(html: String, cid: String) {
 }
 
 function updateFinalHtml(html: String, tokenId: String){
-    let toReplace = "https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_3641%20where%20tokenId=" + tokenId + '"'
+    let toReplace = "https://testnet.tableland.network/query?s=SELECT%20%22audio%22%20FROM%20main_80001_4575%20where%20tokenId=" + tokenId + '"'
     return html.replace(finalRegex, toReplace)
 }
 

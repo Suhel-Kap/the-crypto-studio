@@ -16,7 +16,8 @@ export default function GroupPosts() {
     const getPosts = async () => {
         const res = await orbis.getPosts({context: groupId, tag: "tcspost"})
         if(res.status === 200) {
-            setData(res.data)
+            const posts = res.data.filter((post: any) => post.context === groupId)
+            setData(posts)
         } else {
             setData([])
         }

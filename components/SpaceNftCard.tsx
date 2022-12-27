@@ -1,0 +1,161 @@
+import {IconCirclePlus, IconPencil} from "@tabler/icons";
+
+interface NftCardProps {
+    title: string;
+    description: string;
+    tokenId: string;
+    animationUrl: string;
+    image: any;
+    setModalOpen?: any;
+    setAddAttribute?: any;
+    remaining: string;
+    total: string;
+    price: string;
+}
+
+import {
+    Card,
+    Text,
+    createStyles, Image, ActionIcon, Tooltip, Group, Button,
+} from '@mantine/core';
+import {useRouter} from "next/router";
+import {useEffect, useState} from "react";
+import getSpaceDetails from "../utils/getSpaceDetails";
+import {useIsMounted} from "../hooks/useIsMounted";
+import {ethers} from "ethers";
+import {useContract2} from "../hooks/useContract2";
+import {showNotification, updateNotification} from "@mantine/notifications";
+import {useAccount} from "wagmi";
+
+const useStyles = createStyles((theme) => ({
+    card: {
+        position: 'relative',
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+        maxWidth: 350
+    },
+
+    rating: {
+        position: 'absolute',
+        top: theme.spacing.xs,
+        right: theme.spacing.xs + 2,
+        pointerEvents: 'none',
+    },
+
+    title: {
+        display: 'block',
+        marginTop: theme.spacing.md,
+        marginBottom: theme.spacing.xs / 2,
+    },
+
+    action: {
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+        ...theme.fn.hover({
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
+        }),
+    },
+
+    footer: {
+        marginTop: theme.spacing.md,
+    },
+}));
+
+export default function SpaceNftCard({
+                                    title,
+                                    animationUrl,
+                                    description,
+                                    tokenId,
+                                    image,
+                                    remaining, total, price
+                                }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
+    const {classes, cx, theme} = useStyles();
+    const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+    const {mint, balanceOf} = useContract2()
+    const linkProps = {href: gatewayUrl, target: '_blank', rel: 'noopener noreferrer'};
+    const [isMinting, setIsMinting] = useState(false)
+    const {address} = useAccount()
+
+    const handleMint = async () => {
+        setIsMinting(true)
+        showNotification({
+            id: "minting",
+            title: "Minting...",
+            message: "Please wait while we mint your NFT",
+            color: "blue",
+            loading: true,
+            disallowClose: true,
+            autoClose: false,
+        })
+        try {
+            const canMint = await balanceOf(address as string, parseInt(tokenId))
+            if (canMint > 0){
+                updateNotification({
+                    id: "minting",
+                    title: "Minted!",
+                    message: "You already possess this NFT!",
+                    color: "green",
+                    autoClose: 9000
+                })
+                setIsMinting(false)
+                return
+            }
+            await mint(parseInt(tokenId), price)
+            updateNotification({
+                id: "minting",
+                title: "Minted!",
+                message: "Your NFT has been minted",
+                color: "green",
+                autoClose: 5000
+            })
+            setIsMinting(false)
+        } catch (e){
+            console.log(e)
+            updateNotification({
+                id: "minting",
+                title: "Error",
+                message: "There was an error minting your NFT",
+                color: "red",
+                autoClose: 5000
+            })
+            setIsMinting(false)
+        }
+    }
+
+    return (
+        <Card withBorder radius="md" className={cx(classes.card)} m={"md"}>
+            <Card.Section>
+                <a {...linkProps}>
+                    <Image height={350} width={350} src={image} alt={title}/>
+                </a>
+            </Card.Section>
+
+            <Tooltip label={"View NFT Visualisation"}>
+                <Text className={classes.title} weight={500} component="a" {...linkProps}>
+                    {title} <span className={classes.rating}>#{tokenId}</span>
+                </Text>
+            </Tooltip>
+            <Text size="sm" color="dimmed" lineClamp={4}>
+                {description}
+            </Text>
+
+            {price && (
+                <>
+                    <Text my={"sm"} weight={700}>
+                        {ethers.utils.formatEther(price)} MATIC
+                    </Text>
+                </>
+            )}
+            {remaining && (
+                <>
+                    <Text>
+                        {remaining} / {total} available
+                    </Text>
+                </>
+            )}
+
+            <Button mt={"sm"} onClick={handleMint} fullWidth disabled={parseInt(remaining) == 0 || isMinting}>
+                Mint
+            </Button>
+
+        </Card>
+    );
+}

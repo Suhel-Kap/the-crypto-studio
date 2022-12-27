@@ -15,6 +15,7 @@ import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification} from "@mantine/notifications";
 import dynamic from "next/dynamic";
 import GroupPosts from "../components/GroupPosts";
+import SpaceNftCard from "../components/SpaceNftCard";
 
 const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
 const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
@@ -128,6 +129,7 @@ export default function Space() {
         setSpaceName(id)
         // @ts-ignore
         getSpaceNfts(id).then(res => {
+            console.log(res)
             setNfts(res)
         })
         setMounted(true)
@@ -140,15 +142,16 @@ export default function Space() {
         renderNfts = nfts?.map(nft => {
             return (
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
-                    <NftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name}
+                    <SpaceNftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name}
                              tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
+                             price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply}
                              image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
             )
         })
     } else {
-        renderNfts = <Text m={"xl"}>There are no NFTs in this space</Text>
+        renderNfts = <Title m={"xl"}>There are no NFTs in this space</Title>
     }
 
     const handleJoin = async () => {

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visualizer_4</title>
+    <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
+    <script>
+        document.documentElement.className = "js"
+    </script>
+</head>
+
+<body class="The Crypto Studio" overflow="hidden">
+    <main class="site-wrapper"></main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        class Particle {
+            constructor(num) {
+                //mesa sto mult rithmizw to megethos tou kiklou pou arxizoun na geniountai nea particles
+                this.pos = p5.Vector.random2D().mult(num)
+                this.vel = createVector(0, 0)
+                this.acc = this.pos.copy().mult(random(0.0001, 0.00001))
+                this.w = random(108, 350)
+                    // black default particle color
+                this.color = [1, 1, 1]
+                    //white color particles
+                    // this.color = [0,0,256];
+            }
+
+            // method που δινει random colors στα particles
+            Particle() {
+                //mesa sto mult rithmizw to megethos tou kiklou pou arxizoun na geniountai nea particles
+                this.color = [random(1, 255), random(1, 255), random(1, 255)]
+            }
+
+            // η update methods εφαρμόζονται πάνω απο κάποιο conditioning
+            // Αυτο ειναι πχ να κανει update στην ταχύτητα των particles
+            // αμα το bass η το treble ειναι μεγαλυτερο απο μια τιμη ωστε να
+            // γινεται το interaction της εικόνας με τον ήχο
+            update(cond) {
+                this.vel.add(this.acc)
+                this.pos.add(this.vel)
+                if (cond) {
+                    this.pos.add(this.vel * 11 + 100)
+                }
+            }
+
+            update1(cond) {
+                this.vel.add(this.acc)
+                this.pos.add(this.vel)
+                if (cond) {
+                    this.pos.add(this.vel * 5)
+                }
+            }
+
+            update2(cond) {
+                this.vel.add(this.acc)
+                if (cond) {
+                    this.pos.add(this.vel * 2)
+                }
+            }
+
+            update3(cond) {
+                this.vel.add(this.acc)
+                this.pos.add(this.vel)
+                if (cond) {
+                    this.pos.add(this.vel)
+                }
+            }
+
+            // επιστρέφει false  αν το particle βρισκεται μεσα sto canva
+            // αλλιως επιτρέφει true ελγχος για να μην ξεμεινει ο υπολογιστης απο ram
+            edges() {
+                if (
+                    this.pos.x < -width / 2 ||
+                    this.pos.x > width / 2 ||
+                    this.pos.y < -height / 2 ||
+                    this.pos.y > height / 2
+                ) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            // prints each particle
+            show() {
+                noStroke()
+                fill(this.color)
+                ellipse(this.pos.x, this.pos.y, random(5, 9))
+            }
+        }
+
+        var pieces,
+            radius,
+            fft,
+            analyzer,
+            mapMouseX,
+            mapMouseY,
+            audio,
+            toggleBtn,
+            uploadBtn,
+            uploadedAudio,
+            uploadAnim
+        var colorPalette = ["#676767", "#232D22", "#C1C1C2", "#FFF903"]
+        var uploadLoading = false
+        var particles = []
+
+        /*=============================================
+    SETUP
+  =============================================*/
+
+        function preload() {
+            audio = loadSound(
+                "../preview.mp3"
+            )
+        }
+
+        // loader του νέου mp3 file απο το file system
+        function uploaded(file) {
+            uploadLoading = true
+            uploadedAudio = loadSound(
+                "../preview.mp3",
+                uploadedAudioPlay
+            )
+        }
+
+        var pieces,
+            radius,
+            fft,
+            mapMouseX,
+            mapMouseY,
+            audio,
+            toggleBtn,
+            uploadBtn,
+            uploadedAudio,
+            uploadAnim
+        var bgColor = "#00000"
+        var bassColor = ["#313e9b", "#1200b3"]
+        var midColor = "#da1500"
+        var trembleColor = "#728d0d"
+        var uploadLoading = false
+
+        function uploadedAudioPlay(audioFile) {
+            uploadLoading = false
+
+            if (audio.isPlaying()) {
+                audio.pause()
+            }
+
+            audio = audioFile
+            audio.loop()
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight)
+            pieces = 30
+            radius = windowHeight / 4
+
+            gui = createGui()
+            b = createButton("Button", 50, 50)
+            fft = new p5.FFT()
+        }
+
+        function draw() {
+            background(bgColor)
+            strokeWeight(1)
+
+            fft.analyze()
+
+            var bass = fft.getEnergy("bass")
+            var treble = fft.getEnergy(50, 110)
+            var mid = fft.getEnergy("mid")
+
+            var mapMid = map(mid, 0, 255, -radius, radius)
+            var scaleMid = map(mid, 0, 255, 1, 1.5)
+
+            var mapTreble = map(treble, 0, 255, -radius / 2, radius * 2)
+            var scaleTreble = map(treble, 0, 255, 0.5, 2)
+
+            var mapbass = map(bass, 0, 255, 0, 200)
+            var scalebass = map(bass, 0, 255, 0, 0.8)
+
+            mapMouseX = map(mouseX, 0, width, 100, 200)
+            mapMouseScale = map(mouseX, 0, width, 0.35, 0.2)
+            mapMouseY = map(mouseY, 0, height, windowHeight / 4, windowHeight)
+
+            pieces = 13
+            radius = 60
+
+            translate(windowWidth / 2, windowHeight / 2)
+
+            for (i = 0; i < pieces; i += 1) {
+                rotate(TWO_PI / pieces)
+
+                noFill()
+
+                /*----------  BASS  ----------*/
+                push()
+                strokeWeight(8)
+                stroke(bassColor[0])
+                scale(scalebass + mapMouseScale)
+                rotate(-frameCount * 0.05)
+                point(mapbass, radius / 2)
+                stroke(bassColor[1])
+                strokeWeight(2.2)
+                line(mapMouseX, mouseY, radius, radius)
+                pop()
+
+                /*----------  MID  ----------*/
+                push()
+                stroke(midColor)
+                strokeWeight(4)
+                rotate(-frameCount * 0.01)
+                point(mapMid, radius)
+                pop()
+
+                /*----------  TREMBLE  ----------*/
+                push()
+                stroke(trembleColor)
+                strokeWeight(4)
+                scale(scaleTreble)
+                rotate(frameCount * 0.01)
+                point(-100, radius / 2)
+                point(100, radius / 2)
+                pop()
+            }
+        }
+
+        function mousePressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function touchPressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight)
+        }
+    </script>
+</body>
+
+</html>

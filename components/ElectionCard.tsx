@@ -40,7 +40,7 @@ export default function ElectionCard(props: any){
     const now = new Date()
     const isLive = now.getTime() < new Date(data?._endDate).getTime()
     return (
-        <Paper radius={"md"} p={"md"} component={"a"} href={`/voting/?electionID=${props.electionId}&streamId=${props.streamId}`}
+        <Paper radius={"md"} p={"md"} component={"a"} href={`/voting/?electionID=${props.electionId}&streamId=${props.streamId}&creator=${props.creator}`}
             sx={{
                 cursor: "pointer",
             }}

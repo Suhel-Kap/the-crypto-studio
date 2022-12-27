@@ -56,7 +56,7 @@ contract TheCryptoStudio is ERC1155
     string  private mainTable;
     uint256 private mainTableID;
     string private constant MAIN_TABLE_PREFIX = "main";
-    string private constant MAIN_SCHEMA = "tokenID text, description text, image text, name text, audio text, animation_url text, maxSupply text, currentSupply text, mintPrice text";
+    string private constant MAIN_SCHEMA = "tokenID text, description text, image text, name text, audio text, animation_url text, maxSupply text, currentSupply text, mintPrice text, creator text";
 
     string  private attributeTable;
     uint256 private attributeTableID;
@@ -147,12 +147,36 @@ contract TheCryptoStudio is ERC1155
         tokenInfoMap[tokenID.current()].creator = msg.sender;
         tokenInfoMap[tokenID.current()].price = mintPrice;
         tokenInfoMap[tokenID.current()].maxCap = maxSupply;
-        string memory insert_statement  =  SQLHelpers.insertMainStatement(MAIN_TABLE_PREFIX, mainTableID,tokenID.current(),description,imageCID,name,audioCID,animationCID,maxSupply,mintPrice);
+        string memory tempString = string.concat(
+                SQLHelpers.quote(Strings.toString(tokenID.current())),
+                ",",
+                SQLHelpers.quote(description),
+                ",",
+                SQLHelpers.quote(imageCID),
+                ",",
+                SQLHelpers.quote(name),
+                ",",
+                SQLHelpers.quote(audioCID),
+                ",",
+                SQLHelpers.quote(animationCID),
+                ",",
+                SQLHelpers.quote(Strings.toString(maxSupply)),
+                ",",
+                SQLHelpers.quote(Strings.toString(maxSupply)),
+                ",",
+                SQLHelpers.quote(Strings.toString(mintPrice)),
+                ",",
+                SQLHelpers.quote(Strings.toHexString(msg.sender))
+        );
+        string memory insert_statement  =  SQLHelpers.toInsert(
+            MAIN_TABLE_PREFIX,
+            mainTableID,
+            "tokenID, description, image, name, audio, animation_url, maxSupply, currentSupply, mintPrice, creator",
+            tempString
+    );
         string memory insert_statement2 = SQLHelpers.insertAttributeStatement(ATTRIBUTE_TABLE_PREFIX, attributeTableID,tokenID.current() ,"spaceName", spaceName);
-        string memory insert_statement3 = SQLHelpers.insertAttributeStatement(ATTRIBUTE_TABLE_PREFIX, attributeTableID,tokenID.current() ,"creator", Strings.toHexString(msg.sender));   
         runSQL(mainTableID,insert_statement);
         runSQL(attributeTableID,insert_statement2);
-        runSQL(attributeTableID,insert_statement3);
     }
 
     /// @notice Mint Function each address needs to have a 0 balance of that NFT tokenID to mint it

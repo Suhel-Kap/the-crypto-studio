@@ -129,33 +129,7 @@ library SQLHelpers {
         return string.concat("'", input, "'");
     }
 
-    function insertMainStatement(string memory MAIN_TABLE_PREFIX, uint256 mainTableID,uint256 tokenid ,string memory description, string memory imageCID,string memory name,string memory audio , string memory animationCID, uint256 maxSupply, uint256 mintPrice) internal view returns(string memory){
-    return
-    toInsert(
-            MAIN_TABLE_PREFIX,
-            mainTableID,
-            "tokenID, description, image, name, audio, animation_url, maxSupply, currentSupply, mintPrice",
-            string.concat(
-                quote(Strings.toString(tokenid)),
-                ",",
-                quote(description),
-                ",",
-                quote(imageCID),
-                ",",
-                quote(name),
-                ",",
-                quote(audio),
-                ",",
-                quote(animationCID),
-                ",",
-                quote(Strings.toString(maxSupply)),
-                ",",
-                quote(Strings.toString(maxSupply)),
-                ",",
-                quote(Strings.toString(mintPrice))
-            )
-    );
-    }
+ 
 
     function insertAttributeStatement(string memory ATTRIBUTE_TABLE_PREFIX, uint256 attributeTableID,uint256 tokenid ,string memory trait_type, string memory value) internal view returns(string memory){
         return  toInsert(
@@ -209,21 +183,14 @@ library SQLHelpers {
     function allowedInput(string memory s1) internal pure returns (bool) {
         bytes memory b1 = bytes(s1);
         bytes memory b2 = bytes("spaceName");
-        bytes memory b3 = bytes("creator");
         bool flag = false;
-        bool flag2 = false;
         uint256 l1 = b1.length;
         for (uint256 i=0; i<l1; i++) {
-            if (b1[i] != b3[i]){
+            if (b1[i] != b2[i]){
                 flag = true;
             } 
         }
-        for (uint256 i=0; i<l1; i++) {
-            if (b1[i] != b2[i]){
-                flag2 = true;
-            } 
-        }
-        if(flag && flag2){
+        if(flag){
             return true;
         }
         return false;

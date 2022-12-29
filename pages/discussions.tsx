@@ -87,7 +87,7 @@ export default function Discussions() {
             <Layout>
                 {!user ?
                     <Center>
-                        <Button disabled={loading} onClick={async () => {
+                        <Button disabled={loading} color={"indigo"} onClick={async () => {
                             setLoading(true)
                             await connect()
                             setLoading(false)

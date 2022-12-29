@@ -42,7 +42,7 @@ export default function MonetizeSpace({isOwner, owner}: MonetizeSpaceProps) {
             disallowClose: true,
         })
         try{
-            await deleteSpaceArtist(space, address)
+            await deleteSpaceArtist(space, address.toLowerCase())
             updateNotification({
                 id: "delete",
                 title: "Success!",
@@ -74,7 +74,7 @@ export default function MonetizeSpace({isOwner, owner}: MonetizeSpaceProps) {
             disallowClose: true,
         })
         try{
-            await addSpaceArtist(router.query.id as string, address)
+            await addSpaceArtist(router.query.id as string, address.toLowerCase())
             updateNotification({
                 id: "add",
                 title: "Success!",
@@ -110,9 +110,6 @@ export default function MonetizeSpace({isOwner, owner}: MonetizeSpaceProps) {
                 </Group>
             </td>
             <td>
-                <Text size="sm">{artist.spaceName}</Text>
-            </td>
-            <td>
                 <Text size="sm">{artist.space_artist?.toLowerCase() === owner ? "Owner" : "Artist"}</Text>
             </td>
             {artist.space_artist?.toLowerCase() !== owner && <td>
@@ -133,7 +130,6 @@ export default function MonetizeSpace({isOwner, owner}: MonetizeSpaceProps) {
                     <thead>
                     <tr>
                         <th>Address</th>
-                        <th>Name</th>
                         <th>Role</th>
                         <th></th>
                     </tr>

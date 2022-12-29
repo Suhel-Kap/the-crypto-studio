@@ -35,6 +35,11 @@ const useStyles = createStyles((theme) => ({
         marginTop: theme.spacing.xl,
         marginBottom: theme.spacing.xl,
         width: "100%"
+    },
+    grid: {
+        [theme.fn.smallerThan('md')]: {
+            width: "100%"
+        }
     }
 }))
 
@@ -148,7 +153,7 @@ export default function Space() {
                     <SpaceNftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name}
                                   tokenId={nft.tokenID}
                                   animationUrl={nft.animation_url} description={nft.description}
-                                  price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply}
+                                  price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply} creator={nft.creator}
                                   image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
             )

@@ -84,19 +84,6 @@ export default function NftCard({
         getSpaceLink()
     }, [spaceName, mounted])
 
-    const router = useRouter()
-    const [isHome, setIsHome] = useState(false)
-    useEffect(() => {
-        if (router.pathname === '/') {
-            setIsHome(true)
-        } else if (router.pathname === '/space') {
-            setIsHome(true)
-        } else if (router.pathname === '/user') {
-            setIsHome(true)
-        } else {
-            setIsHome(false)
-        }
-    }, [router.pathname])
 
     return (
         <Card withBorder radius="md" className={cx(classes.card)} m={"md"}>
@@ -117,16 +104,6 @@ export default function NftCard({
             <Text size="sm" color="dimmed" lineClamp={4}>
                 {description}
             </Text>
-
-            {!isHome && (
-                <Group mt={"md"}>
-                    <Tooltip label={"Edit NFT Audio"}>
-                        <ActionIcon onClick={setModalOpen}>
-                            <IconPencil/>
-                        </ActionIcon>
-                    </Tooltip>
-                </Group>
-            )}
 
         </Card>
     );

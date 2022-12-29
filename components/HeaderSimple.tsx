@@ -155,6 +155,7 @@ export function HeaderSimple() {
                         <Switch
                             checked={colorScheme === 'dark'}
                             onChange={() => toggleColorScheme()}
+                            color={"indigo"}
                             size="lg"
                             onLabel={<IconSun color={darkTheme.white} size={20} stroke={1.5}/>}
                             offLabel={<IconMoonStars color={darkTheme.colors.gray[6]} size={20} stroke={1.5}/>}

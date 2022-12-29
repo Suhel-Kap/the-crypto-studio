@@ -44,10 +44,8 @@ export default function MyNft() {
     const {classes} = useStyles();
     const {address, isDisconnected} = useAccount()
     const [nfts, setNfts] = useState<Array<any>>()
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [isAttributeModalOpen, setIsAttributeModalOpen] = useState(false)
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
-    const [tokenId, setTokenId] = useState("")
     const [attributes, setAttributes] = useState([])
     const router = useRouter()
     // @ts-ignore
@@ -105,16 +103,12 @@ export default function MyNft() {
         orbisConnect()
     }, [router.isReady])
 
-    const handleClick = (tokenId: string) => {
-        setTokenId(tokenId)
-        setIsModalOpen(true)
-    }
 
-    const handleAddAttribute = (tokenId: string, attribues: []) => {
-        setTokenId(tokenId)
-        setAttributes(attribues)
-        setIsAttributeModalOpen(true)
-    }
+    // const handleAddAttribute = (tokenId: string, attribues: []) => {
+    //     setTokenId(tokenId)
+    //     setAttributes(attribues)
+    //     setIsAttributeModalOpen(true)
+    // }
 
     useEffect(() => {
         getNfts(address!).then(res => {
@@ -130,8 +124,8 @@ export default function MyNft() {
                 <Grid.Col key={nft.tokenID} lg={4} md={6}>
                     <NftCard title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
-                             image={nft.image} setAddAttribute={() => handleAddAttribute(nft.tokenID, nft.attributes)} spaceName={spaceName}
-                             setModalOpen={() => handleClick(nft.tokenID)}/>
+                             image={nft.image} spaceName={spaceName}
+                             />
                 </Grid.Col>
             )
         })
@@ -148,36 +142,22 @@ export default function MyNft() {
         </>
     }
 
-    const updateModal = (
-        <Modal
-            opened={isModalOpen}
-            className={classes.modal}
-            transition="fade"
-            transitionDuration={500}
-            transitionTimingFunction="ease"
-            onClose={() => setIsModalOpen(false)}
-        >
-            <Center>
-                <UpdateAudio tokenId={tokenId}/>
-            </Center>
-        </Modal>
-    )
 
-    const attributeModal = (
-        <Modal
-            opened={isAttributeModalOpen}
-            className={classes.modal}
-            transition="fade"
-            transitionDuration={500}
-            transitionTimingFunction="ease"
-            onClose={() => setIsAttributeModalOpen(false)}
-        >
-            <Center>
-                {/*@ts-ignore*/}
-                <AddAttribute tokenId={tokenId} attributes={attributes} />
-            </Center>
-        </Modal>
-    )
+    // const attributeModal = (
+    //     <Modal
+    //         opened={isAttributeModalOpen}
+    //         className={classes.modal}
+    //         transition="fade"
+    //         transitionDuration={500}
+    //         transitionTimingFunction="ease"
+    //         onClose={() => setIsAttributeModalOpen(false)}
+    //     >
+    //         <Center>
+    //             {/*@ts-ignore*/}
+    //             <AddAttribute tokenId={tokenId} attributes={attributes} />
+    //         </Center>
+    //     </Modal>
+    // )
 
     const updateProfileModal = (
         <Modal
@@ -250,9 +230,8 @@ export default function MyNft() {
                                 </Tabs.Panel>
                             </StyledTabs>
                         </Container>}
-                    {updateModal}
                     {updateProfileModal}
-                    {attributeModal}
+                    {/*{attributeModal}*/}
                 </Container>
             </Layout>
         </>

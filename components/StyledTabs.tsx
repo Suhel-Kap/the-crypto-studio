@@ -36,8 +36,8 @@ export default function StyledTabs(props: TabsProps) {
                     },
 
                     '&[data-active]': {
-                        backgroundColor: theme.colors.blue[7],
-                        borderColor: theme.colors.blue[7],
+                        backgroundColor: theme.colors.indigo[7],
+                        borderColor: theme.colors.indigo[7],
                         color: theme.white,
                     },
                 },

@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from "react";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {useIsMounted} from "../hooks/useIsMounted";
 import {useAccount} from "wagmi";
+import {useRouter} from "next/router";
 // import { PassportReader } from "@gitcoinco/passport-sdk-reader";
 
 interface UserVCProps {
@@ -15,10 +16,10 @@ export default function UserVcs({address}: UserVCProps) {
     const {address: userAddress} = useAccount()
     const [vcs, setVcs] = useState([{issuer: "NA", provider: "No Verifable Credentials", vc: "No Verifact"}])
     const mounted = useIsMounted()
-
+    const router = useRouter()
 
     const getCredentials = async () => {
-        if(user.metadata.address?.toLowerCase() !== userAddress?.toLowerCase()){
+        if(router.pathname === "/user"){
             let {data: dids} = await orbis.getDids(address)
             const {data, error} = await orbis.getCredentials(dids[0].did)
             if (data) {

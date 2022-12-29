@@ -11,12 +11,13 @@ interface NftCardProps {
     remaining: string;
     total: string;
     price: string;
+    creator: string;
 }
 
 import {
     Card,
     Text,
-    createStyles, Image, ActionIcon, Tooltip, Group, Button,
+    createStyles, Image, ActionIcon, Tooltip, Group, Button, Badge,
 } from '@mantine/core';
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
@@ -31,7 +32,10 @@ const useStyles = createStyles((theme) => ({
     card: {
         position: 'relative',
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
-        maxWidth: 350
+        maxWidth: 350,
+        [theme.fn.smallerThan("sm")]: {
+            maxWidth: "95%"
+        }
     },
 
     rating: {
@@ -65,15 +69,24 @@ export default function SpaceNftCard({
                                     description,
                                     tokenId,
                                     image,
-                                    remaining, total, price
+                                    remaining, total, price, setModalOpen, creator
                                 }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
     const {mint, balanceOf} = useContract()
+    const router = useRouter()
     const linkProps = {href: gatewayUrl, target: '_blank', rel: 'noopener noreferrer'};
     const [isMinting, setIsMinting] = useState(false)
     const {address} = useAccount()
-
+    let badgeContext
+    if(animationUrl.includes("html"))
+        badgeContext = "Audio Visual"
+    else if(animationUrl.includes("TICKET"))
+        badgeContext = "Ticket"
+    else if(animationUrl === " ")
+        badgeContext = "Image"
+    else
+        badgeContext = "Audio"
     const handleMint = async () => {
         setIsMinting(true)
         showNotification({
@@ -130,7 +143,7 @@ export default function SpaceNftCard({
 
             <Tooltip label={"View NFT Visualisation"}>
                 <Text className={classes.title} weight={500} component="a" {...linkProps}>
-                    {title} <span className={classes.rating}>#{tokenId}</span>
+                    {title} <span className={classes.rating}><Badge color={"indigo"} variant="filled">{badgeContext}</Badge>#{tokenId}</span>
                 </Text>
             </Tooltip>
             <Text size="sm" color="dimmed" lineClamp={4}>
@@ -144,6 +157,7 @@ export default function SpaceNftCard({
                     </Text>
                 </>
             )}
+            <Group position={"apart"}>
             {remaining && (
                 <>
                     <Text>
@@ -151,10 +165,24 @@ export default function SpaceNftCard({
                     </Text>
                 </>
             )}
-
-            <Button mt={"sm"} onClick={handleMint} fullWidth disabled={parseInt(remaining) == 0 || isMinting}>
+            {router.pathname === "/my-nft" && badgeContext.includes("Audio") && (
+                <Group>
+                    <Tooltip label={"Edit NFT Audio"}>
+                        <ActionIcon onClick={setModalOpen}>
+                            <IconPencil/>
+                        </ActionIcon>
+                    </Tooltip>
+                </Group>
+            )}
+            </Group>
+            <Text size="sm" mt={"xs"} component={"a"} href={`/user?address=${creator}`} color="dimmed" lineClamp={4}>
+                Created by: {creator}
+            </Text>
+            <Card.Section className={classes.footer}>
+            <Button mt={"sm"} color={"indigo"} onClick={handleMint} fullWidth disabled={parseInt(remaining) == 0 || isMinting}>
                 Mint
             </Button>
+            </Card.Section>
 
         </Card>
     );

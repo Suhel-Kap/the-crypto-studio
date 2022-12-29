@@ -29,7 +29,7 @@ export function Button(props: ButtonProps) {
     };
 
     return (
-        <MantineButton mt={"xl"} {...rest}>
+        <MantineButton color={"indigo"} mt={"xl"} {...rest}>
             {props.loading ? loader() : props.children}
         </MantineButton>
     );

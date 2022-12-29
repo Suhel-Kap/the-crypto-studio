@@ -23,7 +23,7 @@ export default function ChatBox({posts, setPosts}) {
                            onChange={(e) => setMessage(e.currentTarget.value)} autosize minRows={2} maxRows={4}/>
             </Grid.Col>
             <Grid.Col span={2}>
-                <Button onClick={async () => {
+                <Button color={"indigo"} onClick={async () => {
                     let res = await orbis.createPost({context: channel_id, body: message})
                     if (res.status === 200) {
                         console.log("Post created: ", res);

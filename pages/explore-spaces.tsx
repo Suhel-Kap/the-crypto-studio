@@ -13,7 +13,7 @@ export default function ExploreSpaces() {
     const {isDisconnected} = useAccount()
     useEffect(() => {
         getAllSpaces().then(res => {
-            console.log(res)
+            // console.log(res)
             setData(res)
         })
     }, [])
@@ -27,7 +27,7 @@ export default function ExploreSpaces() {
             if (res.status == 200) {
                 await orbis.logout()
                 setUser(null)
-                console.log("User is connected: ", res);
+                // console.log("User is connected: ", res);
             }
         }
     }

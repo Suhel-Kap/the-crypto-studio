@@ -61,7 +61,7 @@ export default function CreatedNfts({address}: CreatedNftsProps) {
                     <SpaceNftCard key={nft.tokenID} title={nft.name}
                                   tokenId={nft.tokenID}
                                   setModalOpen={() => handleClick(nft.tokenID)}
-                                  animationUrl={nft.animation_url} description={nft.description}
+                                  animationUrl={nft.animation_url} description={nft.description} creator={nft.creator}
                                   price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply} image={nft.image}/>
                 </Grid.Col>
             )

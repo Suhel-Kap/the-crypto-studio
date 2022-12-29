@@ -9,11 +9,12 @@ import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
 import {useIsMounted} from "../hooks/useIsMounted";
 import StyledTabs from "../components/StyledTabs";
-import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
+import {IconAlbum, IconCreditCard, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
 import UserPosts from "../components/UserPosts";
 import {useAccount} from "wagmi";
 import {showNotification, updateNotification} from "@mantine/notifications";
 import {getProvider} from "@wagmi/core";
+import UserVcs from "../components/UserVcs";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -252,18 +253,18 @@ export default function User() {
                     <Title>{username}'s Profile</Title>
                     <Container size={"xl"}>
                         <Grid>
-                            <Grid.Col lg={6}>
+                            <Grid.Col lg={8}>
                                 {renderUser}
                             </Grid.Col>
-                            <Grid.Col lg={3}>
-                                <Button color={"indigo"} className={classes.btn} onClick={handleFollow}>
-                                    {isFollowing ? "Unfollow" : "Follow"}
-                                </Button>
-                            </Grid.Col>
-                            <Grid.Col lg={3}>
-                                <Button color={"indigo"} className={classes.btn} variant={"light"} onClick={handleChat}>
-                                    Connect Over Chat
-                                </Button>
+                            <Grid.Col lg={4}>
+                                <Button.Group p={"xl"} sx={{height: "100%"}}>
+                                    <Button color={"indigo"} onClick={handleFollow} sx={{height: "-webkit-fill-available", width: "100%"}}>
+                                        {isFollowing ? "Unfollow" : "Follow"}
+                                    </Button>
+                                    <Button color={"indigo"} variant={"light"} sx={{height: "-webkit-fill-available", width: "100%"}} onClick={handleChat}>
+                                        Connect Over Chat
+                                    </Button>
+                                </Button.Group>
                             </Grid.Col>
                         </Grid>
                         <Stack>
@@ -273,6 +274,7 @@ export default function User() {
                                         <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
                                         <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>User
                                             Posts</Tabs.Tab>
+                                        <Tabs.Tab value={"vcs"} icon={<IconCreditCard size={16}/>}>User VCs</Tabs.Tab>
                                     </Tabs.List>
                                 </Center>
                                 <Tabs.Panel value={"nfts"}>
@@ -282,6 +284,9 @@ export default function User() {
                                 </Tabs.Panel>
                                 <Tabs.Panel value={"chat"}>
                                     <UserPosts/>
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"vcs"}>
+                                    <UserVcs address={router.query.address as string}/>
                                 </Tabs.Panel>
                             </StyledTabs>
                         </Stack>

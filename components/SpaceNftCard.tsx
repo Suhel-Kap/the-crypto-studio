@@ -23,7 +23,7 @@ import {useEffect, useState} from "react";
 import getSpaceDetails from "../utils/getSpaceDetails";
 import {useIsMounted} from "../hooks/useIsMounted";
 import {ethers} from "ethers";
-import {useContract2} from "../hooks/useContract2";
+import {useContract} from "../hooks/useContract";
 import {showNotification, updateNotification} from "@mantine/notifications";
 import {useAccount} from "wagmi";
 
@@ -69,7 +69,7 @@ export default function SpaceNftCard({
                                 }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
-    const {mint, balanceOf} = useContract2()
+    const {mint, balanceOf} = useContract()
     const linkProps = {href: gatewayUrl, target: '_blank', rel: 'noopener noreferrer'};
     const [isMinting, setIsMinting] = useState(false)
     const {address} = useAccount()

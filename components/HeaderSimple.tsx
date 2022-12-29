@@ -133,8 +133,10 @@ export function HeaderSimple() {
     const darkTheme = useMantineTheme();
 
     const items = links.map((link) => (
-        <Link href={link.link} key={link.label} className={classes.link}>
+        <Link href={link.link} passHref={true} key={link.label} className={classes.link}>
+            <a href={link.link}>
             {link.label}
+            </a>
         </Link>
     ));
 

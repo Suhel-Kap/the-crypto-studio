@@ -9,13 +9,15 @@ import CreatorCard from "../components/CreatorCard";
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk"
 import StyledTabs from "../components/StyledTabs";
-import {IconAlbum, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
+import {IconAlbum, IconCash, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
 import {useAccount, useSigner} from "wagmi";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification} from "@mantine/notifications";
 import dynamic from "next/dynamic";
 import GroupPosts from "../components/GroupPosts";
 import SpaceNftCard from "../components/SpaceNftCard";
+import {bool} from "yup";
+import MonetizeSpace from "../components/MonetizeSpace";
 
 const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
 const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
@@ -43,7 +45,7 @@ export default function Space() {
     const [nfts, setNfts] = useState()
     const [spaceName, setSpaceName] = useState("")
     const [mounted, setMounted] = useState(false)
-    const [groupId, setGroupId] = useState<string>("")
+    const [isOwner, setIsOwner] = useState<boolean>(false)
     const [isGroupMember, setIsGroupMember] = useState(false)
     const [renderCreator, setRenderCreator] = useState(<>
         <Skeleton height={50} circle mb="xl"/>
@@ -107,10 +109,12 @@ export default function Space() {
     useEffect(() => {
         (async () => {
             if (!router.isReady) return
+            console.log(router.query.address)
+            console.log(address)
+            if (router.query.address == address?.toLowerCase()) setIsOwner(true)
             let {data: dids} = await orbis.getDids(address)
             const user = dids[0].did
             const {groupId} = router.query
-            setGroupId(groupId as string)
             let {data, error} = await orbis.getIsGroupMember(groupId, user)
             if (data) {
                 setIsGroupMember(data)
@@ -139,14 +143,14 @@ export default function Space() {
     // @ts-ignore
     if (nfts?.length > 0) {
         // @ts-ignore
-        renderNfts = nfts?.map(nft => {
+        renderNfts = nfts.map((nft: any, index: number) => {
             return (
-                <Grid.Col key={nft.tokenID} lg={4} md={6}>
+                <Grid.Col key={index} lg={4} md={6}>
                     <SpaceNftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name}
-                             tokenId={nft.tokenID}
-                             animationUrl={nft.animation_url} description={nft.description}
-                             price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply}
-                             image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
+                                  tokenId={nft.tokenID}
+                                  animationUrl={nft.animation_url} description={nft.description}
+                                  price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply}
+                                  image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
             )
         })
@@ -203,34 +207,33 @@ export default function Space() {
                             <Grid.Col lg={6}>
                                 {renderCreator}
                             </Grid.Col>
-                            <Grid.Col lg={2}>
-                                <Button component={"a"} href={query} target={"_blank"} color={"indigo"}
-                                        className={classes.btn}>
-                                    View Space on Opensea
-                                </Button>
-                            </Grid.Col>
-                            {!user && <Grid.Col lg={2}>
-                                <Button onClick={() => router.push('/discussions')} color={"indigo"} variant={"light"}
-                                        className={classes.btn}>
-                                    Connect to Orbis
-                                </Button>
-                            </Grid.Col>}
-                            {user && isGroupMember && <Grid.Col lg={2}>
-                                <Button variant={"light"} onClick={handleLeave} color={"indigo"}
-                                        className={classes.btn}>
-                                    Leave Space
-                                </Button>
-                            </Grid.Col>}
-                            {user && !isGroupMember && <Grid.Col lg={2}>
-                                <Button variant={"light"} onClick={handleJoin} color={"indigo"} className={classes.btn}>
-                                    Join Space
-                                </Button>
-                            </Grid.Col>}
-                            <Grid.Col lg={2}>
-                                <Button variant={"subtle"} component={"a"} href={orbisGroup} target={"_blank"}
-                                        color={"indigo"} className={classes.btn}>
-                                    Go to Space Chat
-                                </Button>
+                            <Grid.Col lg={6}>
+                                <Button.Group sx={{height: "100%"}}>
+                                    <Button component={"a"} href={query} target={"_blank"} color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                            className={classes.btn}>
+                                        View Space on Opensea
+                                    </Button>
+                                    {!user &&
+                                        <Button onClick={() => router.push('/discussions')} color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                                variant={"light"}
+                                                className={classes.btn}>
+                                            Connect to Orbis
+                                        </Button>}
+                                    {user && isGroupMember &&
+                                        <Button variant={"light"} onClick={handleLeave} color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                                className={classes.btn}>
+                                            Leave Space
+                                        </Button>}
+                                    {user && !isGroupMember &&
+                                        <Button variant={"light"} onClick={handleJoin} color={"indigo"}
+                                                className={classes.btn}>
+                                            Join Space
+                                        </Button>}
+                                    <Button variant={"subtle"} component={"a"} href={orbisGroup} target={"_blank"}
+                                            color={"indigo"} className={classes.btn}>
+                                        Go to Space Chat
+                                    </Button>
+                                </Button.Group>
                             </Grid.Col>
                         </Grid>
                     </Stack>}
@@ -241,14 +244,15 @@ export default function Space() {
                         <StyledTabs defaultValue={"nfts"}>
                             <Center>
                                 <Tabs.List>
-                                    <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
-                                    <Tabs.Tab value={"polls"} icon={<IconTallymarks size={16}/>}
+                                    <Tabs.Tab key={1} value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
+                                    <Tabs.Tab key={2} value={"polls"} icon={<IconTallymarks size={16}/>}
                                               disabled={!isGroupMember}>Polls</Tabs.Tab>
-                                    <Tabs.Tab value={"create"} icon={<IconFilePencil size={16}/>}
+                                    <Tabs.Tab key={3} value={"create"} icon={<IconFilePencil size={16}/>}
                                               disabled={!isGroupMember}>Create Poll</Tabs.Tab>
-                                    <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}
-                                              disabled={!isGroupMember}>Group
-                                        Chat</Tabs.Tab>
+                                    <Tabs.Tab key={4} value={"chat"} icon={<IconMessageChatbot size={16}/>}
+                                              disabled={!isGroupMember}>Group Chat</Tabs.Tab>
+                                    {isOwner && <Tabs.Tab key={5} value={"monetize"} icon={<IconCash size={16}/>}>Monetize
+                                        Space</Tabs.Tab>}
                                 </Tabs.List>
                             </Center>
                             <Tabs.Panel value={"nfts"}>
@@ -264,6 +268,9 @@ export default function Space() {
                             </Tabs.Panel>
                             <Tabs.Panel value={"chat"}>
                                 <GroupPosts/>
+                            </Tabs.Panel>
+                            <Tabs.Panel value={"monetize"}>
+                                <MonetizeSpace owner={router.query.address as string} isOwner={isOwner}/>
                             </Tabs.Panel>
                         </StyledTabs>
                     </Stack>

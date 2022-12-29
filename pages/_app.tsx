@@ -93,6 +93,9 @@ export default function App(props: AppProps) {
                       content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
                 <meta property={"og:url"} content={"https://the-crypto-studio-20be90.spheron.app"}/>
                 <meta property="og:type" content="website"/>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap');
+                </style>
             </Head>
             <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis} as any}>
                 <WagmiConfig client={wagmiClient}>
@@ -101,7 +104,12 @@ export default function App(props: AppProps) {
                             <MantineProvider
                                 withGlobalStyles
                                 withNormalizeCSS
-                                theme={{ colorScheme }}
+                                theme={{
+                                    colorScheme,
+                                    fontFamily: 'Oswald, sans-serif',
+                                    fontFamilyMonospace: 'Monaco, Courier, monospace',
+                                    headings: { fontFamily: 'Oswald, sans-serif' },
+                                }}
                             >
                                 <NotificationsProvider>
                                     <Component {...pageProps} wagmiClient={wagmiClient} />

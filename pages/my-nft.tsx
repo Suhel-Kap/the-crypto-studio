@@ -12,9 +12,9 @@ import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
 import {AddAttribute} from "../components/AddAttribute";
 import StyledTabs from "../components/StyledTabs";
-import {Ce} from "tabler-icons-react";
-import {IconAlbum, IconMessageChatbot} from "@tabler/icons";
+import {IconAlbum, IconCreditCard, IconMessageChatbot} from "@tabler/icons";
 import UserPosts from "../components/UserPosts";
+import UserVcs from '../components/UserVcs';
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -33,6 +33,7 @@ const useStyles = createStyles((theme) => ({
             height: 50,
             margin: theme.spacing.md
         },
+        width: "75%",
         height: "-webkit-fill-available",
         margin: theme.spacing.xl
     }
@@ -40,7 +41,7 @@ const useStyles = createStyles((theme) => ({
 
 export default function MyNft() {
     const {classes} = useStyles();
-    const {address, isDisconnected, isConnected} = useAccount()
+    const {address, isDisconnected} = useAccount()
     const [nfts, setNfts] = useState<Array<any>>()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isAttributeModalOpen, setIsAttributeModalOpen] = useState(false)
@@ -57,7 +58,6 @@ export default function MyNft() {
             if (res.status == 200) {
                 await orbis.logout()
                 setUser(null)
-                console.log("User is connected: ", res);
             }
         }
     }
@@ -118,7 +118,6 @@ export default function MyNft() {
     useEffect(() => {
         getNfts(address!).then(res => {
             setNfts(res)
-            console.log("NFTS: ", res);
         })
     }, [address])
     let renderNfts
@@ -208,16 +207,21 @@ export default function MyNft() {
                     {!isDisconnected &&
                         <Container size={"xl"}>
                             <Grid>
-                                <Grid.Col lg={9}>
+                                <Grid.Col lg={8}>
                                     <CreatorCard image={user?.profile?.pfp} name={user?.profile?.username}
                                                  email={user?.metadata?.address}/>
                                 </Grid.Col>
-                                <Grid.Col lg={3}>
-                                    <Button color={"indigo"} className={classes.btn}
-                                            onClick={() => setIsProfileModalOpen(true)}>
-                                        Update Your Profile
-                                    </Button>
-
+                                <Grid.Col lg={4}>
+                                    <Button.Group p={"xl"} sx={{height: "100%"}}>
+                                        <Button color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                                onClick={() => setIsProfileModalOpen(true)}>
+                                            Update Your Profile
+                                        </Button>
+                                        <Button color={"indigo"} variant={"light"} sx={{height: "-webkit-fill-available"}}
+                                                onClick={() => window.open("https://passport.gitcoin.co/", "_blank")}>
+                                            Issue Gitcoin VC
+                                        </Button>
+                                    </Button.Group>
                                 </Grid.Col>
                             </Grid>
                             <StyledTabs defaultValue={"nfts"}>
@@ -225,6 +229,7 @@ export default function MyNft() {
                                     <Tabs.List>
                                         <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
                                         <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>Your Posts</Tabs.Tab>
+                                        <Tabs.Tab value={"vcs"} icon={<IconCreditCard size={16}/>}>Your VCs</Tabs.Tab>
                                     </Tabs.List>
                                 </Center>
                                 <Tabs.Panel value={"nfts"}>
@@ -234,6 +239,9 @@ export default function MyNft() {
                                 </Tabs.Panel>
                                 <Tabs.Panel value={"chat"}>
                                     <UserPosts />
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"vcs"}>
+                                    <UserVcs />
                                 </Tabs.Panel>
                             </StyledTabs>
                         </Container>}

@@ -2,13 +2,13 @@ import {Badge, Image, Paper, Text, Title} from "@mantine/core";
 import {useRouter} from "next/router";
 import {useAccount, useSigner} from "wagmi";
 import {useEffect, useState} from "react";
-import {EnvOptions, VocdoniSDKClient} from "@vocdoni/sdk";
-import { useIsMounted } from "../hooks/useIsMounted";
+// import {EnvOptions, VocdoniSDKClient, ClientOptions} from "@vocdoni/sdk";
+import { useIsMounted } from "../hooks/useIsMounted"
 
 export default function ElectionCard(props: any){
     const router = useRouter()
+    const [vocdoni, setVocdoni] = useState({})
     const {data: signer} = useSigner()
-    const {isConnected, isConnecting, address, isDisconnected} = useAccount()
     const mounted = useIsMounted()
     const [data, setData] = useState<any>({
         _title: {
@@ -22,20 +22,31 @@ export default function ElectionCard(props: any){
     })
 
     useEffect(() => {
+        if(!mounted) return
+        import("@vocdoni/sdk").then((sdk: any) => {
+            const {VocdoniSDKClient, ClientOptions, EnvOptions} = sdk
+            console.log({VocdoniSDKClient, ClientOptions, EnvOptions})
+            setVocdoni({VocdoniSDKClient, ClientOptions, EnvOptions})
+        })
+    }, [mounted, router.isReady])
+    useEffect(() => {
         (async () => {
+            // console.log("vocdoni", vocdoni)
+            // @ts-ignore
+            if(!vocdoni.VocdoniSDKClient && !vocdoni.EnvOptions && !vocdoni.ClientOptions)  return
             if(!mounted) return
             if (!props.electionId) return
-            const client = new VocdoniSDKClient({
-                env: EnvOptions.STG,
-                // @ts-ignore
-                wallet: signer,
-            });
             // @ts-ignore
+            const client = new vocdoni.VocdoniSDKClient({
+                // @ts-ignore
+                env: vocdoni.EnvOptions.STG,
+                wallet: signer
+            });
             client.setElectionId(props.electionId)
             const info = await client!.fetchElection()
             setData(info)
         })()
-    }, [router.isReady, signer, isConnected, isConnecting, isDisconnected, props, props.electionId, mounted])
+    }, [mounted, props.electionId, vocdoni])
 
     const now = new Date()
     const isLive = now.getTime() < new Date(data?._endDate).getTime()

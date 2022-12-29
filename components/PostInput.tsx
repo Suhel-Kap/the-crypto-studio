@@ -4,6 +4,8 @@ import {IconSend} from "@tabler/icons";
 import {useContext} from "react";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification, updateNotification} from "@mantine/notifications";
+import {tcsContractAddress} from "../constants";
+import {useAccount} from "wagmi";
 
 interface PostInputProps {
     groupId: string
@@ -13,6 +15,7 @@ interface PostInputProps {
 
 export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
     const [content, setContent] = useInputState("")
+    const {address} = useAccount()
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
 
@@ -30,8 +33,28 @@ export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
             tags: [{
                 slug: tag,
                 title: "TCS Post",
-            }]
+            }],
+        }, {
+            type: "custom",
+            accessControlConditions: [
+                {
+                    contractAddress: tcsContractAddress["the-crypto-studio"],
+                    standardContractType: 'ERC1155',
+                    chain: "mumbai",
+                    method: 'isSpaceMember',
+                    parameters: [
+                        address,
+                        'Nature'
+                    ],
+                    returnValueTest: {
+                        comparator: '==',
+                        value: 'true'
+                    }
+                }
+            ]
         })
+
+
         if (res.status === 200) {
             updateNotification({
                 id: "post-input",
@@ -65,9 +88,9 @@ export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
                 />
             </Grid.Col>
             <Grid.Col span={1}>
-                <Center style={{ width: 24, height: 180 }}>
+                <Center style={{width: 24, height: 180}}>
                     <ActionIcon onClick={handleSubmit}>
-                        <IconSend size={32} color={"blue"} />
+                        <IconSend size={32} color={"blue"}/>
                     </ActionIcon>
                 </Center>
             </Grid.Col>

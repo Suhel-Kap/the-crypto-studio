@@ -16,17 +16,16 @@ export default function GroupPosts() {
     const getPosts = async () => {
         const res = await orbis.getPosts({context: groupId, tag: "tcspost"})
         if(res.status === 200) {
-            const posts = res.data.filter((post: any) => post.context === groupId)
-            setData(posts)
+            setData(res.data)
         } else {
             setData([])
         }
     }
     useEffect(() => {
         if(!isMounted) return
+        if(!router.query.groupId) return
         getPosts()
-    }, [isMounted])
-    console.log(data)
+    }, [isMounted, router.isReady])
 
     return (
         <Container>

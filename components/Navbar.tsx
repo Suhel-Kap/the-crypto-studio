@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Navbar, Group, Code } from '@mantine/core';
+import {createStyles, Navbar, Group, Code, Text} from '@mantine/core';
 import {
     IconArtboard,
     IconHammer, IconMapSearch,
@@ -100,15 +100,16 @@ export function NavbarSide() {
     const { classes, cx } = useStyles();
     const [active, setActive] = useState(null);
 
-    const links = data.map((item) => (
-        <Link
+    const links = data.map((item, index) => (
+        <Text
+            key={index}
+            component={"a"}
             className={cx(classes.link, { [classes.linkActive]: item.label === active })}
             href={item.link}
-            key={item.label}
         >
             <item.icon className={classes.linkIcon} stroke={1.5} />
             <span style={{color: "#CED4DA"}}>{item.label}</span>
-        </Link>
+        </Text>
     ));
 
     return (

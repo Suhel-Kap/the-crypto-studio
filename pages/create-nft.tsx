@@ -25,7 +25,8 @@ import getSpaces from "../utils/getSpaces";
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
 import {GlobalContext} from "../contexts/GlobalContext";
-import {useContract2} from "../hooks/useContract2";
+import {useContract} from "../hooks/useContract";
+import {useIsMounted} from "../hooks/useIsMounted";
 
 export default function CreateNft() {
     const [file, setFile] = useState<File>()
@@ -40,14 +41,34 @@ export default function CreateNft() {
     const [spaceName, setSpaceName] = useState<string>("")
     const {upload, uploadImage} = useNftStorage()
     const [selectedNft, setSelectedNft] = useState<String>()
-    const {getCurrentTokenId, mint, spaceExists, mintSpace, declarePFP, declareAudio, declareVisualizer, declareTicket} = useContract2()
+    const {getCurrentTokenId, spaceExists, mintSpace, declarePFP, declareAudio, declareVisualizer, declareTicket} = useContract()
     const router = useRouter()
-    const [spaces, setSpaces] = useState([])
+    const mounted = useIsMounted()
+    const [spaces, setSpaces] = useState(["No spaces found"])
     const {address, isDisconnected} = useAccount()
-    const [disabled, setDisabled] = useState(false)
+    const [disabled, setDisabled] = useState(true)
     const [spacePfp, setSpacePfp] = useState<File>()
     // @ts-ignore
-    const {orbis, user, setUser} = useContext(GlobalContext)
+    const {orbis, setUser} = useContext(GlobalContext)
+
+    useEffect(() => {
+        if(!mounted) return
+        if(!address) return
+        getSpaces(address!).then(res => {
+            if (res[0].message === "Row not found") {
+                setDisabled(true)
+                setSpaces(["No spaces found"])
+                return
+            }
+            let temp: Array<string> = []
+            res[0].forEach((space: any) => {
+                temp.push(space.spaceName)
+            })
+            setSpaceName(temp[0])
+            setDisabled(false)
+            setSpaces(temp)
+        })
+    }, [address, mounted])
 
     const logout = async () => {
         if (isDisconnected) {
@@ -349,24 +370,6 @@ export default function CreateNft() {
             setLoading(false)
         }
     }
-
-    useEffect(() => {
-        getSpaces(address!).then(res => {
-            if (res[0].message === "Row not found") {
-                setDisabled(true)
-                // @ts-ignore
-                setSpaces(["No spaces found"])
-                return
-            }
-            let temp: Array<string> = []
-            res[0].forEach((space: any) => {
-                temp.push(space.spaceName)
-            })
-            setSpaceName(temp[0])
-            // @ts-ignore
-            setSpaces(temp)
-        })
-    }, [address])
 
     return (
         <>

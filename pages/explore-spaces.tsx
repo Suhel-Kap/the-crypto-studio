@@ -38,10 +38,9 @@ export default function ExploreSpaces() {
 
     let renderSpaces
     if (data?.length > 0) {
-        // @ts-ignore
-        renderSpaces = data?.map(nft => {
+        renderSpaces = data?.map((nft: any, index: number) => {
             return (
-                <Grid.Col lg={4} md={6}>
+                <Grid.Col key={index} lg={4} md={6}>
                     <SpaceCard signer={signer} title={nft.spaceName} address={nft.space_owner} groupId={nft.groupID} image={`https://${nft.image}.ipfs.nftstorage.link`}/>
                 </Grid.Col>
             )

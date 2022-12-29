@@ -1,17 +1,17 @@
 import {BigNumber, ethers} from "ethers";
-import {tcsAbi,tcsContractAddress} from "../constants"
-import { useSigner} from "wagmi";
-import { UpdateAttribute } from './../components/UpdateAttribute';
+import {tcsAbi, tcsContractAddress} from "../constants"
+import {useAccount, useSigner} from "wagmi";
 
 interface DeclareProps {
     name: String
-    description: String
     image: String
+    audioCID: String
     animation: String
+    description: String
     spaceName: String
-    mintPrice: BigNumber
-    tokenType: boolean
+    mintPrice: number
     maxSupply: number
+    currentToken: number
 }
 
 interface AttributeProps {
@@ -22,6 +22,7 @@ interface AttributeProps {
 
 export const useContract = () => {
     const {data: signer, isError, isLoading} = useSigner()
+    const {address} = useAccount()
 
     const contract = new ethers.Contract(tcsContractAddress["the-crypto-studio"], tcsAbi, signer!)
 
@@ -29,28 +30,40 @@ export const useContract = () => {
         return await contract.totalSupply()
     }
 
-    const getTokenMintPrice = async () => {
-        return await contract.getTokenMintPrice()
-    }
 
     const setTokenMintPrice = async (tokenId:number , mintPrice:BigNumber) => {
         const tx = await contract.setTokenMintPrice(tokenId, mintPrice)
         return await tx.wait()
     }
 
-    const getTokenRemainingSuply = async (tokenId:number) => {
-        return await contract.getTokenRemainingSuply(tokenId)
+    const declareVisualizer = async ({name, image, audioCID, animation, description, spaceName, mintPrice, maxSupply,currentToken}: DeclareProps) => {
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,audioCID, animation, description, spaceName, price, maxSupply,currentToken)
+        return await tx.wait()
     }
-
-    const declareNFT = async ({name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply}: DeclareProps) => {
-        const tx = await contract.DeclareNFT(name, image, animation, description, spaceName, mintPrice, tokenType, maxSupply, {value: ethers.utils.parseEther("0.01")})
+    const declarePFP = async (name: String,image: String,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) =>{
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,"", "", description, spaceName, price, maxSupply,currentToken)
+        return await tx.wait()
+    }
+    const declareAudio = async (name: String,image: String,animation:string ,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) => {
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,"", animation, description, spaceName, price, maxSupply,currentToken)
         return await tx.wait()
     }
 
+    const declareTicket = async (name: String,image: String,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) =>{
+        const price = ethers.utils.parseEther(mintPrice.toString())
+        const tx = await contract.declareNFT(name, image,"TICKET", "TICKET", description, spaceName, price, maxSupply,currentToken)
+        return await tx.wait()
+    }
 
-    const mint = async (tokenid:number, mintPrice:BigNumber) => {
-        const price = mintPrice.toString()
-        const tx = await contract.Mint(tokenid, {value: ethers.utils.parseEther(price)})
+    const balanceOf = async (address :string , tokenId: number) => {
+        return await contract.balanceOf(address, tokenId)
+    }
+
+    const mint = async (tokenid:number, mintPrice:string) => {
+        const tx = await contract.mint(tokenid, {value: mintPrice})
         return await tx.wait()
     }
 
@@ -61,12 +74,13 @@ export const useContract = () => {
     }
 
     const addAttribute = async({tokenId, traitType, value}: AttributeProps) => {
+        console.log("addAttribute", tokenId, traitType, value)
         const tx = await contract.addAttribute(tokenId, traitType, value)
         return await tx.wait()
     }
 
-    const assignAnimationURI = async(tokenId:number, animationURI:string) => {
-        const tx = await contract.assignAnimationURI(tokenId, animationURI)
+    const updateAudio = async(tokenId:number, audioCID:string) => {
+        const tx = await contract.updateAudio(tokenId, audioCID)
         return await tx.wait()
     }
 
@@ -75,35 +89,34 @@ export const useContract = () => {
         return await contract.spaceExists(spaceName)
     }
 
-    const mintSpace = async (spaceName: string, groupId: string, imageCid: string, description: string) => {
-        const tx = await contract.SocialSpaceCreation(spaceName, groupId, imageCid,description,{value: ethers.utils.parseEther("0.01")})
+    const mintSpace = async (spaceName: string, groupId: string, imageCid: string) => {
+        const tx = await contract.socialSpaceCreation(spaceName, groupId, imageCid,{value: ethers.utils.parseEther("0.01"), gasLimit: 1000000})
         return await tx.wait()
     }
 
     // how to add an address
-    const addSpaceArtist = async(spaceName:string, address:string) => {
+    const addSpaceArtist = async(spaceName:string, address:any) => {
         const tx = await contract.addSpaceArtist(spaceName, address)
         return await tx.wait()
     }
 
-    // how to add an address
-    const deleteSpaceArtist = async(spaceName:string, address:string) => {
+        // how to add an address
+    const deleteSpaceArtist = async(spaceName:string, address:any) => {
         const tx = await contract.deleteSpaceArtist(spaceName, address)
         return await tx.wait()
     }
 
-    const isSpaceMember = async (spaceName: string, address:string) => {
+    const isSpaceMember = async (spaceName: string, address:any) => {
         return await contract.isSpaceMember(spaceName, address)
     }
 
-    const isSpaceArtist = async (spaceName: string, address:string) => {
+    const isSpaceArtist = async (spaceName: string, address:any) => {
         return await contract.isSpaceArtist(spaceName, address)
     }
 
 
     return {
         getCurrentTokenId,
-        getTokenMintPrice,
         setTokenMintPrice,
         spaceExists,
         mintSpace,
@@ -112,10 +125,13 @@ export const useContract = () => {
         isSpaceMember,
         deleteSpaceArtist,
         addSpaceArtist,
-        assignAnimationURI,
-        declareNFT,
+        updateAudio,
+        declareAudio,
+        declarePFP,
+        declareVisualizer,
+        declareTicket,
         updateAttribute,
-        getTokenRemainingSuply,
-        addAttribute
+        addAttribute,
+        balanceOf
     }
 }

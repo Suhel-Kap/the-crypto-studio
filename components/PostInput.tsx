@@ -6,6 +6,7 @@ import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification, updateNotification} from "@mantine/notifications";
 import {tcsContractAddress} from "../constants";
 import {useAccount} from "wagmi";
+import { useRouter } from "next/router";
 
 interface PostInputProps {
     groupId: string
@@ -16,6 +17,7 @@ interface PostInputProps {
 export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
     const [content, setContent] = useInputState("")
     const {address} = useAccount()
+    const router = useRouter()
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
 
@@ -29,30 +31,30 @@ export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
         })
         const res = await orbis.createPost({
             body: content,
-            context: groupId,
+            context: groupId.toLowerCase(),
             tags: [{
-                slug: tag,
+                slug: tag.toLowerCase(),
                 title: "TCS Post",
-            }],
-        }, {
-            type: "custom",
-            accessControlConditions: [
-                {
-                    contractAddress: tcsContractAddress["the-crypto-studio"],
-                    standardContractType: 'ERC1155',
-                    chain: "mumbai",
-                    method: 'isSpaceMember',
-                    parameters: [
-                        address,
-                        'Nature'
-                    ],
-                    returnValueTest: {
-                        comparator: '==',
-                        value: 'true'
-                    }
-                }
-            ]
-        })
+            }],})
+        // }, {
+        //     type: "custom",
+        //     accessControlConditions: [
+        //         {
+        //             contractAddress: tcsContractAddress["the-crypto-studio"],
+        //             standardContractType: 'ERC1155',
+        //             chain: "mumbai",
+        //             method: 'isSpaceMember',
+        //             parameters: [
+        //                 address,
+        //                 'Nature'
+        //             ],
+        //             returnValueTest: {
+        //                 comparator: '==',
+        //                 value: 'true'
+        //             }
+        //         }
+        //     ]
+        // })
 
 
         if (res.status === 200) {
@@ -63,7 +65,7 @@ export default function PostInput({groupId, tag, fetchPost}: PostInputProps) {
                 autoClose: 5000,
             })
             setContent("")
-            await fetchPost()
+            await router.reload()
         } else {
             updateNotification({
                 id: "post-input",

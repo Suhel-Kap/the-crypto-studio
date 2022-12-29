@@ -9,12 +9,19 @@ import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
 import {useIsMounted} from "../hooks/useIsMounted";
 import StyledTabs from "../components/StyledTabs";
-import {IconAlbum, IconCreditCard, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
+import {
+    IconAlbum,
+    IconCreditCard,
+    IconFilePencil,
+    IconGeometry,
+    IconMessageChatbot,
+    IconTallymarks
+} from "@tabler/icons";
 import UserPosts from "../components/UserPosts";
 import {useAccount} from "wagmi";
 import {showNotification, updateNotification} from "@mantine/notifications";
-import {getProvider} from "@wagmi/core";
 import UserVcs from "../components/UserVcs";
+import CreatedNfts from "../components/CreatedNfts";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -46,6 +53,7 @@ export default function User() {
     const [isFollowing, setIsFollowing] = useState(false)
     const [username, setUsername] = useState("User")
     const [userDid, setUserDid] = useState("")
+    const [userAddress, setUserAddress] = useState("")
     const mounted = useIsMounted()
     const router = useRouter()
     const [renderUser, setUserRender] = useState<any>(<>
@@ -56,7 +64,6 @@ export default function User() {
     </>)
     // @ts-ignore
     const {orbis, setUser, user} = useContext(GlobalContext)
-    const provider = getProvider()
 
     async function getProvider() {
         let provider = null;
@@ -204,6 +211,7 @@ export default function User() {
         if (!mounted) return
         if (router.query.address) {
             const address = router.query.address as `0x${string}`
+            setUserAddress(address)
             getProfile(address)
             getNfts(address).then((nfts) => {
                 setNfts(nfts)
@@ -272,6 +280,7 @@ export default function User() {
                                 <Center>
                                     <Tabs.List>
                                         <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
+                                        <Tabs.Tab value={"created-nfts"} icon={<IconGeometry size={16}/>}>Created NFTs</Tabs.Tab>
                                         <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>User
                                             Posts</Tabs.Tab>
                                         <Tabs.Tab value={"vcs"} icon={<IconCreditCard size={16}/>}>User VCs</Tabs.Tab>
@@ -281,6 +290,9 @@ export default function User() {
                                     <Grid gutter={"xl"}>
                                         {renderNfts}
                                     </Grid>
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"created-nfts"}>
+                                    <CreatedNfts address={userAddress!}/>
                                 </Tabs.Panel>
                                 <Tabs.Panel value={"chat"}>
                                     <UserPosts/>

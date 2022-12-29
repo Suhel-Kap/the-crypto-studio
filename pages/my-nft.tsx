@@ -12,9 +12,10 @@ import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
 import {AddAttribute} from "../components/AddAttribute";
 import StyledTabs from "../components/StyledTabs";
-import {IconAlbum, IconCreditCard, IconMessageChatbot} from "@tabler/icons";
+import {IconAlbum, IconCreditCard, IconGeometry, IconMessageChatbot} from "@tabler/icons";
 import UserPosts from "../components/UserPosts";
 import UserVcs from '../components/UserVcs';
+import CreatedNfts from "../components/CreatedNfts";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -228,6 +229,7 @@ export default function MyNft() {
                                 <Center>
                                     <Tabs.List>
                                         <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
+                                        <Tabs.Tab value={"created-nfts"} icon={<IconGeometry size={16}/>}>Created NFTs</Tabs.Tab>
                                         <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>Your Posts</Tabs.Tab>
                                         <Tabs.Tab value={"vcs"} icon={<IconCreditCard size={16}/>}>Your VCs</Tabs.Tab>
                                     </Tabs.List>
@@ -236,6 +238,9 @@ export default function MyNft() {
                                     <Grid gutter={"xl"}>
                                         {renderNfts}
                                     </Grid>
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"created-nfts"}>
+                                    <CreatedNfts address={address!}/>
                                 </Tabs.Panel>
                                 <Tabs.Panel value={"chat"}>
                                     <UserPosts />

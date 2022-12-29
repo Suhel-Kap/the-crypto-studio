@@ -133,7 +133,6 @@ export default function Space() {
         setSpaceName(id)
         // @ts-ignore
         getSpaceNfts(id).then(res => {
-            console.log(res)
             setNfts(res)
         })
         setMounted(true)

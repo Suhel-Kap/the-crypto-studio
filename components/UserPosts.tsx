@@ -16,7 +16,7 @@ export default function UserPosts() {
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
     const getPosts = async (address: string) => {
-        const res = await orbis.getPosts({context: address, tag: address})
+        const res = await orbis.getPosts({context: address.toLowerCase(), tag: address.toLowerCase()})
         if(res.status === 200) {
             setData(res.data)
             console.log(res.data)
@@ -31,7 +31,9 @@ export default function UserPosts() {
             getPosts(address as string)
         }
         if (router.pathname === "/user") {
+            console.log(router.query.address)
             if(!router.query.address) return
+            console.log(router.query.address, "21")
             getPosts(router.query.address as string)
             return;
         }

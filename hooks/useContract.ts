@@ -38,23 +38,24 @@ export const useContract = () => {
 
     const declareVisualizer = async ({name, image, audioCID, animation, description, spaceName, mintPrice, maxSupply,currentToken}: DeclareProps) => {
         const price = ethers.utils.parseEther(mintPrice.toString())
-        const tx = await contract.declareNFT(name, image,audioCID, animation, description, spaceName, price, maxSupply,currentToken)
+        const tx = await contract.declareNFT(name, image,audioCID, animation, description, spaceName, price, maxSupply,currentToken, {gasLimit: 1000000})
         return await tx.wait()
     }
     const declarePFP = async (name: String,image: String,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) =>{
         const price = ethers.utils.parseEther(mintPrice.toString())
-        const tx = await contract.declareNFT(name, image,"", "", description, spaceName, price, maxSupply,currentToken)
+        const tx = await contract.declareNFT(name, image," ", " ", description, spaceName, price, maxSupply,currentToken, {gasLimit: 1000000})
         return await tx.wait()
     }
     const declareAudio = async (name: String,image: String,animation:string ,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) => {
         const price = ethers.utils.parseEther(mintPrice.toString())
-        const tx = await contract.declareNFT(name, image,"", animation, description, spaceName, price, maxSupply,currentToken)
+        console.log(name, image,animation ,description,spaceName,price, maxSupply,currentToken)
+        const tx = await contract.declareNFT(name, image,"", animation, description, spaceName, price, maxSupply,currentToken, {gasLimit: 1000000})
         return await tx.wait()
     }
 
     const declareTicket = async (name: String,image: String,description: String,spaceName: String,mintPrice: number,maxSupply: number,currentToken: number) =>{
         const price = ethers.utils.parseEther(mintPrice.toString())
-        const tx = await contract.declareNFT(name, image,"TICKET", "TICKET", description, spaceName, price, maxSupply,currentToken)
+        const tx = await contract.declareNFT(name, image,"TICKET", "TICKET", description, spaceName, price, maxSupply,currentToken, {gasLimit: 1000000})
         return await tx.wait()
     }
 

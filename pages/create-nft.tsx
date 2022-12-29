@@ -143,7 +143,7 @@ export default function CreateNft() {
         try {
             const currentToken = await getCurrentTokenId()
             console.log("currentToken", currentToken)
-            await declareVisualizer({name, image, audioCID: audioCid, animation: animationCid, description, spaceName, maxSupply: quantity, mintPrice: price, currentToken: currentToken + 1})
+            await declareVisualizer({name, image, audioCID: audioCid, animation: animationCid, description, spaceName, maxSupply: quantity, mintPrice: price, currentToken: parseInt(currentToken) + 1})
             updateNotification({
                 id: "space",
                 title: "Success",
@@ -271,7 +271,7 @@ export default function CreateNft() {
         imageCid = `https://${imageCid}.ipfs.nftstorage.link`
         try {
             const tokenId = await getCurrentTokenId()
-            await declareAudio(name, imageCid, audioCid, description, spaceName, price, quantity, tokenId + 1)
+            await declareAudio(name, imageCid, audioCid, description, spaceName, price, quantity, parseInt(tokenId) + 1)
             updateNotification({
                 id: "space",
                 title: "Success",
@@ -309,7 +309,7 @@ export default function CreateNft() {
         imageCid = `https://${imageCid}.ipfs.nftstorage.link`
         try {
             const tokenId = await getCurrentTokenId()
-            await declarePFP(name, imageCid, description, spaceName, price, quantity, tokenId + 1)
+            await declarePFP(name, imageCid, description, spaceName, price, quantity, parseInt(tokenId) + 1)
             updateNotification({
                 id: "space",
                 title: "Success",
@@ -347,7 +347,7 @@ export default function CreateNft() {
         imageCid = `https://${imageCid}.ipfs.nftstorage.link`
         try {
             const tokenId = await getCurrentTokenId()
-            await declareTicket(name, imageCid, description, spaceName, price, quantity, tokenId + 1)
+            await declareTicket(name, imageCid, description, spaceName, price, quantity, parseInt(tokenId) + 1)
             updateNotification({
                 id: "space",
                 title: "Success",

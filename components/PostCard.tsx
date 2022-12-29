@@ -2,16 +2,18 @@ import {ActionIcon, Avatar, Badge, Group, Paper, Stack, Text} from "@mantine/cor
 import makeBlockie from "ethereum-blockies-base64"
 import * as dayjs from "dayjs"
 import relativeTime from 'dayjs/plugin/relativeTime'
-import {IconHeart, IconMoodXd, IconThumbDown} from "@tabler/icons";
+import {IconHeart, IconMoodXd, IconThumbDown, IconTrash} from "@tabler/icons";
 import {useContext, useState} from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
-import {showNotification} from "@mantine/notifications";
+import {showNotification, updateNotification} from "@mantine/notifications";
+import {useRouter} from "next/router";
 
 dayjs.extend(relativeTime)
 
 
 export default function PostCard(props: any) {
     const time = dayjs.unix(props.post.timestamp)
+    const router = useRouter()
     const [likes, setLikes] = useState(props.post.count_likes)
     const [downvotes, setDownvotes] = useState(props.post.count_downvotes)
     const [haha, setHaha] = useState(props.post.count_haha)
@@ -21,6 +23,34 @@ export default function PostCard(props: any) {
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
 
+    const handleDelete = async () => {
+        showNotification({
+            id: "post-delete",
+            title: "Deleting...",
+            message: "Please wait while we delete your post.",
+            loading: true,
+            disallowClose: true,
+        })
+        const res = await orbis.deletePost(props.post.stream_id)
+        if (res.status === 200) {
+            updateNotification({
+                id: "post-delete",
+                title: "Post Deleted",
+                message: "Your post has been deleted.",
+                color: "green",
+                disallowClose: true,
+            })
+            router.reload()
+        } else {
+            updateNotification({
+                id: "post-delete",
+                title: "Error",
+                message: "There was an error deleting your post.",
+                color: "red",
+                disallowClose: true,
+            })
+        }
+    }
     const handleLike = async () => {
         const res = await orbis.react(props.post.stream_id, "like")
         if(res.status === 200) {
@@ -123,6 +153,11 @@ export default function PostCard(props: any) {
                             {haha}
                         </Text>
                     </Group>
+                    {router.pathname === "/my-nft" && <Group>
+                        <ActionIcon onClick={handleDelete}>
+                            <IconTrash color={"red"}/>
+                        </ActionIcon>
+                    </Group>}
                 </Group>
             </Stack>
         </Paper>

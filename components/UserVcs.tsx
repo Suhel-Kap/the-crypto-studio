@@ -12,27 +12,26 @@ interface UserVCProps {
 export default function UserVcs({address}: UserVCProps) {
     // @ts-ignore
     const {user, orbis} = useContext(GlobalContext)
-    console.log(user)
     const {address: userAddress} = useAccount()
     const [vcs, setVcs] = useState([{issuer: "NA", provider: "No Verifable Credentials", vc: "No Verifact"}])
     const mounted = useIsMounted()
 
 
     const getCredentials = async () => {
-        if(user.metadata.address !== userAddress){
+        if(user.metadata.address?.toLowerCase() !== userAddress?.toLowerCase()){
             let {data: dids} = await orbis.getDids(address)
             const {data, error} = await orbis.getCredentials(dids[0].did)
             if (data) {
                 const vcs = data.filter((vc: any) => vc.issuer === "did:key:z6mkghvghlobledj1bgrlhs4lpgjavbma1tn2zcryqmyu5lc")
-                setVcs(vcs)
-                console.log(data)
+                if(vcs.length > 0)
+                    setVcs(vcs)
             }
         } else {
             const {data, error} = await orbis.getCredentials(user.did)
             if (data) {
                 const vcs = data.filter((vc: any) => vc.issuer === "did:key:z6mkghvghlobledj1bgrlhs4lpgjavbma1tn2zcryqmyu5lc")
-                setVcs(data)
-                console.log(data)
+                if(vcs.length > 0)
+                    setVcs(vcs)
             }
         }
     }

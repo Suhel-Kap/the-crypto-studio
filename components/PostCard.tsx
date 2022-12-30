@@ -3,10 +3,15 @@ import makeBlockie from "ethereum-blockies-base64"
 import * as dayjs from "dayjs"
 import relativeTime from 'dayjs/plugin/relativeTime'
 import {IconHeart, IconMoodXd, IconThumbDown, IconTrash} from "@tabler/icons";
-import {useContext, useState} from "react";
-import { GlobalContext } from "../contexts/GlobalContext";
+import {useContext, useEffect, useState} from "react";
+import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification, updateNotification} from "@mantine/notifications";
 import {useRouter} from "next/router";
+// @ts-ignore
+import LitJsSdk from "@lit-protocol/sdk-browser";
+import {tcsContractAddress} from "../constants";
+import {useAccount} from "wagmi";
+import {useContract} from "../hooks/useContract";
 
 dayjs.extend(relativeTime)
 
@@ -14,14 +19,75 @@ dayjs.extend(relativeTime)
 export default function PostCard(props: any) {
     const time = dayjs.unix(props.post.timestamp)
     const router = useRouter()
+    const {address} = useAccount()
+    const {isSpaceMember} = useContract()
     const [likes, setLikes] = useState(props.post.count_likes)
     const [downvotes, setDownvotes] = useState(props.post.count_downvotes)
     const [haha, setHaha] = useState(props.post.count_haha)
     const [likeColor, setLikeColor] = useState("gray")
     const [downvoteColor, setDownvoteColor] = useState("gray")
     const [hahaColor, setHahaColor] = useState("gray")
+    const [encrypted, setEncrypted] = useState(false)
+    const [body, setBody] = useState("Encrypted Post")
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
+
+    const evmContractConditions = [
+        {
+            contractAddress: tcsContractAddress["the-crypto-studio"],
+            functionName: "isSpaceMember",
+            functionParams: [props.spaceName, ":userAddress"],
+            functionAbi: {
+                "type": "function",
+                "stateMutability": "view",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "name": "isSpaceMember",
+                "inputs": [{
+                    "internalType": "string",
+                    "name": "spaceName",
+                    "type": "string"
+                }, {"internalType": "address", "name": "sender", "type": "address"}],
+            },
+            chain: "mumbai",
+            returnValueTest: {
+                key: "",
+                comparator: "=",
+                value: "true",
+            },
+        },
+    ]
+
+    const decrypt = async (encrypted: any) => {
+        const spaceMember = await isSpaceMember(props.spaceName, address)
+        if(!spaceMember) return
+
+        const client = new LitJsSdk.LitNodeClient()
+        const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: "mumbai" })
+        await client.connect()
+
+        const symmetricKey2 = await client.getEncryptionKey({
+            evmContractConditions,
+            toDecrypt: encrypted.toDecrypt,
+            chain: "mumbai",
+            authSig,
+        });
+        return await LitJsSdk.decryptString(
+            await LitJsSdk.base64StringToBlob(encrypted.encrypted),
+            symmetricKey2
+        )
+    }
+
+    if(encrypted){
+        const encryption = JSON.parse(props.post.content.tags[1].title)
+        decrypt(encryption).then(res => setBody(res))
+    }
+
+    useEffect(() => {
+        if (props.post.content.body === "This is an encrypted post visible only to space members") {
+            setEncrypted(true)
+        }
+    }, [props.post.content.body])
+
 
     const handleDelete = async () => {
         showNotification({
@@ -53,7 +119,7 @@ export default function PostCard(props: any) {
     }
     const handleLike = async () => {
         const res = await orbis.react(props.post.stream_id, "like")
-        if(res.status === 200) {
+        if (res.status === 200) {
             setLikes(likes + 1)
             setLikeColor("pink")
             showNotification({
@@ -71,7 +137,7 @@ export default function PostCard(props: any) {
 
     const handleDownvote = async () => {
         const res = await orbis.react(props.post.stream_id, "downvote")
-        if(res.status === 200) {
+        if (res.status === 200) {
             setDownvotes(downvotes + 1)
             setDownvoteColor("red")
             showNotification({
@@ -89,7 +155,7 @@ export default function PostCard(props: any) {
 
     const handleHaha = async () => {
         const res = await orbis.react(props.post.stream_id, "haha")
-        if(res.status === 200) {
+        if (res.status === 200) {
             setHaha(haha + 1)
             setHahaColor("yellow")
             showNotification({
@@ -110,7 +176,8 @@ export default function PostCard(props: any) {
             <Stack>
                 <Group position={"apart"}>
                     <Group>
-                        <Avatar size={45} radius={45} component={"a"} href={`/user/?address=${props.post.creator_details.metadata.address}`}
+                        <Avatar size={45} radius={45} component={"a"}
+                                href={`/user/?address=${props.post.creator_details.metadata.address}`}
                                 src={props.post.creator_details.profile.pfp || makeBlockie(props.post.creator_details.metadata.address)}/>
                         <div>
                             <Text size={"sm"}>
@@ -119,6 +186,11 @@ export default function PostCard(props: any) {
                             <Badge color={"teal"} variant={"outline"} size={"sm"}>
                                 {props.post.creator_details?.metadata?.ensName || props.post.creator_details?.metadata?.address.slice(0, 4) + "..." + props.post.creator_details?.metadata?.address.slice(-4)}
                             </Badge>
+                            {encrypted &&
+                                <Badge color={"red"} ml={"xs"} variant={"outline"} size={"sm"}>
+                                    Encrypted
+                                </Badge>
+                            }
                         </div>
                     </Group>
                     <Text size={"xs"} color={"dimmed"}>
@@ -126,7 +198,8 @@ export default function PostCard(props: any) {
                     </Text>
                 </Group>
                 <Text>
-                    {props.post.content.body}
+                    {!encrypted && props.post.content.body}
+                    {encrypted && body}
                 </Text>
                 <Group>
                     <Group>
@@ -138,7 +211,7 @@ export default function PostCard(props: any) {
                         </Text>
                     </Group>
                     <Group>
-                        <ActionIcon color={downvoteColor} onClick={handleDownvote} >
+                        <ActionIcon color={downvoteColor} onClick={handleDownvote}>
                             <IconThumbDown color={downvoteColor}/>
                         </ActionIcon>
                         <Text>

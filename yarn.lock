@@ -879,7 +879,7 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@lit-protocol/sdk-browser@^1.1.238":
+"@lit-protocol/sdk-browser@^1.1.238", "@lit-protocol/sdk-browser@^1.1.241":
   version "1.1.241"
   resolved "https://registry.yarnpkg.com/@lit-protocol/sdk-browser/-/sdk-browser-1.1.241.tgz#a4ef74c2e2f1ad5dc9c12413318c6851bbefdf00"
   integrity sha512-xVk9cV3OVb4Q7Op81khh337fb21NuNWVnnVsLnZtVtCGf+XW6l9dcO7QLNIhe9ddQJZxObPEVU5/BZx+hzbHMg==

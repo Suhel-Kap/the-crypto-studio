@@ -268,7 +268,7 @@ export default function Space() {
                                 <Polls/>
                             </Tabs.Panel>
                             <Tabs.Panel value={"create"}>
-                                <PollCreationForm/>
+                                <PollCreationForm spaceName={spaceName}/>
                             </Tabs.Panel>
                             <Tabs.Panel value={"chat"}>
                                 <GroupPosts/>

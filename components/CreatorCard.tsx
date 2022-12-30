@@ -55,7 +55,7 @@ export default function CreatorCard({ image, name, email, icon, ...others }: Use
                         {name}
                     </Text>
 
-                    <Text color="dimmed" className={classes.address}>
+                    <Text color="dimmed" className={classes.address} lineClamp={4}>
                         {email}
                     </Text>
                 </div>

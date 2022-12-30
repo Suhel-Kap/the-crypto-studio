@@ -41,7 +41,7 @@ export default function UserPosts() {
 
     return (
         <Container>
-            {isDashboard && <PostInput groupId={address as string} tag={address as string} fetchPost={getPosts} />}
+            {isDashboard && <PostInput spaceName={""} groupId={address as string} tag={address as string} fetchPost={getPosts} />}
             {isDashboard && <div style={{
                 marginTop: -60
             }}></div>}

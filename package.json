@@ -13,6 +13,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
     "@gitcoinco/passport-sdk-reader": "^0.1.4",
+    "@lit-protocol/sdk-browser": "^1.1.241",
     "@mantine/core": "^5.6.4",
     "@mantine/dates": "^5.6.4",
     "@mantine/dropzone": "^5.6.4",

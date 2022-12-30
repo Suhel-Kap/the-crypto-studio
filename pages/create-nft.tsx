@@ -36,6 +36,7 @@ export default function CreateNft() {
     const [loading, setLoading] = useState(false)
     const [displayPreview, setDisplayPreview] = useState(false)
     const [description, setDescription] = useState<String>("")
+    const [spaceDescription, setSpaceDescription] = useState<String>("")
     const [price, setPrice] = useState<number>(0)
     const [quantity, setQuantity] = useState<number>(1)
     const [spaceName, setSpaceName] = useState<string>("")
@@ -211,6 +212,7 @@ export default function CreateNft() {
             const res = await orbis.createGroup({
                 pfp: `https://ipfs.io/ipfs/${cid}`,
                 name: spacename,
+                description: spaceDescription
             })
             const groupId = res.doc
             console.log(groupId)
@@ -218,7 +220,7 @@ export default function CreateNft() {
                 const groupRes = await orbis.createChannel(groupId, {
                     group_id: groupId,
                     name: "General",
-                    description: "General channel for the group",
+                    description: "General channel for the " + spacename + " space",
                     type: "feed"
                 })
                 console.log(groupRes)
@@ -383,11 +385,12 @@ export default function CreateNft() {
                     <TextInput m={"md"} label={"NFT Space Name"} value={spacename as any}
                                onChange={(event) => setSpacename(event.currentTarget.value)}
                                placeholder="Name" required/>
+                    <Textarea m={"md"} label={"Space Description"} value={spaceDescription as any} onChange={(event) => setSpaceDescription(event.currentTarget.value)}
+                              placeholder="Description" required/>
                     <FileInput m={"md"} required label={"Upload your space image"} placeholder={"Upload image file"}
                                accept={"image/*"} icon={<IconUpload size={14}/>} value={spacePfp as any}
                                onChange={setSpacePfp as any}/>
-                    <Button color={"indigo"} disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Mint
-                        Space </Button>
+                    <Button color={"indigo"} disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Create Space </Button>
                 </Container>
 
                 <Divider m={"xl"}/>

@@ -173,7 +173,6 @@ export default function MyNft() {
             </Center>
         </Modal>
     )
-
     return (
         <>
             <Head>

@@ -10,8 +10,6 @@ import {useRouter} from "next/router";
 // @ts-ignore
 import LitJsSdk from "@lit-protocol/sdk-browser";
 import {tcsContractAddress} from "../constants";
-import {useAccount} from "wagmi";
-import {useContract} from "../hooks/useContract";
 
 dayjs.extend(relativeTime)
 
@@ -19,8 +17,6 @@ dayjs.extend(relativeTime)
 export default function PostCard(props: any) {
     const time = dayjs.unix(props.post.timestamp)
     const router = useRouter()
-    const {address} = useAccount()
-    const {isSpaceMember} = useContract()
     const [likes, setLikes] = useState(props.post.count_likes)
     const [downvotes, setDownvotes] = useState(props.post.count_downvotes)
     const [haha, setHaha] = useState(props.post.count_haha)
@@ -28,7 +24,7 @@ export default function PostCard(props: any) {
     const [downvoteColor, setDownvoteColor] = useState("gray")
     const [hahaColor, setHahaColor] = useState("gray")
     const [encrypted, setEncrypted] = useState(false)
-    const [body, setBody] = useState("Encrypted Post")
+    const [body, setBody] = useState(`This is an encrypted post visible only to ${props.spaceName} NFT holders.`)
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
 
@@ -58,8 +54,7 @@ export default function PostCard(props: any) {
     ]
 
     const decrypt = async (encrypted: any) => {
-        const spaceMember = await isSpaceMember(props.spaceName, address)
-        if(!spaceMember) return
+        if(!props?.spaceMember) return
 
         const client = new LitJsSdk.LitNodeClient()
         const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: "mumbai" })

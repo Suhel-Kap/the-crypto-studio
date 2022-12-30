@@ -39,6 +39,7 @@ interface UserButtonProps extends UnstyledButtonProps {
     image?: string;
     name?: string;
     email: string;
+    description?: string;
     icon?: React.ReactNode;
 }
 

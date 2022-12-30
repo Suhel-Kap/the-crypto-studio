@@ -22,7 +22,6 @@ import {useRouter} from "next/router";
 import dayjs from "dayjs";
 import {useAccount, useSigner} from "wagmi";
 import {useIsMounted} from "../hooks/useIsMounted";
-import {useContract} from "../hooks/useContract";
 
 export default function PollCreationForm(props: any) {
     const [image, setImage] = useState<File>()
@@ -30,9 +29,7 @@ export default function PollCreationForm(props: any) {
     const {initElection} = useVocdoni()
     const {data: signer} = useSigner()
     const {address} = useAccount()
-    const {isSpaceMember} = useContract()
     const mounted = useIsMounted()
-    const [spaceMember, setSpaceMember] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
@@ -41,9 +38,6 @@ export default function PollCreationForm(props: any) {
     useEffect(() => {
         if(!mounted) return
         if(!address) return
-        isSpaceMember(props.spaceName, address).then((res: any) => {
-            setSpaceMember(res)
-        })
     }, [mounted, address])
 
     const form = useForm({
@@ -221,7 +215,7 @@ export default function PollCreationForm(props: any) {
                 }>
                     Add a new question
                 </Button>
-                <Button disabled={!spaceMember || submitting} type={"submit"} fullWidth>
+                <Button disabled={!props.spaceMember || submitting} type={"submit"} fullWidth>
                     Submit
                 </Button>
 

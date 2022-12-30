@@ -6,12 +6,15 @@ import {useIsMounted} from "../hooks/useIsMounted";
 import { GlobalContext } from "../contexts/GlobalContext";
 import PostCard from "./PostCard";
 
-export default function GroupPosts() {
+interface GroupPostProps{
+    spaceMember: boolean
+}
+export default function GroupPosts({spaceMember}: GroupPostProps){
     const router = useRouter()
     const {groupId} = router.query
     const [data, setData] = useState<any>()
     const [spaceName, setSpaceName] = useState("")
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState(false)
     const isMounted = useIsMounted()
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
@@ -19,7 +22,6 @@ export default function GroupPosts() {
         const res = await orbis.getPosts({context: groupId, tag: "tcspost"})
         if(res.status === 200) {
             setData(res.data)
-            console.log(res.data)
         } else {
             setData([])
         }
@@ -37,11 +39,12 @@ export default function GroupPosts() {
             <div style={{
                 marginTop: -60
             }}>
-                <Checkbox color={"indigo"} label={"Make post visible only to space NFT holders."} checked={checked} onChange={(event) => setChecked(event.currentTarget.checked)} />
+                {spaceMember && <Checkbox color={"indigo"} label={"Make post visible only to space NFT holders."} checked={checked}
+                           onChange={(event) => setChecked(event.currentTarget.checked)}/>}
             {
                 data?.map((post: any, index: number) => {
                     return (
-                        <PostCard spaceName={spaceName} key={index} post={post} />
+                        <PostCard spaceMember={spaceMember} spaceName={spaceName} key={index} post={post} />
                     )
                 })
             }

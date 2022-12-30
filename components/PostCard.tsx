@@ -74,7 +74,7 @@ export default function PostCard(props: any) {
 
     if(encrypted){
         const encryption = JSON.parse(props.post.content.tags[1].title)
-        decrypt(encryption).then(res => setBody(res))
+        // decrypt(encryption).then(res => setBody(res))
     }
 
     useEffect(() => {

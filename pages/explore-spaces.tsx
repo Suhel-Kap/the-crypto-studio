@@ -1,4 +1,4 @@
-import {Container, Grid, Skeleton, Text, Title} from "@mantine/core";
+import {Button, Container, Grid, Skeleton, Text, Title} from "@mantine/core";
 import Head from "next/head";
 import {Layout} from "../components/Layout";
 import {useContext, useEffect, useState} from "react";
@@ -55,6 +55,7 @@ export default function ExploreSpaces() {
             <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
         </>
     }
+
 
     return (
         <>

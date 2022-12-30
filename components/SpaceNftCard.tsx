@@ -12,6 +12,7 @@ interface NftCardProps {
     total: string;
     price: string;
     creator: string;
+    mutable?: string;
 }
 
 import {
@@ -69,7 +70,7 @@ export default function SpaceNftCard({
                                     description,
                                     tokenId,
                                     image,
-                                    remaining, total, price, setModalOpen, creator
+                                    remaining, total, price, setModalOpen, creator, mutable
                                 }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
@@ -165,7 +166,7 @@ export default function SpaceNftCard({
                     </Text>
                 </>
             )}
-            {router.pathname === "/my-nft" && badgeContext.includes("Audio") && (
+            {router.pathname === "/my-nft" && badgeContext.includes("Audio") && mutable == "1" && (
                 <Group>
                     <Tooltip label={"Edit NFT Audio"}>
                         <ActionIcon onClick={setModalOpen}>

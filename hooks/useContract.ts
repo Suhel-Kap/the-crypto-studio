@@ -1,6 +1,6 @@
 import {BigNumber, ethers} from "ethers";
 import {tcsAbi, tcsContractAddress} from "../constants"
-import {useAccount, useSigner} from "wagmi";
+import {useSigner} from "wagmi";
 
 interface DeclareProps {
     name: String
@@ -21,8 +21,7 @@ interface AttributeProps {
 }
 
 export const useContract = () => {
-    const {data: signer, isError, isLoading} = useSigner()
-    const {address} = useAccount()
+    const {data: signer} = useSigner()
 
     const contract = new ethers.Contract(tcsContractAddress["the-crypto-studio"], tcsAbi, signer!)
 
@@ -32,7 +31,7 @@ export const useContract = () => {
 
 
     const setTokenMintPrice = async (tokenId:number , mintPrice:BigNumber) => {
-        const tx = await contract.setTokenMintPrice(tokenId, mintPrice)
+        const tx = await contract.setTokenMintPrice(tokenId, mintPrice, { gasLimit: 1000000})
         return await tx.wait()
     }
 
@@ -63,25 +62,30 @@ export const useContract = () => {
         return await contract.balanceOf(address, tokenId)
     }
 
+    const makeNFTImmutable = async(tokenId:number) => {
+        const tx = await contract.makeNFTImmutable(tokenId, { gasLimit: 1000000})
+        return await tx.wait()
+    }
+
     const mint = async (tokenid:number, mintPrice:string) => {
-        const tx = await contract.mint(tokenid, {value: mintPrice})
+        const tx = await contract.mint(tokenid, {value: mintPrice, gasLimit: 1000000})
         return await tx.wait()
     }
 
 
     const updateAttribute = async ({tokenId , traitType, value}: AttributeProps) => {
-        const tx = await contract.updateAttribute(tokenId, traitType, value)
+        const tx = await contract.updateAttribute(tokenId, traitType, value, { gasLimit: 1000000})
         return await tx.wait()
     }
 
     const addAttribute = async({tokenId, traitType, value}: AttributeProps) => {
         console.log("addAttribute", tokenId, traitType, value)
-        const tx = await contract.addAttribute(tokenId, traitType, value)
+        const tx = await contract.addAttribute(tokenId, traitType, value, { gasLimit: 1000000})
         return await tx.wait()
     }
 
     const updateAudio = async(tokenId:number, audioCID:string) => {
-        const tx = await contract.updateAudio(tokenId, audioCID)
+        const tx = await contract.updateAudio(tokenId, audioCID, { gasLimit: 1000000})
         return await tx.wait()
     }
 
@@ -97,13 +101,13 @@ export const useContract = () => {
 
     // how to add an address
     const addSpaceArtist = async(spaceName:string, address:any) => {
-        const tx = await contract.addSpaceArtist(spaceName, address)
+        const tx = await contract.addSpaceArtist(spaceName, address, { gasLimit: 1000000})
         return await tx.wait()
     }
 
         // how to add an address
     const deleteSpaceArtist = async(spaceName:string, address:any) => {
-        const tx = await contract.deleteSpaceArtist(spaceName, address)
+        const tx = await contract.deleteSpaceArtist(spaceName, address, { gasLimit: 1000000})
         return await tx.wait()
     }
 
@@ -133,6 +137,7 @@ export const useContract = () => {
         declareTicket,
         updateAttribute,
         addAttribute,
-        balanceOf
+        balanceOf,
+        makeNFTImmutable
     }
 }

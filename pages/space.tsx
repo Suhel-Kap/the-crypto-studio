@@ -7,7 +7,7 @@ import getSpaceNfts from "../utils/getSpaceNfts";
 import NftCard from "../components/NftCard";
 import CreatorCard from "../components/CreatorCard";
 import StyledTabs from "../components/StyledTabs";
-import {IconAlbum, IconCash, IconFilePencil, IconMessageChatbot, IconTallymarks} from "@tabler/icons";
+import {IconAlbum, IconCash, IconFilePencil, IconMessageChatbot, IconTallymarks, IconUnlink} from "@tabler/icons";
 import {useAccount} from "wagmi";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification} from "@mantine/notifications";
@@ -16,9 +16,10 @@ import GroupPosts from "../components/GroupPosts";
 import SpaceNftCard from "../components/SpaceNftCard";
 import MonetizeSpace from "../components/MonetizeSpace";
 import {useContract} from "../hooks/useContract";
+import CollaborationRequests from "../components/CollaborationRequests";
 
-const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
-const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
+// const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
+// const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
 
 let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
 let orbisGroup = "https://app.orbis.club/group/"
@@ -116,19 +117,20 @@ export default function Space() {
             if (!router.isReady) return
             if (router.query.address == address?.toLowerCase()) setIsOwner(true)
             const spaceMember = await isSpaceMember(router.query.id as string, address)
+            console.log("Space member: ", spaceMember);
             setSpaceMember(spaceMember)
             let {data: dids} = await orbis.getDids(address)
             const user = dids[0].did
             const {groupId} = router.query
             let {data: group} = await orbis.getGroup(groupId)
-            console.log(group.content.description)
             setGroupDesc(group.content.description)
             let {data, error} = await orbis.getIsGroupMember(groupId, user)
+            console.log("Is group member: ", data);
             if (data) {
                 setIsGroupMember(data)
             }
         })()
-    }, [router.isReady, isConnected, address])
+    }, [router.isReady, isConnected, address, orbis, user])
 
     useEffect(() => {
         if (!router.isReady) return;
@@ -156,7 +158,7 @@ export default function Space() {
                     <SpaceNftCard key={nft.tokenID} setAddAttribute={() => console.log("I'm clicked")} title={nft.name}
                                   tokenId={nft.tokenID}
                                   animationUrl={nft.animation_url} description={nft.description}
-                                  price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply} creator={nft.creator}
+                                  price={nft.mintPrice} remaining={nft.currentSupply} total={nft.maxSupply} creator={nft.creator} mutable={nft.mutable}
                                   image={nft.image} setModalOpen={() => console.log("I'm clicked")}/>
                 </Grid.Col>
             )
@@ -253,12 +255,13 @@ export default function Space() {
                             <Center>
                                 <Tabs.List mb={"sm"}>
                                     <Tabs.Tab key={1} value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
-                                    <Tabs.Tab key={2} value={"polls"} icon={<IconTallymarks size={16}/>}
-                                              disabled={!isGroupMember}>Polls</Tabs.Tab>
-                                    <Tabs.Tab key={3} value={"create"} icon={<IconFilePencil size={16}/>}
-                                              disabled={!isGroupMember}>Create Poll</Tabs.Tab>
+                                    {/*<Tabs.Tab key={2} value={"polls"} icon={<IconTallymarks size={16}/>}*/}
+                                    {/*          disabled={!isGroupMember}>Polls</Tabs.Tab>*/}
+                                    {/*<Tabs.Tab key={3} value={"create"} icon={<IconFilePencil size={16}/>}*/}
+                                    {/*          disabled={!isGroupMember}>Create Poll</Tabs.Tab>*/}
                                     <Tabs.Tab key={4} value={"chat"} icon={<IconMessageChatbot size={16}/>}
                                               disabled={!isGroupMember}>Group Chat</Tabs.Tab>
+                                    <Tabs.Tab value={"collab"} icon={<IconUnlink size={16}/>}>Collaboration Requests</Tabs.Tab>
                                     {isOwner && <Tabs.Tab key={5} value={"monetize"} icon={<IconCash size={16}/>}>Monetize
                                         Space</Tabs.Tab>}
                                 </Tabs.List>
@@ -268,14 +271,17 @@ export default function Space() {
                                     {renderNfts}
                                 </Grid>
                             </Tabs.Panel>
-                            <Tabs.Panel value={"polls"}>
-                                <Polls/>
-                            </Tabs.Panel>
-                            <Tabs.Panel value={"create"}>
-                                <PollCreationForm spaceMember={spaceMember} spaceName={spaceName}/>
-                            </Tabs.Panel>
+                            {/*<Tabs.Panel value={"polls"}>*/}
+                            {/*    <Polls/>*/}
+                            {/*</Tabs.Panel>*/}
+                            {/*<Tabs.Panel value={"create"}>*/}
+                            {/*    <PollCreationForm spaceMember={spaceMember} spaceName={spaceName}/>*/}
+                            {/*</Tabs.Panel>*/}
                             <Tabs.Panel value={"chat"}>
                                 <GroupPosts spaceMember={spaceMember}/>
+                            </Tabs.Panel>
+                            <Tabs.Panel value={"collab"}>
+                                <CollaborationRequests/>
                             </Tabs.Panel>
                             <Tabs.Panel value={"monetize"}>
                                 <MonetizeSpace owner={router.query.address as string} isOwner={isOwner}/>

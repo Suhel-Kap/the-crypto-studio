@@ -12,7 +12,7 @@ import {
     Title,
     Divider,
     NativeSelect,
-    Accordion, HoverCard, ActionIcon, NumberInput
+    Accordion, HoverCard, ActionIcon, NumberInput, Checkbox
 } from "@mantine/core";
 import {IconQuestionMark, IconUpload} from "@tabler/icons";
 import {useContext, useEffect, useState} from "react";
@@ -42,13 +42,14 @@ export default function CreateNft() {
     const [spaceName, setSpaceName] = useState<string>("")
     const {upload, uploadImage} = useNftStorage()
     const [selectedNft, setSelectedNft] = useState<String>()
-    const {getCurrentTokenId, spaceExists, mintSpace, declarePFP, declareAudio, declareVisualizer, declareTicket} = useContract()
+    const {getCurrentTokenId, spaceExists, mintSpace, declarePFP, declareAudio, declareVisualizer, declareTicket, makeNFTImmutable} = useContract()
     const router = useRouter()
     const mounted = useIsMounted()
     const [spaces, setSpaces] = useState(["No spaces found"])
     const {address, isDisconnected} = useAccount()
     const [disabled, setDisabled] = useState(true)
     const [spacePfp, setSpacePfp] = useState<File>()
+    const [checked, setChecked] = useState(false)
     // @ts-ignore
     const {orbis, setUser} = useContext(GlobalContext)
 
@@ -103,7 +104,8 @@ export default function CreateNft() {
         })
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
-        const tokenId = await getCurrentTokenId()
+        let tokenId = await getCurrentTokenId()
+        tokenId = parseInt(tokenId) + 1
         const updateHtml = await fetch("/api/updateHtml", {
             method: "POST",
             headers: {
@@ -112,14 +114,14 @@ export default function CreateNft() {
             body: JSON.stringify({
                 cid: audioCid,
                 preview: false,
-                tokenId: parseInt(tokenId) + 1,
+                tokenId: tokenId,
                 selectedNft,
             })
         })
         const animation = await updateHtml.json()
         const cid = animation.jsonCid
         // console.log("dataCid", cid)
-        const animationCid = `https://${cid}.ipfs.nftstorage.link/${parseInt(tokenId) + 1}.html`
+        const animationCid = `https://${cid}.ipfs.nftstorage.link/${tokenId}.html`
         // console.log("animationCid", animationCid)
         let image
         switch (selectedNft) {
@@ -142,9 +144,10 @@ export default function CreateNft() {
                 image = nftImages["nft-design-1"]
         }
         try {
-            const currentToken = await getCurrentTokenId()
-            console.log("currentToken", currentToken)
-            await declareVisualizer({name, image, audioCID: audioCid, animation: animationCid, description, spaceName, maxSupply: quantity, mintPrice: price, currentToken: parseInt(currentToken) + 1})
+            await declareVisualizer({name, image, audioCID: audioCid, animation: animationCid, description, spaceName, maxSupply: quantity, mintPrice: price, currentToken: tokenId})
+            if(checked){
+                await makeNFTImmutable(tokenId)
+            }
             updateNotification({
                 id: "space",
                 title: "Success",
@@ -272,8 +275,12 @@ export default function CreateNft() {
         audioCid = `https://${audioCid}.ipfs.nftstorage.link`
         imageCid = `https://${imageCid}.ipfs.nftstorage.link`
         try {
-            const tokenId = await getCurrentTokenId()
-            await declareAudio(name, imageCid, audioCid, description, spaceName, price, quantity, parseInt(tokenId) + 1)
+            let tokenId = await getCurrentTokenId()
+            tokenId = parseInt(tokenId) + 1
+            await declareAudio(name, imageCid, audioCid, description, spaceName, price, quantity, tokenId)
+            if(checked){
+                await makeNFTImmutable(tokenId)
+            }
             updateNotification({
                 id: "space",
                 title: "Success",
@@ -451,6 +458,8 @@ export default function CreateNft() {
                                                placeholder={"Upload audio file"}
                                                accept={"audio/*"} icon={<IconUpload size={14}/>} value={file}
                                                onChange={setFile as any}/>
+                                    <Checkbox m={"md"} color={"indigo"} label={"Checking this will make your NFT immutable. You will NOT be able to change the audio after you've created this NFT."} checked={checked}
+                                              onChange={(event) => setChecked(event.currentTarget.checked)}/>
                                     <Group>
                                         <Button color={"indigo"} disabled={loading} m={"md"}
                                                 onClick={async () => await handlePreviewClick()}>Preview
@@ -605,6 +614,8 @@ export default function CreateNft() {
                                                placeholder={"Upload audio file"}
                                                accept={"audio/*"} icon={<IconUpload size={14}/>} value={file}
                                                onChange={setFile as any}/>
+                                    <Checkbox m={"md"} color={"indigo"} label={"Checking this will make your NFT immutable. You will NOT be able to change the audio after you've created this NFT."} checked={checked}
+                                              onChange={(event) => setChecked(event.currentTarget.checked)}/>
                                     <Group>
                                         <Button color={"indigo"} disabled={loading} m={"md"}
                                                 onClick={async () => await handleAudioNftSubmit()}>Create Audio

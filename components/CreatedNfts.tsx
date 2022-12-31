@@ -67,7 +67,7 @@ export default function CreatedNfts({address}: CreatedNftsProps) {
             )
         })
     } else {
-        renderNfts = <Title m={"xl"}>There are no NFTs in this space</Title>
+        renderNfts = <Title m={"xl"}>User has not created any NFTs.</Title>
     }
 
     return (

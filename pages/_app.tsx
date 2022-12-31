@@ -1,6 +1,6 @@
 import {AppProps} from 'next/app';
 import Head from 'next/head';
-import {MantineProvider} from '@mantine/core';
+import {ColorScheme, ColorSchemeProvider, MantineProvider} from '@mantine/core';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
     getDefaultWallets,
@@ -23,33 +23,36 @@ import {GlobalContext} from "../contexts/GlobalContext";
 /** Import Orbis SDK */
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
+import {useHotkeys, useLocalStorage} from "@mantine/hooks";
 
 let orbis = new Orbis();
 const GROUP_ID = "kjzl6cwe1jw14axp80vka5y7ca38y09datmcu4bz0tz8xzntvn9la91292wfnhb";
 const CHANNEL_ID = "kjzl6cwe1jw14b9kogz1as83u05pswa5fs4pzbejlr55f8njn108punvyyrymk5"
+
+const {chains, provider, webSocketProvider} = configureChains(
+    [chain.polygonMumbai],
+    [
+        alchemyProvider({apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}),
+        publicProvider()
+    ]
+);
+const {connectors} = getDefaultWallets({
+    appName: 'Dynamic Audio NFTs',
+    chains
+});
+const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+    webSocketProvider
+})
 
 export default function App(props: AppProps) {
     const [user, setUser] = useState(null);
     const group_id = GROUP_ID;
     const channel_id = CHANNEL_ID;
     const {Component, pageProps} = props;
-    const {chains, provider, webSocketProvider} = configureChains(
-        [chain.polygonMumbai],
-        [
-            alchemyProvider({apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}),
-            publicProvider()
-        ]
-    );
-    const {connectors} = getDefaultWallets({
-        appName: 'Dynamic Audio NFTs',
-        chains
-    });
-    const wagmiClient = createClient({
-        autoConnect: true,
-        connectors,
-        provider,
-        webSocketProvider
-    })
+
 
     useEffect(() => {
         if (!user) {
@@ -67,31 +70,52 @@ export default function App(props: AppProps) {
         }
     }
 
+    const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+        key: 'mantine-color-scheme',
+        defaultValue: 'dark',
+        getInitialValueInEffect: true,
+    });
+    const toggleColorScheme = (value?: ColorScheme) =>
+        setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+    useHotkeys([['mod+J', () => toggleColorScheme()]]);
+
+
     return (
         <>
             <Head>
                 <title>The Crypto Studio</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width"/>
-                <meta name={"description"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
-                <meta property={"og:title"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
-                <meta property={"og:description"} content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"} />
-                <meta property={"og:url"} content={"https://the-crypto-studio-20be90.spheron.app"} />
-                <meta property="og:type" content="website" />
+                <meta name={"description"}
+                      content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
+                <meta property={"og:title"}
+                      content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
+                <meta property={"og:description"}
+                      content={"This is a place where you can create tradable, digital assets from any piece of audio. What’s more, you don’t need to be an expert to use this great new app.\n"}/>
+                <meta property={"og:url"} content={"https://the-crypto-studio-20be90.spheron.app"}/>
+                <meta property="og:type" content="website"/>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap');
+                </style>
             </Head>
             <GlobalContext.Provider value={{user, setUser, group_id, channel_id, orbis} as any}>
                 <WagmiConfig client={wagmiClient}>
                     <RainbowKitProvider chains={chains} theme={darkTheme()}>
-                        <MantineProvider
-                            withGlobalStyles
-                            withNormalizeCSS
-                            theme={{
-                                colorScheme: 'dark',
-                            }}
-                        >
-                            <NotificationsProvider>
-                                <Component {...pageProps} />
-                            </NotificationsProvider>
-                        </MantineProvider>
+                        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                            <MantineProvider
+                                withGlobalStyles
+                                withNormalizeCSS
+                                theme={{
+                                    colorScheme,
+                                    fontFamily: 'Oswald, sans-serif',
+                                    fontFamilyMonospace: 'Monaco, Courier, monospace',
+                                    headings: { fontFamily: 'Oswald, sans-serif' },
+                                }}
+                            >
+                                <NotificationsProvider>
+                                    <Component {...pageProps} wagmiClient={wagmiClient} />
+                                </NotificationsProvider>
+                            </MantineProvider>
+                        </ColorSchemeProvider>
                     </RainbowKitProvider>
                 </WagmiConfig>
             </GlobalContext.Provider>

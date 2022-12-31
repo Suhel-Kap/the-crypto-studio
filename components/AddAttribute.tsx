@@ -17,7 +17,7 @@ import {IconDotsVertical, IconSettings} from "@tabler/icons";
 import {useContract} from "../hooks/useContract";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/router";
-import {UpdateAttribute} from "./UpdateAttribute";
+// import {UpdateAttribute} from "./UpdateAttribute";
 
 interface AttributeProps {
     tokenId: string;
@@ -42,18 +42,18 @@ export function AddAttribute(props: AttributeProps) {
         setAttributes([...props.attributes])
     }, [props])
 
-    let updateModal = <Modal
-        opened={modalOpen}
-        transition="fade"
-        transitionDuration={500}
-        transitionTimingFunction="ease"
-        onClose={() => setModalOpen(false)}
-        zIndex={1000}
-    >
-        <Center>
-            <UpdateAttribute tokenId={tokenId} attrName={attrName} value={value}/>
-        </Center>
-    </Modal>
+    // let updateModal = <Modal
+    //     opened={modalOpen}
+    //     transition="fade"
+    //     transitionDuration={500}
+    //     transitionTimingFunction="ease"
+    //     onClose={() => setModalOpen(false)}
+    //     zIndex={1000}
+    // >
+    //     <Center>
+    //         <UpdateAttribute tokenId={tokenId} attrName={attrName} value={value}/>
+    //     </Center>
+    // </Modal>
     const handleClick = async (type: string, value: string, tokenId: string) => {
         setTokenId(tokenId)
         setAttrName(type)
@@ -140,7 +140,7 @@ export function AddAttribute(props: AttributeProps) {
                     {loading && <Loader color="grape" variant="dots"/>}
                 </Stack>
             </Container>
-            {updateModal}
+            {/*{updateModal}*/}
         </>
     )
 }

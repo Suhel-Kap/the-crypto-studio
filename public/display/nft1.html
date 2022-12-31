@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visualizer_4</title>
+    <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
+    <script>
+        document.documentElement.className = "js"
+    </script>
+</head>
+
+<body class="The Crypto Studio" style="overflow: hidden">
+    <main class="site-wrapper"></main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        class Particle {
+            constructor(num) {
+                //mesa sto mult rithmizw to megethos tou kiklou pou arxizoun na geniountai nea particles
+                this.pos = p5.Vector.random2D().mult(num)
+                this.vel = createVector(0, 0)
+                this.acc = this.pos.copy().mult(random(0.0001, 0.00001))
+                this.w = random(108, 350)
+                    // black default particle color
+                this.color = [1, 1, 1]
+                    //white color particles
+                    // this.color = [0,0,256];
+            }
+
+            // method που δινει random colors στα particles
+            Particle() {
+                //mesa sto mult rithmizw to megethos tou kiklou pou arxizoun na geniountai nea particles
+                this.color = [random(1, 255), random(1, 255), random(1, 255)]
+            }
+
+            // η update methods εφαρμόζονται πάνω απο κάποιο conditioning
+            // Αυτο ειναι πχ να κανει update στην ταχύτητα των particles
+            // αμα το bass η το treble ειναι μεγαλυτερο απο μια τιμη ωστε να
+            // γινεται το interaction της εικόνας με τον ήχο
+            update(cond) {
+                this.vel.add(this.acc)
+                this.pos.add(this.vel)
+                if (cond) {
+                    this.pos.add(this.vel * 11 + 100)
+                }
+            }
+
+            update1(cond) {
+                this.vel.add(this.acc)
+                this.pos.add(this.vel)
+                if (cond) {
+                    this.pos.add(this.vel * 5)
+                }
+            }
+
+            update2(cond) {
+                this.vel.add(this.acc)
+                if (cond) {
+                    this.pos.add(this.vel * 2)
+                }
+            }
+
+            update3(cond) {
+                this.vel.add(this.acc)
+                this.pos.add(this.vel)
+                if (cond) {
+                    this.pos.add(this.vel)
+                }
+            }
+
+            // επιστρέφει false  αν το particle βρισκεται μεσα sto canva
+            // αλλιως επιτρέφει true ελγχος για να μην ξεμεινει ο υπολογιστης απο ram
+            edges() {
+                if (
+                    this.pos.x < -width / 2 ||
+                    this.pos.x > width / 2 ||
+                    this.pos.y < -height / 2 ||
+                    this.pos.y > height / 2
+                ) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            // prints each particle
+            show() {
+                noStroke()
+                fill(this.color)
+                ellipse(this.pos.x, this.pos.y, random(5, 9))
+            }
+        }
+
+        var pieces,
+            radius,
+            fft,
+            analyzer,
+            mapMouseX,
+            mapMouseY,
+            audio,
+            toggleBtn,
+            uploadBtn,
+            uploadedAudio,
+            uploadAnim
+        var colorPalette = ["#676767", "#232D22", "#C1C1C2", "#FFF903"]
+        var uploadLoading = false
+        var particles = []
+
+        /*=============================================
+    SETUP
+=============================================*/
+
+        function preload() {
+            getStorage()
+            audio = loadSound("../preview.mp3")
+        }
+
+        // loader του νέου mp3 file απο το file system
+        function uploaded(file) {
+            uploadLoading = true
+            uploadedAudio = loadSound(
+                "../preview.mp3",
+                uploadedAudioPlay
+            )
+        }
+
+        function getStorage() {
+            smoothing = 0.5
+            bins = Math.pow(2, 11)
+            amplitude = 0.4
+            bars = 75
+            factor = 500
+            radius = 150
+            exponent = 5
+            strokeWidth = 5
+            affinity = 1
+            colour = "#ee44ee"
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight)
+            gui = createGui()
+            b = createButton("Button", 50, 50)
+
+            fft = new p5.FFT(0.4)
+
+            audio.amp(parseFloat(amplitude))
+            angleMode(DEGREES)
+            imageMode(CENTER)
+            colorMode(HSB)
+            rectMode(CENTER)
+            amplitude = new p5.Amplitude()
+        }
+
+        function mousePressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function touchPressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        /*=============================================
+    DRAW
+=============================================*/
+        function draw() {
+            stroke(50)
+            strokeWeight(2)
+
+            translate(windowWidth / 2, windowHeight / 2)
+
+            let spectrum = fft.analyze()
+            spectrum.splice(bars, bins - bars)
+
+            amp = fft.getEnergy("treble")
+            amp1 = fft.getEnergy("bass")
+
+            push()
+                // image(img, 0, 0, width/2.5, height/2.5);
+            if (amp > 230) {
+                //   rotate(random(-0.5, 0.5))
+            }
+
+            pop()
+
+            var alpha = map(amp, 0, 25, 180, 150)
+            fill(0, alpha)
+            rect(0, 0, width, height)
+            background(255, 125, 125, 15)
+            if (amp1 > 230 && amp1 < 300) {
+                background(random(255), random(255), random(255))
+            }
+
+            var wave = fft.waveform()
+            for (var t = -1; t <= 1; t += 2) {
+                beginShape()
+
+                for (var i = 0; i <= 180; i += 0.5) {
+                    var index = floor(map(i, 0, 180, 0, wave.length - 1))
+                    var r = map(wave[index], -1, 1, 50, 116)
+
+                    var x = r * sin(i) * t * 1.5
+                    var y = r * cos(i) * 1.5
+                    vertex(x, y)
+                }
+                endShape()
+            }
+
+            var p = new Particle(33)
+                // var p2 = new Particle(33);
+            p.Particle()
+                // p2.Particle()
+                //    var p3 = new Particle();
+            particles.push(p)
+                // particles.push(p2);
+                // particles.push(p3);
+            for (var i = particles.length - 1; i >= 0; i--) {
+                if (!particles[i].edges()) {
+                    let bool = particles[i].update(amp1 > 300)
+                    particles[i].update1(amp > 150 && amp < 299)
+                        // particles[i].update2(amp > 100 && amp<150);
+                        // particles[i].update3(amp < 100);
+                    particles[i].show()
+                } else {
+                    //διαγραφει τα particles που παιρνανε απο τα edges του canva
+                    particles.splice(i, 1)
+                }
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight)
+        }
+    </script>
+</body>
+
+</html>

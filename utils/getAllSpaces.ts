@@ -1,4 +1,5 @@
-const spaceTableUri = "https://testnet.tableland.network/query?s=SELECT%20*%20FROM%20space_group_80001_3766"
+import {tableland} from "../constants";
+const spaceTableUri = `https://testnets.tableland.network/query?s=SELECT%20*%20FROM%20${tableland["space-group"]}`
 
 const getAllSpaces = async () => {
     const response = await fetch(spaceTableUri)

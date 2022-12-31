@@ -1,5 +1,5 @@
 {
-    "name": "The Crypto Studio",
+    "name": "the-crypto-studio",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -8,24 +8,24 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Suhel-Kap/the-crypto-studio"
+        "url": "git+https://github.com/nijoe1/the-crypto-studio"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Suhel-Kap/the-crypto-studio"
+        "url": "git+https://github.com/nijoe1/the-crypto-studio"
     },
-    "homepage": "https://github.com/Suhel-Kap/the-crypto-studio#readme",
+    "url": "git+https://github.com/nijoe1/the-crypto-studio",
     "devDependencies": {
         "@nomiclabs/hardhat-ethers": "^2.0.3",
         "@nomiclabs/hardhat-etherscan": "^3.1.0",
         "@openzeppelin/hardhat-upgrades": "^1.12.0",
         "ethers": "^5.5.2",
-        "hardhat": "^2.8.0"
+        "hardhat": "^2.12.3"
     },
     "dependencies": {
-        "@openzeppelin/contracts": "^4.7.0",
+        "@openzeppelin/contracts": "^4.8.0",
         "@openzeppelin/contracts-upgradeable": "^4.4.1",
         "@tableland/evm": "^2.0.2"
     }

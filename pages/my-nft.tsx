@@ -4,13 +4,18 @@ import {useAccount} from "wagmi";
 import {useContext, useEffect, useState} from "react";
 import {getNfts} from "../utils/getNfts";
 import NftCard from "../components/NftCard"
-import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Text} from "@mantine/core";
+import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Tabs, Text} from "@mantine/core";
 import {UpdateAudio} from "../components/UpdateAudio";
 import {UpdateProfile} from "../components/UpdateProfile";
 import {GlobalContext} from "../contexts/GlobalContext";
 import CreatorCard from "../components/CreatorCard";
 import {useRouter} from "next/router";
 import {AddAttribute} from "../components/AddAttribute";
+import StyledTabs from "../components/StyledTabs";
+import {IconAlbum, IconCreditCard, IconGeometry, IconMessageChatbot} from "@tabler/icons";
+import UserPosts from "../components/UserPosts";
+import UserVcs from '../components/UserVcs';
+import CreatedNfts from "../components/CreatedNfts";
 
 const useStyles = createStyles((theme) => ({
     container: {
@@ -29,6 +34,7 @@ const useStyles = createStyles((theme) => ({
             height: 50,
             margin: theme.spacing.md
         },
+        width: "75%",
         height: "-webkit-fill-available",
         margin: theme.spacing.xl
     }
@@ -36,16 +42,28 @@ const useStyles = createStyles((theme) => ({
 
 export default function MyNft() {
     const {classes} = useStyles();
-    const {address, isDisconnected, isConnected} = useAccount()
+    const {address, isDisconnected} = useAccount()
     const [nfts, setNfts] = useState<Array<any>>()
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [isAttributeModalOpen, setIsAttributeModalOpen] = useState(false)
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
-    const [tokenId, setTokenId] = useState("")
     const [attributes, setAttributes] = useState([])
     const router = useRouter()
     // @ts-ignore
     const {user, setUser, orbis, group_id} = useContext(GlobalContext)
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
 
     async function getProvider() {
         let provider = null;
@@ -85,38 +103,34 @@ export default function MyNft() {
         orbisConnect()
     }, [router.isReady])
 
-    const handleClick = (tokenId: string) => {
-        setTokenId(tokenId)
-        setIsModalOpen(true)
-    }
 
-    const handleAddAttribute = (tokenId: string, attribues: []) => {
-        setTokenId(tokenId)
-        setAttributes(attribues)
-        setIsAttributeModalOpen(true)
-    }
+    // const handleAddAttribute = (tokenId: string, attribues: []) => {
+    //     setTokenId(tokenId)
+    //     setAttributes(attribues)
+    //     setIsAttributeModalOpen(true)
+    // }
 
     useEffect(() => {
         getNfts(address!).then(res => {
             setNfts(res)
-            console.log(res)
         })
     }, [address])
     let renderNfts
     // @ts-ignore
     if (nfts?.length > 0) {
         renderNfts = nfts?.map(nft => {
+            const spaceName = nft.attributes.filter((trait: any) => trait.trait_type === "spaceName")[0].value
             return (
-                <Grid.Col lg={4} md={6}>
-                    <NftCard key={nft.tokenID} title={nft.name} tokenId={nft.tokenID}
+                <Grid.Col key={nft.tokenID} lg={4} md={6}>
+                    <NftCard title={nft.name} tokenId={nft.tokenID}
                              animationUrl={nft.animation_url} description={nft.description}
-                             image={nft.image} setAddAttribute={() => handleAddAttribute(nft.tokenID, nft.attributes)}
-                             setModalOpen={() => handleClick(nft.tokenID)}/>
+                             image={nft.image} spaceName={spaceName}
+                             />
                 </Grid.Col>
             )
         })
     } else if (nfts?.length === 0) {
-        renderNfts = <Text>You have 0 NFTs</Text>
+        renderNfts = <div style={{margin: 30}}><Text>You have 0 NFTs</Text></div>
     } else {
         renderNfts = <>
             <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>
@@ -128,36 +142,22 @@ export default function MyNft() {
         </>
     }
 
-    const updateModal = (
-        <Modal
-            opened={isModalOpen}
-            className={classes.modal}
-            transition="fade"
-            transitionDuration={500}
-            transitionTimingFunction="ease"
-            onClose={() => setIsModalOpen(false)}
-        >
-            <Center>
-                <UpdateAudio tokenId={tokenId}/>
-            </Center>
-        </Modal>
-    )
 
-    const attributeModal = (
-        <Modal
-            opened={isAttributeModalOpen}
-            className={classes.modal}
-            transition="fade"
-            transitionDuration={500}
-            transitionTimingFunction="ease"
-            onClose={() => setIsAttributeModalOpen(false)}
-        >
-            <Center>
-                {/*@ts-ignore*/}
-                <AddAttribute tokenId={tokenId} attributes={attributes} />
-            </Center>
-        </Modal>
-    )
+    // const attributeModal = (
+    //     <Modal
+    //         opened={isAttributeModalOpen}
+    //         className={classes.modal}
+    //         transition="fade"
+    //         transitionDuration={500}
+    //         transitionTimingFunction="ease"
+    //         onClose={() => setIsAttributeModalOpen(false)}
+    //     >
+    //         <Center>
+    //             {/*@ts-ignore*/}
+    //             <AddAttribute tokenId={tokenId} attributes={attributes} />
+    //         </Center>
+    //     </Modal>
+    // )
 
     const updateProfileModal = (
         <Modal
@@ -173,7 +173,6 @@ export default function MyNft() {
             </Center>
         </Modal>
     )
-
     return (
         <>
             <Head>
@@ -188,25 +187,50 @@ export default function MyNft() {
                     {!isDisconnected &&
                         <Container size={"xl"}>
                             <Grid>
-                                <Grid.Col lg={9}>
+                                <Grid.Col lg={8}>
                                     <CreatorCard image={user?.profile?.pfp} name={user?.profile?.username}
                                                  email={user?.metadata?.address}/>
                                 </Grid.Col>
-                                <Grid.Col lg={3}>
-                                    <Button color={"indigo"} className={classes.btn}
-                                            onClick={() => setIsProfileModalOpen(true)}>
-                                        Update Your Profile
-                                    </Button>
-
+                                <Grid.Col lg={4}>
+                                    <Button.Group p={"xl"} sx={{height: "100%"}}>
+                                        <Button color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                                onClick={() => setIsProfileModalOpen(true)}>
+                                            Update Your Profile
+                                        </Button>
+                                        <Button color={"indigo"} variant={"light"} sx={{height: "-webkit-fill-available"}}
+                                                onClick={() => window.open("https://passport.gitcoin.co/", "_blank")}>
+                                            Issue Gitcoin VC
+                                        </Button>
+                                    </Button.Group>
                                 </Grid.Col>
                             </Grid>
-                            <Grid gutter={"xl"}>
-                                {renderNfts}
-                            </Grid>
+                            <StyledTabs defaultValue={"nfts"}>
+                                <Center>
+                                    <Tabs.List>
+                                        <Tabs.Tab value={"nfts"} icon={<IconAlbum size={16}/>}>NFTs</Tabs.Tab>
+                                        <Tabs.Tab value={"created-nfts"} icon={<IconGeometry size={16}/>}>Created NFTs</Tabs.Tab>
+                                        <Tabs.Tab value={"chat"} icon={<IconMessageChatbot size={16}/>}>Your Posts</Tabs.Tab>
+                                        <Tabs.Tab value={"vcs"} icon={<IconCreditCard size={16}/>}>Your VCs</Tabs.Tab>
+                                    </Tabs.List>
+                                </Center>
+                                <Tabs.Panel value={"nfts"}>
+                                    <Grid gutter={"xl"}>
+                                        {renderNfts}
+                                    </Grid>
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"created-nfts"}>
+                                    <CreatedNfts address={address!}/>
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"chat"}>
+                                    <UserPosts />
+                                </Tabs.Panel>
+                                <Tabs.Panel value={"vcs"}>
+                                    <UserVcs />
+                                </Tabs.Panel>
+                            </StyledTabs>
                         </Container>}
-                    {updateModal}
                     {updateProfileModal}
-                    {attributeModal}
+                    {/*{attributeModal}*/}
                 </Container>
             </Layout>
         </>

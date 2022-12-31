@@ -12,19 +12,21 @@ import {
     Title,
     Divider,
     NativeSelect,
-    Accordion, HoverCard, ActionIcon
+    Accordion, HoverCard, ActionIcon, NumberInput, Checkbox
 } from "@mantine/core";
 import {IconQuestionMark, IconUpload} from "@tabler/icons";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import useNftStorage from "../hooks/useNftStorage";
-import {useContract} from "../hooks/useContract";
-import {showNotification} from "@mantine/notifications";
+import {showNotification, updateNotification} from "@mantine/notifications";
 import {useRouter} from "next/router"
 import {nftImages} from "../constants";
 import {useAccount} from "wagmi";
 import getSpaces from "../utils/getSpaces";
 // @ts-ignore
 import {Orbis} from "@orbisclub/orbis-sdk";
+import {GlobalContext} from "../contexts/GlobalContext";
+import {useContract} from "../hooks/useContract";
+import {useIsMounted} from "../hooks/useIsMounted";
 
 export default function CreateNft() {
     const [file, setFile] = useState<File>()
@@ -34,16 +36,56 @@ export default function CreateNft() {
     const [loading, setLoading] = useState(false)
     const [displayPreview, setDisplayPreview] = useState(false)
     const [description, setDescription] = useState<String>("")
+    const [spaceDescription, setSpaceDescription] = useState<String>("")
+    const [price, setPrice] = useState<number>(0)
+    const [quantity, setQuantity] = useState<number>(1)
     const [spaceName, setSpaceName] = useState<string>("")
     const {upload, uploadImage} = useNftStorage()
     const [selectedNft, setSelectedNft] = useState<String>()
-    const {getCurrentTokenId, mint, spaceExists, mintSpace, mintImageNft, mintAudioNft} = useContract()
+    const {getCurrentTokenId, spaceExists, mintSpace, declarePFP, declareAudio, declareVisualizer, declareTicket, makeNFTImmutable} = useContract()
     const router = useRouter()
-    const [tempCid, setTempCid] = useState<String>()
-    const [spaces, setSpaces] = useState([])
-    const {address} = useAccount()
-    const [disabled, setDisabled] = useState(false)
+    const mounted = useIsMounted()
+    const [spaces, setSpaces] = useState(["No spaces found"])
+    const {address, isDisconnected} = useAccount()
+    const [disabled, setDisabled] = useState(true)
     const [spacePfp, setSpacePfp] = useState<File>()
+    const [checked, setChecked] = useState(false)
+    // @ts-ignore
+    const {orbis, setUser} = useContext(GlobalContext)
+
+    useEffect(() => {
+        if(!mounted) return
+        if(!address) return
+        getSpaces(address!).then(res => {
+            if (res[0].message === "Row not found") {
+                setDisabled(true)
+                setSpaces(["No spaces found"])
+                return
+            }
+            let temp: Array<string> = []
+            res[0].forEach((space: any) => {
+                temp.push(space.spaceName)
+            })
+            setSpaceName(temp[0])
+            setDisabled(false)
+            setSpaces(temp)
+        })
+    }, [address, mounted])
+
+    const logout = async () => {
+        if (isDisconnected) {
+            let res = await orbis.isConnected()
+            if (res.status == 200) {
+                await orbis.logout()
+                setUser(null)
+                console.log("User is connected: ", res);
+            }
+        }
+    }
+
+    useEffect(() => {
+        logout()
+    }, [isDisconnected])
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedNft(e.target.value)
@@ -52,10 +94,19 @@ export default function CreateNft() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
+        showNotification({
+            id: "space",
+            title: "Creating NFT",
+            message: "Please wait while we create your NFT",
+            loading: true,
+            disallowClose: true,
+            autoClose: false
+        })
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
-        const tokenId = await getCurrentTokenId()
-        const updateHtml = await fetch("/api/updateHtml", {
+        let tokenId = await getCurrentTokenId()
+        tokenId = parseInt(tokenId) + 1
+        const updateHtml = await fetch("https://tcs-server-ydkcvwlbra-uc.a.run.app/mint", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -63,15 +114,15 @@ export default function CreateNft() {
             body: JSON.stringify({
                 cid: audioCid,
                 preview: false,
-                tokenId: parseInt(tokenId) + 1,
+                tokenId: tokenId,
                 selectedNft,
             })
         })
         const animation = await updateHtml.json()
         const cid = animation.jsonCid
-        console.log("dataCid", cid)
-        const animationCid = `ipfs://${cid}/${parseInt(tokenId) + 1}.html`
-        console.log("animationCid", animationCid)
+        // console.log("dataCid", cid)
+        const animationCid = `https://${cid}.ipfs.nftstorage.link/${tokenId}.html`
+        // console.log("animationCid", animationCid)
         let image
         switch (selectedNft) {
             case "1":
@@ -93,19 +144,28 @@ export default function CreateNft() {
                 image = nftImages["nft-design-1"]
         }
         try {
-            await mint({name, image, animation: animationCid, audioCid, description, spaceName})
-            showNotification({
+            await declareVisualizer({name, image, audioCID: audioCid, animation: animationCid, description, spaceName, maxSupply: quantity, mintPrice: price, currentToken: tokenId})
+            if(checked){
+                await makeNFTImmutable(tokenId)
+            }
+            updateNotification({
+                id: "space",
                 title: "Success",
-                message: "Your NFT has been minted",
+                message: "Your NFT has been created",
+                color: "green",
+                autoClose: 5000
             })
             setLoading(false)
             await router.push("/my-nft")
         } catch (e) {
             console.log(e)
-            showNotification({
+            updateNotification({
+                id: "space",
                 title: "Error",
                 // @ts-ignore
                 message: e.message,
+                color: "red",
+                autoClose: 5000
             })
             setLoading(false)
         }
@@ -119,25 +179,9 @@ export default function CreateNft() {
             return
         }
         console.log(spaceName, "spaceName")
-        if (file && name && description && spaceName) {
-            const cid = await upload(file)
-            console.log(cid)
-            const updateHtml = await fetch("/api/updateHtml", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    cid,
-                    preview: true
-                })
-            })
-            const dataCid = await updateHtml.json()
-            const animationCid = dataCid.res
-            setTempCid(animationCid)
-            console.log("dataCid", dataCid)
-            setLoading(false)
+        if (file && name && description ) {
             setDisplayPreview(true)
+            setLoading(false)
         } else {
             alert("Please fill all fields")
             setLoading(false)
@@ -146,39 +190,67 @@ export default function CreateNft() {
 
     const handleMintSpace = async () => {
         setLoading(true)
+        showNotification({
+            id: "space",
+            title: "Creating Space",
+            message: "Please wait while we create your space",
+            loading: true,
+            disallowClose: true,
+            autoClose: false
+        })
         if (spacename && spacePfp) {
             const isSpace = await spaceExists(spacename)
             if (isSpace) {
-                showNotification({
+                updateNotification({
+                    id: "space",
                     title: "Error",
                     message: "Space already exists",
+                    color: "red",
+                    autoClose: 5000
                 })
                 setLoading(false)
                 return
             }
             const cid = await uploadImage(spacePfp!)
-            let orbis = new Orbis()
-            await orbis.connect()
             const res = await orbis.createGroup({
                 pfp: `https://ipfs.io/ipfs/${cid}`,
                 name: spacename,
+                description: spaceDescription
             })
             const groupId = res.doc
-
-            try {
-                await mintSpace(spacename, groupId, `https://ipfs.io/ipfs/${cid}`)
-                showNotification({
-                    title: "Success",
-                    message: "Space has been created",
+            console.log(groupId)
+            try{
+                const groupRes = await orbis.createChannel(groupId, {
+                    group_id: groupId,
+                    name: "General",
+                    description: "General channel for the " + spacename + " space",
+                    type: "feed"
                 })
-                setLoading(false)
-                router.reload()
+                console.log(groupRes)
             } catch (e) {
                 console.log(e)
-                showNotification({
+            }
+
+            try {
+                await mintSpace(spacename, groupId, cid)
+                updateNotification({
+                    id: "space",
+                    title: "Success",
+                    message: "Space has been created",
+                    color: "green",
+                    autoClose: 5000
+                })
+                setLoading(false)
+                // router.reload()
+            } catch (e) {
+                console.log(e)
+                updateNotification({
+                    id: "space",
                     title: "Error",
                     // @ts-ignore
                     message: e.message,
+                    color: "red",
+                    autoClose: 5000
                 })
                 setLoading(false)
             }
@@ -190,25 +262,43 @@ export default function CreateNft() {
 
     const handleAudioNftSubmit = async () => {
         setLoading(true)
+        showNotification({
+            id: "space",
+            title: "Creating NFT",
+            message: "Please wait while we create your NFT",
+            loading: true,
+            disallowClose: true,
+            autoClose: false
+        })
         let audioCid = await upload(file!)
         let imageCid = await uploadImage(image!)
-        audioCid = `https://ipfs.io/ipfs/${audioCid}`
-        imageCid = `https://ipfs.io/ipfs/${imageCid}`
+        audioCid = `https://${audioCid}.ipfs.nftstorage.link`
+        imageCid = `https://${imageCid}.ipfs.nftstorage.link`
         try {
-            // @ts-ignore
-            await mintAudioNft({name, image: imageCid, audioCid, description, spaceName})
-            showNotification({
+            let tokenId = await getCurrentTokenId()
+            tokenId = parseInt(tokenId) + 1
+            await declareAudio(name, imageCid, audioCid, description, spaceName, price, quantity, tokenId)
+            if(checked){
+                await makeNFTImmutable(tokenId)
+            }
+            updateNotification({
+                id: "space",
                 title: "Success",
-                message: "Your NFT has been minted",
+                message: "Your NFT has been created",
+                color: "green",
+                autoClose: 5000
             })
             setLoading(false)
             await router.push("/my-nft")
         } catch (e) {
             console.log(e)
-            showNotification({
+            updateNotification({
+                id: "space",
                 title: "Error",
                 // @ts-ignore
                 message: e.message,
+                color: "red",
+                autoClose: 5000
             })
             setLoading(false)
         }
@@ -216,45 +306,79 @@ export default function CreateNft() {
 
     const handleImageNft = async () => {
         setLoading(true)
+        showNotification({
+            id: "space",
+            title: "Creating NFT",
+            message: "Please wait while we create your NFT",
+            loading: true,
+            disallowClose: true,
+            autoClose: false
+        })
         let imageCid = await uploadImage(image!)
-        imageCid = `https://ipfs.io/ipfs/${imageCid}`
+        imageCid = `https://${imageCid}.ipfs.nftstorage.link`
         try {
-            // @ts-ignore
-            await mintImageNft({name, image: imageCid, description, spaceName})
-            showNotification({
+            const tokenId = await getCurrentTokenId()
+            await declarePFP(name, imageCid, description, spaceName, price, quantity, parseInt(tokenId) + 1)
+            updateNotification({
+                id: "space",
                 title: "Success",
-                message: "Your NFT has been minted",
+                message: "Your NFT has been created",
+                color: "green",
+                autoClose: 5000
             })
             setLoading(false)
             await router.push("/my-nft")
         } catch (e) {
             console.log(e)
-            showNotification({
+            updateNotification({
+                id: "space",
                 title: "Error",
                 // @ts-ignore
                 message: e.message,
+                color: "red",
+                autoClose: 5000
             })
             setLoading(false)
         }
     }
 
-    useEffect(() => {
-        getSpaces(address!).then(res => {
-            if (res[0].message === "Row not found") {
-                setDisabled(true)
-                // @ts-ignore
-                setSpaces(["No spaces found"])
-                return
-            }
-            let temp: Array<string> = []
-            res[0].forEach((space: any) => {
-                temp.push(space.spaceName)
-            })
-            setSpaceName(temp[0])
-            // @ts-ignore
-            setSpaces(temp)
+    const handleTicket = async () => {
+        setLoading(true)
+        showNotification({
+            id: "space",
+            title: "Creating Tickets",
+            message: "Please wait while we mint your NFT Tickets",
+            loading: true,
+            disallowClose: true,
+            autoClose: false
         })
-    }, [address])
+        let imageCid = await uploadImage(image!)
+        imageCid = `https://${imageCid}.ipfs.nftstorage.link`
+        try {
+            const tokenId = await getCurrentTokenId()
+            await declareTicket(name, imageCid, description, spaceName, price, quantity, parseInt(tokenId) + 1)
+            updateNotification({
+                id: "space",
+                title: "Success",
+                message: "Your tickets have been created",
+                color: "green",
+                autoClose: 5000
+            })
+            setLoading(false)
+            await router.push("/my-nft")
+        } catch (e) {
+            console.log(e)
+            updateNotification({
+                id: "space",
+                title: "Error",
+                // @ts-ignore
+                message: e.message,
+                color: "red",
+                autoClose: 5000
+            })
+            setLoading(false)
+        }
+    }
 
     return (
         <>
@@ -268,11 +392,12 @@ export default function CreateNft() {
                     <TextInput m={"md"} label={"NFT Space Name"} value={spacename as any}
                                onChange={(event) => setSpacename(event.currentTarget.value)}
                                placeholder="Name" required/>
+                    <Textarea m={"md"} label={"Space Description"} value={spaceDescription as any} onChange={(event) => setSpaceDescription(event.currentTarget.value)}
+                              placeholder="Description" required/>
                     <FileInput m={"md"} required label={"Upload your space image"} placeholder={"Upload image file"}
                                accept={"image/*"} icon={<IconUpload size={14}/>} value={spacePfp as any}
                                onChange={setSpacePfp as any}/>
-                    <Button color={"indigo"} disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Mint
-                        Space </Button>
+                    <Button color={"indigo"} disabled={loading} m={"md"} onClick={async () => await handleMintSpace()}>Create Space </Button>
                 </Container>
 
                 <Divider m={"xl"}/>
@@ -303,7 +428,7 @@ export default function CreateNft() {
                             <Accordion.Panel>
                                 <Container>
                                     <Title order={1}>Create Audio Visual NFT</Title>
-                                    <Text sx={{color: "crimson", fontStyle: "italic"}}>You won't be able to mint the audio visual NFT for some time. Apologies for the inconvenience.</Text>
+                                    <Text sx={{color: "crimson", fontStyle: "italic"}}>You can check out the NFTs below, they will dance according to the sound you choose after creating.</Text>
                                     <TextInput m={"md"} label={"NFT Name"} value={name as any}
                                                onChange={(event) => setName(event.currentTarget.value)}
                                                placeholder="Name" required/>
@@ -321,10 +446,20 @@ export default function CreateNft() {
                                               onChange={(event) => setDescription(event.currentTarget.value)}
                                               placeholder="Description"
                                               required/>
+                                    <Group>
+                                        <NumberInput m={"md"} label={"NFT Price (in MATIC)"} value={price as number} precision={1}
+                                            onChange={(value) => setPrice(value!)} required min={0.5}
+                                        />
+                                        <NumberInput m={"md"} label={"NFT Quantity"} value={quantity as number}
+                                            onChange={(value) => setQuantity(value!)} required min={1}
+                                        />
+                                    </Group>
                                     <FileInput m={"md"} required label={"Upload your audio file"}
                                                placeholder={"Upload audio file"}
                                                accept={"audio/*"} icon={<IconUpload size={14}/>} value={file}
                                                onChange={setFile as any}/>
+                                    <Checkbox m={"md"} color={"indigo"} label={"Checking this will make your NFT immutable. You will NOT be able to change the audio after you've created this NFT."} checked={checked}
+                                              onChange={(event) => setChecked(event.currentTarget.checked)}/>
                                     <Group>
                                         <Button color={"indigo"} disabled={loading} m={"md"}
                                                 onClick={async () => await handlePreviewClick()}>Preview
@@ -339,7 +474,7 @@ export default function CreateNft() {
                                                     <input type={"radio"} value={"1"}
                                                            onChange={(e) => handleSelectChange(e)}/>
                                                     <iframe
-                                                        src={`https://ipfs.io/ipfs/${tempCid}/nft1.html`}
+                                                        src={"/display/nft1.html"}
                                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                                         height="500px"
                                                         width="500px"
@@ -355,7 +490,7 @@ export default function CreateNft() {
                                                     <input type={"radio"} value={"2"}
                                                            onChange={(e) => handleSelectChange(e)}/>
                                                     <iframe
-                                                        src={`https://ipfs.io/ipfs/${tempCid}/nft2.html`}
+                                                        src={"/display/nft2.html"}
                                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                                         height="500px"
                                                         width="500px"
@@ -371,7 +506,7 @@ export default function CreateNft() {
                                                     <input type={"radio"} value={"3"}
                                                            onChange={(e) => handleSelectChange(e)}/>
                                                     <iframe
-                                                        src={`https://ipfs.io/ipfs/${tempCid}/nft3.html`}
+                                                        src={"/display/nft3.html"}
                                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                                         height="500px"
                                                         width="500px"
@@ -387,7 +522,7 @@ export default function CreateNft() {
                                                     <input type={"radio"} value={"4"}
                                                            onChange={(e) => handleSelectChange(e)}/>
                                                     <iframe
-                                                        src={`https://ipfs.io/ipfs/${tempCid}/nft4.html`}
+                                                        src={"/display/nft4.html"}
                                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                                         height="500px"
                                                         width="500px"
@@ -403,7 +538,7 @@ export default function CreateNft() {
                                                     <input type={"radio"} value={"5"}
                                                            onChange={(e) => handleSelectChange(e)}/>
                                                     <iframe
-                                                        src={`https://ipfs.io/ipfs/${tempCid}/nft5.html`}
+                                                        src={"/display/nft5.html"}
                                                         sandbox="allow-same-origin allow-scripts allow-forms"
                                                         height="500px"
                                                         width="500px"
@@ -415,8 +550,7 @@ export default function CreateNft() {
                                                 </label>
                                             </div>
                                             <Group>
-                                                <Button color={"indigo"} disabled={loading} m={"md"} type={"submit"}>Mint
-                                                    NFT</Button>
+                                                <Button color={"indigo"} disabled={loading} m={"md"} type={"submit"}>Create Audio Visual NFT</Button>
                                                 {loading && <Loader color="grape" variant="dots"/>}
                                             </Group>
                                         </form>
@@ -468,13 +602,23 @@ export default function CreateNft() {
                                                placeholder={"Upload image file"}
                                                accept={"image/*"} icon={<IconUpload size={14}/>} value={image as any}
                                                onChange={setImage as any}/>
+                                    <Group>
+                                        <NumberInput m={"md"} label={"NFT Price (in MATIC)"} value={price as number} precision={1}
+                                                     onChange={(value) => setPrice(value!)} required min={0}
+                                        />
+                                        <NumberInput m={"md"} label={"NFT Quantity"} value={quantity as number}
+                                                     onChange={(value) => setQuantity(value!)} required min={1}
+                                        />
+                                    </Group>
                                     <FileInput m={"md"} required label={"Upload your audio file"}
                                                placeholder={"Upload audio file"}
                                                accept={"audio/*"} icon={<IconUpload size={14}/>} value={file}
                                                onChange={setFile as any}/>
+                                    <Checkbox m={"md"} color={"indigo"} label={"Checking this will make your NFT immutable. You will NOT be able to change the audio after you've created this NFT."} checked={checked}
+                                              onChange={(event) => setChecked(event.currentTarget.checked)}/>
                                     <Group>
                                         <Button color={"indigo"} disabled={loading} m={"md"}
-                                                onClick={async () => await handleAudioNftSubmit()}>Mint Audio
+                                                onClick={async () => await handleAudioNftSubmit()}>Create Audio
                                             NFT</Button>
                                         {loading && <Loader color="grape" variant="dots"/>}
                                     </Group>
@@ -521,19 +665,86 @@ export default function CreateNft() {
                                               onChange={(event) => setDescription(event.currentTarget.value)}
                                               placeholder="Description"
                                               required/>
+                                    <Group>
+                                        <NumberInput m={"md"} label={"NFT Price (in MATIC)"} value={price as number} precision={1}
+                                                     onChange={(value) => setPrice(value!)} required min={0}
+                                        />
+                                        <NumberInput m={"md"} label={"NFT Quantity"} value={quantity as number}
+                                                     onChange={(value) => setQuantity(value!)} required min={1}
+                                        />
+                                    </Group>
                                     <FileInput m={"md"} required label={"Upload your nft image"}
                                                placeholder={"Upload image file"}
                                                accept={"image/*"} icon={<IconUpload size={14}/>} value={image as any}
                                                onChange={setImage as any}/>
                                     <Group>
                                         <Button color={"indigo"} disabled={loading} m={"md"}
-                                                onClick={async () => await handleImageNft()}>Mint Image NFT</Button>
+                                                onClick={async () => await handleImageNft()}>Create Image NFT</Button>
                                         {loading && <Loader color="grape" variant="dots"/>}
                                     </Group>
                                 </Container>
                             </Accordion.Panel>
                         </Accordion.Item>
-
+                        <Accordion.Item value="create-ticket">
+                            <Accordion.Control>
+                                <Group spacing={"xs"}>
+                                    <Text>
+                                        Create Ticket
+                                    </Text>
+                                    <HoverCard width={280} shadow="md">
+                                        <HoverCard.Target>
+                                            <ActionIcon>
+                                                <IconQuestionMark size={18}/>
+                                            </ActionIcon>
+                                        </HoverCard.Target>
+                                        <HoverCard.Dropdown>
+                                            <Text size="sm">
+                                                Create tickets using NFTs.
+                                            </Text>
+                                        </HoverCard.Dropdown>
+                                    </HoverCard>
+                                </Group>
+                            </Accordion.Control>
+                            <Accordion.Panel>
+                                <Container>
+                                    <Title order={1}>Create Ticket NFT</Title>
+                                    <TextInput m={"md"} label={"NFT Name"} value={name as any}
+                                               onChange={(event) => setName(event.currentTarget.value)}
+                                               placeholder="Name" required/>
+                                    <NativeSelect data={spaces} value={spaceName}
+                                                  onChange={(event) => setSpaceName(event.currentTarget.value)}
+                                                  label="Select your space"
+                                                  description="Make sure you have minted a space name before creating an NFT"
+                                                  variant="filled"
+                                                  withAsterisk
+                                                  required
+                                                  disabled={disabled}
+                                                  m={"md"}
+                                    />
+                                    <Textarea m={"md"} label={"NFT Description"} value={description as any}
+                                              onChange={(event) => setDescription(event.currentTarget.value)}
+                                              placeholder="Description"
+                                              required/>
+                                    <Group>
+                                        <NumberInput m={"md"} label={"NFT Price (in MATIC)"} value={price as number} precision={1}
+                                                     onChange={(value) => setPrice(value!)} required min={0}
+                                        />
+                                        <NumberInput m={"md"} label={"NFT Quantity"} value={quantity as number}
+                                                     onChange={(value) => setQuantity(value!)} required min={1}
+                                        />
+                                    </Group>
+                                    <FileInput m={"md"} required label={"Upload your nft image"}
+                                               placeholder={"Upload image file"}
+                                               accept={"image/*"} icon={<IconUpload size={14}/>} value={image as any}
+                                               onChange={setImage as any}/>
+                                    <Group>
+                                        <Button color={"indigo"} disabled={loading} m={"md"}
+                                                onClick={handleTicket}>Create Tickets</Button>
+                                        {loading && <Loader color="grape" variant="dots"/>}
+                                    </Group>
+                                </Container>
+                            </Accordion.Panel>
+                        </Accordion.Item>
                     </Accordion>
                 </Container>
             </Layout>

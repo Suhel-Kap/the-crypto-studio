@@ -6,6 +6,8 @@ import {Center, Button, Stack} from "@mantine/core";
 import {GlobalContext} from "../contexts/GlobalContext";
 import ChatContent from '../components/ChatContent';
 import ChatBox from "../components/ChatBox";
+import {useIsMounted} from "../hooks/useIsMounted";
+// import {getProvider} from "@wagmi/core";
 
 export default function Discussions() {
     // @ts-ignore
@@ -13,12 +15,14 @@ export default function Discussions() {
     const [loading, setLoading] = useState(false)
     const [posts, setPosts] = useState([])
     const {isDisconnected} = useAccount()
+    const mounted = useIsMounted()
 
     const logout = async () => {
         if (isDisconnected) {
             let res = await orbis.isConnected()
             if (res.status == 200) {
                 await orbis.logout()
+                setUser(null)
                 console.log("User is connected: ", res);
             }
         }
@@ -57,6 +61,8 @@ export default function Discussions() {
     const getPosts = async () => {
         setLoading(true);
         let {data, error} = await orbis.getPosts({context: channel_id});
+        const {data: temp} = await orbis.getGroup(group_id);
+        console.log("Group: ", temp);
         if(error) {
             alert("Error getting posts.");
         } else {
@@ -66,8 +72,11 @@ export default function Discussions() {
     }
 
     useEffect(() => {
+        console.log("user", user)
+        if(!mounted) return
+        if(!user) return
         getPosts()
-    }, [])
+    }, [mounted, user])
 
     return (
         <>
@@ -78,7 +87,7 @@ export default function Discussions() {
             <Layout>
                 {!user ?
                     <Center>
-                        <Button disabled={loading} onClick={async () => {
+                        <Button disabled={loading} color={"indigo"} onClick={async () => {
                             setLoading(true)
                             await connect()
                             setLoading(false)

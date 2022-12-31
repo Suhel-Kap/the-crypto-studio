@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visualizer_4</title>
+    <!-- <link rel="stylesheet" type="text/css" href="css/demo.css" /> -->
+    <script>
+        document.documentElement.className = "js"
+    </script>
+</head>
+
+<body class="The Crypto Studio" overflow="hidden">
+    <main class="site-wrapper"></main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/p5.touchgui-fork@0.7.1/lib/p5.touchgui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        let smoothing,
+            bins,
+            amplitude,
+            bars,
+            factor,
+            radius,
+            exponent,
+            strokeWidth,
+            affinity,
+            colour //locally stored values
+        let frameID = 0 //counter for animating the loading animation when a new song is uploaded
+        var pieces,
+            fft,
+            analyzer,
+            mapMouseX,
+            mapMouseY,
+            audio,
+            toggleBtn,
+            uploadBtn,
+            uploadedAudio,
+            uploadAnim
+        var colorPalette = ["#02073c", "#5b0ff5", "#f50fac", "#f50fac"]
+        var uploadLoading = false
+
+        /*=============================================
+  SETUP
+  =============================================*/
+
+        function preload() {
+            getStorage()
+            audio = loadSound(
+                "../preview.mp3"
+            )
+        }
+
+        // loader του νέου mp3 file απο το file system
+        function uploaded(file) {
+            uploadLoading = true
+            uploadedAudio = loadSound(
+                "../preview.mp3",
+                uploadedAudioPlay
+            )
+        }
+
+        // settings του visualizer
+        function getStorage() {
+            smoothing = 0.5
+            bins = Math.pow(2, 11)
+            amplitude = 0.4
+            bars = 105
+            factor = 500
+            radius = 200
+            exponent = 2
+            strokeWidth = 5
+            affinity = 1
+            colour = "#33ff00"
+        }
+
+        // Αρχικοποιηση των buttons upload track & play/pause
+        // αλλα και του animation φόρτωσης του uploaded song ao to file system
+        // η οταν φορτώνει ενα visualizer με το default του song
+        function setup() {
+            createCanvas(windowWidth, windowHeight)
+            fft = new p5.FFT(smoothing, bins)
+            audio.amp(parseFloat(amplitude))
+        }
+
+        /*=============================================
+  DRAW
+  =============================================*/
+
+        function draw() {
+            let bass = fft.getEnergy(2, 250)
+            background((bass * bass) / 5000)
+            let spectrum = fft.analyze()
+            spectrum.splice(bars, bins - bars)
+            noStroke()
+            let dtheta = Math.PI / spectrum.length,
+                angleOffset = -Math.PI / 18
+            let x1 = windowWidth / 2,
+                y1 = windowHeight / 2
+            let angle, x2, y2, x3, y3, magnitude
+
+            stroke(200)
+            strokeWeight(strokeWidth)
+
+            for (let i = 0; i < spectrum.length; i++) {
+                magnitude =
+                    (Math.pow(spectrum[i], exponent) * factor) / Math.pow(255, exponent) +
+                    radius * 0.3 //magnitude = frequency volume ^ exponent / 255 ^ exponent
+
+                angle = dtheta * i
+
+                x2 = Math.cos(angleOffset + angle + dtheta / 2) * magnitude + x1
+                y2 = Math.sin(angleOffset + angle + dtheta / 2) * magnitude + y1
+                x3 = Math.cos(angleOffset - angle - dtheta / 2) * magnitude + x1
+                y3 = Math.sin(angleOffset - angle - dtheta / 2) * magnitude + y1
+                line(x1, y1 - 10, x2, y2)
+                line(x1, y1 - 10, x3, y3)
+            }
+            // ροζ color του κύκλου
+            fill("#3B1344")
+            circle(x1, y1, radius * 0.28 * (2 + bass / 255))
+        }
+
+        function mousePressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function touchPressed() {
+            if (audio.isPlaying()) {
+                // .isPlaying() returns a boolean
+                audio.pause()
+                    // background(255);
+            } else {
+                audio.play()
+                    // background(0);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight)
+        }
+    </script>
+</body>
+
+</html>

@@ -5,18 +5,25 @@ interface NftCardProps {
     description: string;
     tokenId: string;
     animationUrl: string;
+    spaceName?: string;
     image: any;
-    setModalOpen: any;
-    setAddAttribute: any;
+    setModalOpen?: any;
+    setAddAttribute?: any;
+    remaining?: string;
+    total?: string;
+    price?: string;
 }
 
 import {
     Card,
     Text,
-    createStyles, Image, ActionIcon, Tooltip, Group,
+    createStyles, Image, ActionIcon, Tooltip, Group, Button,
 } from '@mantine/core';
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
+import getSpaceDetails from "../utils/getSpaceDetails";
+import {useIsMounted} from "../hooks/useIsMounted";
+import {ethers} from "ethers";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -57,24 +64,26 @@ export default function NftCard({
                                     tokenId,
                                     image,
                                     setModalOpen,
-                                    setAddAttribute
+                                    spaceName,
                                 }: NftCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof NftCardProps>) {
     const {classes, cx, theme} = useStyles();
     const gatewayUrl = animationUrl?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+    const mounted = useIsMounted()
+    const [spaceLink, setSpaceLink] = useState("")
 
     const linkProps = {href: gatewayUrl, target: '_blank', rel: 'noopener noreferrer'};
 
-    const router = useRouter()
-    const [isHome, setIsHome] = useState(false)
+    const getSpaceLink = async () => {
+        const res = await getSpaceDetails(spaceName!)
+        setSpaceLink(`/space?id=${spaceName}&address=${res[0].space_owner}&groupId=${res[0].groupID}`)
+    }
+
     useEffect(() => {
-        if (router.pathname === '/') {
-            setIsHome(true)
-        } else if (router.pathname === '/space') {
-            setIsHome(true)
-        } else {
-            setIsHome(false)
-        }
-    }, [router.pathname])
+        if (!mounted) return
+        if (!spaceName) return
+        getSpaceLink()
+    }, [spaceName, mounted])
+
 
     return (
         <Card withBorder radius="md" className={cx(classes.card)} m={"md"}>
@@ -89,25 +98,12 @@ export default function NftCard({
                     {title} <span className={classes.rating}>#{tokenId}</span>
                 </Text>
             </Tooltip>
-
+            <Text size="sm" color="dimmed" lineClamp={4} component={"a"} href={spaceLink}>
+                {spaceName}
+            </Text>
             <Text size="sm" color="dimmed" lineClamp={4}>
                 {description}
             </Text>
-
-            {!isHome && (
-                <Group mt={"md"}>
-                    {/*<Tooltip label={"Add attribute"}>*/}
-                    {/*    <ActionIcon onClick={setAddAttribute}>*/}
-                    {/*        <IconCirclePlus/>*/}
-                    {/*    </ActionIcon>*/}
-                    {/*</Tooltip>*/}
-                    <Tooltip label={"Edit NFT Audio"}>
-                        <ActionIcon onClick={setModalOpen}>
-                            <IconPencil/>
-                        </ActionIcon>
-                    </Tooltip>
-                </Group>
-            )}
 
         </Card>
     );

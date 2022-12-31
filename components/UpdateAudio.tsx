@@ -14,7 +14,7 @@ export function UpdateAudio(props: UpdateAudioProps){
     const [file, setFile] = useState<File>()
     const [loading, setLoading] = useState(false)
     const {upload} = useNftStorage()
-    const {changeAudio} = useContract()
+    const {updateAttribute} = useContract()
     const router = useRouter()
 
     const handleSubmit = async () => {
@@ -22,7 +22,11 @@ export function UpdateAudio(props: UpdateAudioProps){
         let audioCid = await upload(file!)
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         try{
-            await changeAudio(parseInt(props.tokenId), audioCid)
+            await updateAttribute({
+                tokenId: parseInt(props.tokenId),
+                traitType: "audio",
+                value: audioCid
+            })
             showNotification({
                 title: "Success",
                 message: "Audio updated",

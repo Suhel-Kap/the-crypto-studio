@@ -4,12 +4,23 @@ const nextConfig = {
   swcMinify: true,
 }
 
+// next.config.js
 module.exports = {
-  ...nextConfig,
-  images: {
-    loader: 'akamai',
-    path: '',
-  },
-  trailingSlash: true,
-  // assetPrefix: isProd ? "https://the-crypto-studio-20be90.spheron.app/" : "",
-}
+    ...nextConfig,
+  webpack: (config, options) => {
+    config.module.rules.push({
+      test: /\.m?js$/,
+      exclude: /(node_modules|bower_components)/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env'],
+          plugins: ['@babel/plugin-syntax-dynamic-import']
+        }
+      }
+    });
+
+    return config;
+  }
+};
+

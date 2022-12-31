@@ -255,10 +255,10 @@ export default function Space() {
                             <Center>
                                 <Tabs.List mb={"sm"}>
                                     <Tabs.Tab key={1} value={"nfts"} icon={<IconAlbum size={16}/>}>Space NFTs</Tabs.Tab>
-                                    {/*<Tabs.Tab key={2} value={"polls"} icon={<IconTallymarks size={16}/>}*/}
-                                    {/*          disabled={!isGroupMember}>Polls</Tabs.Tab>*/}
-                                    {/*<Tabs.Tab key={3} value={"create"} icon={<IconFilePencil size={16}/>}*/}
-                                    {/*          disabled={!isGroupMember}>Create Poll</Tabs.Tab>*/}
+                                    <Tabs.Tab key={2} value={"polls"} icon={<IconTallymarks size={16}/>}
+                                              disabled={!isGroupMember}>Polls</Tabs.Tab>
+                                    <Tabs.Tab key={3} value={"create"} icon={<IconFilePencil size={16}/>}
+                                              disabled={!isGroupMember}>Create Poll</Tabs.Tab>
                                     <Tabs.Tab key={4} value={"chat"} icon={<IconMessageChatbot size={16}/>}
                                               disabled={!isGroupMember}>Group Chat</Tabs.Tab>
                                     <Tabs.Tab value={"collab"} icon={<IconUnlink size={16}/>}>Collaboration Requests</Tabs.Tab>

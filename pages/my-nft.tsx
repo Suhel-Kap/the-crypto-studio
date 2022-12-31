@@ -4,7 +4,7 @@ import {useAccount} from "wagmi";
 import {useContext, useEffect, useState} from "react";
 import {getNfts} from "../utils/getNfts";
 import NftCard from "../components/NftCard"
-import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Tabs, Text} from "@mantine/core";
+import {Button, Center, Container, createStyles, Grid, Modal, Skeleton, Tabs, Text, Title} from "@mantine/core";
 import {UpdateAudio} from "../components/UpdateAudio";
 import {UpdateProfile} from "../components/UpdateProfile";
 import {GlobalContext} from "../contexts/GlobalContext";
@@ -130,7 +130,7 @@ export default function MyNft() {
             )
         })
     } else if (nfts?.length === 0) {
-        renderNfts = <div style={{margin: 30}}><Text>You have 0 NFTs</Text></div>
+        renderNfts = <div style={{margin: 30}}><Title m={"xl"}>You have 0 NFTs</Title></div>
     } else {
         renderNfts = <>
             <Skeleton height={350} width={350} m={"xl"} radius={"xl"}/>

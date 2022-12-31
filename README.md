@@ -36,28 +36,19 @@ We provide them all of them from our UI!
 [Collection on OpenSea](https://testnets.opensea.io/collection/thecryptostudio)
 
  
- **Here is the prototype Architecture of our Platform** 
+ ## ARCHITECTURE
 
 <p align="left">
-<img src="./public/TheCryptoStudio (4).webp"/>
+<img src="./public/TCSARCHITECTURE.webp"/>
  
- **Intergrated Technologies** 
-
-<p align="left">
-<img src="./public/TheCryptoStudio (5).webp"/>
- 
- 
-**Here is the prototype Architecture of our NFTs** 
-
-<p align="left">
-<img src="./public/architecture.png"/>
-Here is an HTML example :
-<br />
-https://github.com/Suhel-Kap/the-crypto-studio/blob/main/constants/nfts/nft7.html
-</p>
-
-
 # Technologies Used
+
+<p align="left">
+<img src="./public/TCSTECH.webp"/>
+
+
+
+
 <br/>
 This is how we used the Vocdoni SDK - Lit Protocol - Gitcoin Passport -  Orbis SDK
   <br />

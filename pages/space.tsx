@@ -18,8 +18,8 @@ import MonetizeSpace from "../components/MonetizeSpace";
 import {useContract} from "../hooks/useContract";
 import CollaborationRequests from "../components/CollaborationRequests";
 
-// const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
-// const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
+const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
+const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
 
 let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
 let orbisGroup = "https://app.orbis.club/group/"
@@ -271,12 +271,12 @@ export default function Space() {
                                     {renderNfts}
                                 </Grid>
                             </Tabs.Panel>
-                            {/*<Tabs.Panel value={"polls"}>*/}
-                            {/*    <Polls/>*/}
-                            {/*</Tabs.Panel>*/}
-                            {/*<Tabs.Panel value={"create"}>*/}
-                            {/*    <PollCreationForm spaceMember={spaceMember} spaceName={spaceName}/>*/}
-                            {/*</Tabs.Panel>*/}
+                            <Tabs.Panel value={"polls"}>
+                                <Polls/>
+                            </Tabs.Panel>
+                            <Tabs.Panel value={"create"}>
+                                <PollCreationForm spaceMember={spaceMember} spaceName={spaceName}/>
+                            </Tabs.Panel>
                             <Tabs.Panel value={"chat"}>
                                 <GroupPosts spaceMember={spaceMember}/>
                             </Tabs.Panel>

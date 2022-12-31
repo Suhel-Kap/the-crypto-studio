@@ -32,44 +32,44 @@ export default function PostCard(props: any) {
     const {orbis} = useContext(GlobalContext)
     let tokenId = 0
 
-    const evmContractConditions = [
-        {
-            contractAddress: tcsContractAddress["the-crypto-studio"],
-            functionName: "balanceOf",
-            functionParams: [":userAddress", tokenId],
-            functionAbi: {
-                type: "function",
-                stateMutability: "view",
-                outputs: [
-                    {
-                        type: "uint256",
-                        name: "",
-                        internalType: "uint256",
-                    },
-                ],
-                name: "balanceOf",
-                inputs: [
-                    {
-                        type: "address",
-                        name: "account",
-                        internalType: "address",
-                    },
-                    {
-                        type: "uint256",
-                        name: "id",
-                        internalType: "uint256",
-                    },
-                ],
-            },
-            chain: "mumbai",
-            returnValueTest: {
-                key: "",
-                comparator: ">",
-                value: "0",
-            },
-        },]
+    // const evmContractConditionsUser = [
+    //     {
+    //         contractAddress: tcsContractAddress["the-crypto-studio"],
+    //         functionName: "balanceOf",
+    //         functionParams: [":userAddress", tokenId],
+    //         functionAbi: {
+    //             type: "function",
+    //             stateMutability: "view",
+    //             outputs: [
+    //                 {
+    //                     type: "uint256",
+    //                     name: "",
+    //                     internalType: "uint256",
+    //                 },
+    //             ],
+    //             name: "balanceOf",
+    //             inputs: [
+    //                 {
+    //                     type: "address",
+    //                     name: "account",
+    //                     internalType: "address",
+    //                 },
+    //                 {
+    //                     type: "uint256",
+    //                     name: "id",
+    //                     internalType: "uint256",
+    //                 },
+    //             ],
+    //         },
+    //         chain: "mumbai",
+    //         returnValueTest: {
+    //             key: "",
+    //             comparator: ">",
+    //             value: "0",
+    //         },
+    //     },]
 
-    const evmContractConditionsGrp = [
+    const evmContractConditions = [
         {
             contractAddress: tcsContractAddress["the-crypto-studio"],
             functionName: "isSpaceMember",
@@ -145,7 +145,7 @@ export default function PostCard(props: any) {
         )
     }
 
-    if(encrypted){
+    if(encrypted && router.pathname === "/space"){
         const encryption = JSON.parse(props.post.content.tags[1].title)
         decrypt(encryption).then(res => setBody(res))
     }

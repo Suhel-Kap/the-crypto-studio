@@ -3,7 +3,7 @@
 </h1>
 
 <p>
-<img src=./public/TheCryptoStudio.png" alt="alt text" width="200" height="200"/>
+<img src="./public/TheCryptoStudio.png" alt="alt text"/>
 </p>
 
 
@@ -59,12 +59,12 @@ NFT owners can add and update their NFT metadata by interacting with the cryptoS
  **Here is the prototype Architecture of our Platform** 
 
 <p align="left">
-<img src="./public/TheCryptoStudio(1).png"/>
+<img src="./public/TheCryptoStudio (1).png"/>
  
  **Intergrated Technologies** 
 
 <p align="left">
-<img src="./public/TheCryptoStudio(2).png"/>
+<img src="./public/TheCryptoStudio (2).png"/>
  
  
 **Here is the prototype Architecture of our NFTs** 

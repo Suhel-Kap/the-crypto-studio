@@ -3,8 +3,9 @@
 </h1>
 
 <p>
-<img src="./public/logo.webp" alt="alt text" width="200" height="200"/>
+<img src=./public/TheCryptoStudio.png" alt="alt text" width="200" height="200"/>
 </p>
+
 
 [Demo video](https://youtu.be/e4lI4cYYG3U)
 
@@ -51,6 +52,21 @@ The dynamic features for changing the audio track of an NFT come into place by u
 
 NFT owners can add and update their NFT metadata by interacting with the cryptoStudio Smart contract as they want except the animationURL and the spaceName trait attributes, to keep the basic art and the creatorSignature immutable.
 
+
+
+
+ 
+ **Here is the prototype Architecture of our Platform** 
+
+<p align="left">
+<img src="./public/TheCryptoStudio(1).png"/>
+ 
+ **Intergrated Technologies** 
+
+<p align="left">
+<img src="./public/TheCryptoStudio(2).png"/>
+ 
+ 
 **Here is the prototype Architecture of our NFTs** 
 
 <p align="left">

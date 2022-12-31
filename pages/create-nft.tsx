@@ -106,7 +106,7 @@ export default function CreateNft() {
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         let tokenId = await getCurrentTokenId()
         tokenId = parseInt(tokenId) + 1
-        const updateHtml = await fetch("/api/updateHtml", {
+        const updateHtml = await fetch("https://tcs-server-ydkcvwlbra-uc.a.run.app/mint", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

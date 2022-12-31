@@ -1,27 +1,65 @@
 import {useInputState} from "@mantine/hooks";
 import {ActionIcon, Center, Grid, Paper, Textarea} from "@mantine/core";
 import {IconSend} from "@tabler/icons";
-import {useContext} from "react";
+import {useContext, useEffect, useState} from "react";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {showNotification, updateNotification} from "@mantine/notifications";
 import {tcsContractAddress} from "../constants";
 // @ts-ignore
 import LitJsSdk from "@lit-protocol/sdk-browser";
 import {useRouter} from "next/router";
+import getCreatedNfts from "../utils/getCreatedNfts";
 
 interface PostInputProps {
     groupId: string
     tag: string
-    fetchPost?: any
+    tokenId?: string
     spaceName?: string
     encrypted?: boolean
 }
 
-export default function PostInput({groupId, tag, fetchPost, spaceName, encrypted}: PostInputProps) {
+export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}: PostInputProps) {
     const [content, setContent] = useInputState("")
     const router = useRouter()
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
+
+    const userEncryptionConditions = [
+        {
+            contractAddress: tcsContractAddress["the-crypto-studio"],
+            functionName: "balanceOf",
+            functionParams: [":userAddress", tokenId],
+            functionAbi: {
+                type: "function",
+                stateMutability: "view",
+                outputs: [
+                    {
+                        type: "uint256",
+                        name: "",
+                        internalType: "uint256",
+                    },
+                ],
+                name: "balanceOf",
+                inputs: [
+                    {
+                        type: "address",
+                        name: "account",
+                        internalType: "address",
+                    },
+                    {
+                        type: "uint256",
+                        name: "id",
+                        internalType: "uint256",
+                    },
+                ],
+            },
+            chain: "mumbai",
+            returnValueTest: {
+                key: "",
+                comparator: ">",
+                value: "0",
+            },
+        },]
 
     const evmContractConditions = [
         {
@@ -85,9 +123,68 @@ export default function PostInput({groupId, tag, fetchPost, spaceName, encrypted
                 slug: tag.toLowerCase(),
                 title: "TCS Post"
             }, {
-                    slug: "encrypted",
-                    title: JSON.stringify(var1)
-                }],
+                slug: "encrypted",
+                title: JSON.stringify(var1)
+            }],
+        },)
+        if (res.status === 200) {
+            updateNotification({
+                id: "post-input",
+                title: "Posted!",
+                message: "Your message has been posted.",
+                autoClose: 5000,
+            })
+            setContent("")
+            await router.reload()
+        } else {
+            updateNotification({
+                id: "post-input",
+                title: "Error",
+                color: "red",
+                message: "There was an error posting your message.",
+                autoClose: 5000,
+            })
+        }
+    }
+
+    const handleUserEncryptionPost = async () => {
+        showNotification({
+            id: "post-input",
+            title: "Posting...",
+            message: "Please wait while we post your message.",
+            loading: true,
+            disallowClose: true,
+        })
+        const client = new LitJsSdk.LitNodeClient();
+        const chain = "mumbai";
+        const authSig = await LitJsSdk.checkAndSignAuthMessage({chain: "mumbai"});
+        const {encryptedString, symmetricKey} = await LitJsSdk.encryptString(
+            content
+        );
+
+        await client.connect()
+
+        const encryptedSymmetricKey = await client.saveEncryptionKey({
+            userEncryptionConditions,
+            symmetricKey,
+            authSig,
+            chain,
+        })
+        let resu = await LitJsSdk.blobToBase64String(encryptedString)
+        const encryptedRes = {
+            toDecrypt: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"),
+            encrypted: resu
+        }
+        const res = await orbis.createPost({
+            body: "This is an encrypted post visible only to NFT holders",
+            context: groupId.toLowerCase(),
+            tags: [{
+                slug: tag.toLowerCase(),
+                title: "TCS Post"
+            }, {
+                slug: "encrypted",
+                title: JSON.stringify(encryptedRes)
+            }],
         },)
         if (res.status === 200) {
             updateNotification({
@@ -163,7 +260,10 @@ export default function PostInput({groupId, tag, fetchPost, spaceName, encrypted
                     {!encrypted && <ActionIcon onClick={handleSubmit}>
                         <IconSend size={32} color={"blue"}/>
                     </ActionIcon>}
-                    {encrypted && <ActionIcon onClick={hanldeEncryptPost}>
+                    {!tokenId && encrypted && <ActionIcon onClick={hanldeEncryptPost}>
+                        <IconSend size={32} color={"blue"}/>
+                    </ActionIcon>}
+                    {tokenId && encrypted && <ActionIcon onClick={handleUserEncryptionPost}>
                         <IconSend size={32} color={"blue"}/>
                     </ActionIcon>}
                 </Center>

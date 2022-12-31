@@ -35,7 +35,7 @@ export default function GroupPosts({spaceMember}: GroupPostProps){
 
     return (
         <Container>
-            <PostInput spaceName={spaceName} fetchPost={getPosts} encrypted={checked} groupId={groupId as string} tag={"tcspost"} />
+            <PostInput spaceName={spaceName} encrypted={checked} groupId={groupId as string} tag={"tcspost"} />
             <div style={{
                 marginTop: -60
             }}>

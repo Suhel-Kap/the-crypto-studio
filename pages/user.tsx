@@ -119,8 +119,8 @@ export default function User() {
             setUserRender(<CreatorCard email={address}/>)
             setUsername("User")
         } else {
-            setUserRender(<CreatorCard email={address} image={data.details.profile.pfp} name={data.username}/>)
-            setUsername(data.username)
+            setUserRender(<CreatorCard email={address} image={data?.details?.profile?.pfp} name={data?.username}/>)
+            setUsername(data?.username || "User")
         }
     }
 

@@ -73,7 +73,7 @@ This is how we used the Vocdoni SDK - Lit Protocol - Gitcoin Passport -  Orbis S
     <br />
         We are using Lit Protocol by leveraging their SDK to encrypt posts  
         <br/>
-        In our implementation we are using the **erc1155 tokenGated access control** for posts - channels created into our dapp
+        In our implementation we are using the **erc1155 tokenGated access control** and our custom rule from our smart contract for posts - channels created into our dapp
         <br />
         TheCryptoStudio uses the Lit protocol to encrypt orbis posts with our custom smart contract function that determines if an individual is a space member
         This allows a private social layer for each space and its members.
@@ -140,7 +140,7 @@ This is how we used the Vocdoni SDK - Lit Protocol - Gitcoin Passport -  Orbis S
   ## SmartContract
   Our contract is deployed and verified on polygon mumbai here is the mumbaiScan Link . 
 <br />
-####https://mumbai.polygonscan.com/address/0x19f1C98534C647Bc8a33F14c777a959BFA9f14dD#code
+####https://mumbai.polygonscan.com/address/0xC2df717A00c751cfBE03E1b4f07e65CCa5b9a524#code
 
  
  ---

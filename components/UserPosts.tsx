@@ -6,7 +6,9 @@ import {useIsMounted} from "../hooks/useIsMounted";
 import {GlobalContext} from "../contexts/GlobalContext";
 import PostCard from "./PostCard";
 import {useAccount} from "wagmi";
-import getCreatedNfts from "../utils/getCreatedNfts";
+import {getNfts} from "../utils/getNfts";
+
+
 
 export default function UserPosts() {
     const router = useRouter()
@@ -15,12 +17,14 @@ export default function UserPosts() {
     const [data, setData] = useState<any>()
     const [selectedToken, setSelectedToken] = useState("")
     const isMounted = useIsMounted()
+
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
     const getPosts = async (address: string) => {
         const res = await orbis.getPosts({context: address.toLowerCase(), tag: address.toLowerCase()})
         if (res.status === 200) {
             setData(res.data)
+            console.log(res.data)
         } else {
             setData([])
         }
@@ -43,13 +47,14 @@ export default function UserPosts() {
 
     const getTokenId = async () => {
         if (router.pathname === "/my-nft") {
-            getCreatedNfts(address!.toLowerCase()).then((nfts: any) => {
                 let tokenIds: any = []
-                nfts.forEach((nft: any) => {
+                getNfts(address).then((nfts) => {
+                    nfts.forEach((nft: any) => {
                     tokenIds.push(nft.tokenID)
+                    });
+                    console.log(tokenIds)
+                    setTokenIds(tokenIds)
                 })
-                setTokenIds(tokenIds)
-            })
         }
     }
 
@@ -57,11 +62,12 @@ export default function UserPosts() {
         if (!address) return
         if (!checked) return
         getTokenId()
+        console.log(selectedToken)
     }, [address, checked])
 
     return (
         <Container>
-            {isDashboard &&
+            {isDashboard && 
                 <PostInput spaceName={""} groupId={address as string} tag={address as string} encrypted={checked} tokenId={selectedToken}/>}
             {isDashboard && <div style={{
                 marginTop: -60

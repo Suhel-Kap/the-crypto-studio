@@ -100,12 +100,13 @@ export default function PollCreationForm(props: any) {
                     endDate.setHours(values.endHour)
                     endDate.setMinutes(values.endMinute)
                     const electionId = await initElection(signer, groupMembers, values.topic, values.description, endDate, imageUri, values.questions)
+                    console.log(groupId)
                     console.log(electionId)
+
                     const res = await orbis.createPost(
                         {
                             context: `${groupId}`,
                             body: `${electionId}`,
-                            mentions: mentions,
                             tags: [{
                                 slug: "poll",
                                 title: "Poll"

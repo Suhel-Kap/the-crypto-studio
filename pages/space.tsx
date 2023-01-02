@@ -21,7 +21,7 @@ import CollaborationRequests from "../components/CollaborationRequests";
 const PollCreationForm = dynamic(() => import("../components/PollCreationForm"), {ssr: false})
 const Polls = dynamic(() => import("../components/Polls"), {ssr: false})
 
-let query = "https://testnets.opensea.io/collection/cryptostudio-2xpo9crut9?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
+let query = "https://testnets.opensea.io/collection/thecryptostudio?search[sortAscending]=true&search[sortBy]=UNIT_PRICE&search[stringTraits][0][name]=spaceName&search[stringTraits][0][values][0]="
 let orbisGroup = "https://app.orbis.club/group/"
 
 const useStyles = createStyles((theme) => ({

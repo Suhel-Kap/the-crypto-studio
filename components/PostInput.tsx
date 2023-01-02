@@ -24,44 +24,47 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
 
-    const userEncryptionConditions = [
-        {
-            contractAddress: tcsContractAddress["the-crypto-studio"],
-            functionName: "balanceOf",
-            functionParams: [":userAddress", tokenId],
-            functionAbi: {
-                type: "function",
-                stateMutability: "view",
-                outputs: [
-                    {
-                        type: "uint256",
-                        name: "",
-                        internalType: "uint256",
-                    },
-                ],
-                name: "balanceOf",
-                inputs: [
-                    {
-                        type: "address",
-                        name: "account",
-                        internalType: "address",
-                    },
-                    {
-                        type: "uint256",
-                        name: "id",
-                        internalType: "uint256",
-                    },
-                ],
-            },
-            chain: "mumbai",
-            returnValueTest: {
-                key: "",
-                comparator: ">",
-                value: "0",
-            },
-        },]
+    function getTokenGatedConditions(tokenid:any){
+        const accessControlConditions = [
+            {
+                contractAddress: tcsContractAddress["the-crypto-studio"],
+                functionName: "balanceOf",
+                functionParams: [":userAddress", tokenid],
+                functionAbi: {
+                    type: "function",
+                    stateMutability: "view",
+                    outputs: [
+                        {
+                            type: "uint256",
+                            name: "",
+                            internalType: "uint256",
+                        },
+                    ],
+                    name: "balanceOf",
+                    inputs: [
+                        {
+                            type: "address",
+                            name: "account",
+                            internalType: "address",
+                        },
+                        {
+                            type: "uint256",
+                            name: "id",
+                            internalType: "uint256",
+                        },
+                    ],
+                },
+                chain: "mumbai",
+                returnValueTest: {
+                    key: "",
+                    comparator: ">",
+                    value: "0",
+                },
+            },]
+            return accessControlConditions
+    }
 
-    const evmContractConditions = [
+    var evmContractConditions = [
         {
             contractAddress: tcsContractAddress["the-crypto-studio"],
             functionName: "isSpaceMember",
@@ -163,9 +166,9 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         );
 
         await client.connect()
-
+        evmContractConditions = getTokenGatedConditions(tokenId)
         const encryptedSymmetricKey = await client.saveEncryptionKey({
-            userEncryptionConditions,
+            evmContractConditions,
             symmetricKey,
             authSig,
             chain,
@@ -173,10 +176,14 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         let resu = await LitJsSdk.blobToBase64String(encryptedString)
         const encryptedRes = {
             toDecrypt: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"),
-            encrypted: resu
+            encrypted: resu,
+            tokenid: tokenId,
         }
+        console.log("TokenID : ",encryptedRes.tokenid)
+        let bodytext = "This is an encrypted post visible only to tokenID = "+encryptedRes.tokenid+" NFT holders"
+        console.log(bodytext)
         const res = await orbis.createPost({
-            body: "This is an encrypted post visible only to NFT holders",
+            body: bodytext,
             context: groupId.toLowerCase(),
             tags: [{
                 slug: tag.toLowerCase(),

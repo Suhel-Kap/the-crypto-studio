@@ -106,7 +106,7 @@ export default function CreateNft() {
         audioCid = `https://ipfs.io/ipfs/${audioCid}`
         let tokenId = await getCurrentTokenId()
         tokenId = parseInt(tokenId) + 1
-        const updateHtml = await fetch("https://tcs-server-ydkcvwlbra-uc.a.run.app/mint", {
+        const updateHtml = await fetch(`${process.env.NEXT_PUBLIC_GCLOUD_URL}/mint`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -121,7 +121,7 @@ export default function CreateNft() {
         const animation = await updateHtml.json()
         const cid = animation.jsonCid
         // console.log("dataCid", cid)
-        const animationCid = `https://${cid}.ipfs.nftstorage.link/${tokenId}.html`
+        const animationCid = `https://ipfs.io/ipfs/${cid}/${tokenId}.html`
         // console.log("animationCid", animationCid)
         let image
         switch (selectedNft) {

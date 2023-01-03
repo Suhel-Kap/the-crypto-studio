@@ -31,8 +31,8 @@ export default function PostCard(props: any) {
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
     useEffect(() => {
-        var cond = props.post.content.tags[1]
-        console.log(cond)
+        let cond = props.post.content.tags[1]
+        // console.log(cond)
         if (cond) {
             let data = JSON.parse(props.post.content.tags[1].title)
             if(data.tokenid){
@@ -49,7 +49,7 @@ export default function PostCard(props: any) {
                     nfts.forEach((nft: any) => {
                         tokenIds.push(nft.tokenID)
                     });
-                    console.log(tokenIds)
+                    // console.log(tokenIds)
                     tokenIds.forEach((tokenid: any) => {
                         if (tokenid == data.tokenid) {
                             setAble(true)
@@ -70,7 +70,7 @@ export default function PostCard(props: any) {
     }, [props.post.content.body])
 
     function getTokenGatedConditions(tokenid: any) {
-        const accessControlConditions = [
+        return [
             {
                 contractAddress: tcsContractAddress["the-crypto-studio"],
                 functionName: "balanceOf",
@@ -106,7 +106,6 @@ export default function PostCard(props: any) {
                     value: "0",
                 },
             }]
-        return accessControlConditions
     }
 
 
@@ -183,15 +182,15 @@ export default function PostCard(props: any) {
     if ((router.pathname === "/user" || router.pathname === "/my-nft") && encrypted) {
         // able is a useState variable and checks if the user has balanceOf > 0 for the current post
         // token gated NFT
-        console.log(able)
+        // console.log(able)
         if (able) {
-            var EncryptionData = JSON.parse(props.post.content.tags[1].title)
-            console.log(EncryptionData)
+            let EncryptionData = JSON.parse(props.post.content.tags[1].title)
+            // console.log(EncryptionData)
             if (EncryptionData.tokenid) {
-                console.log("encryption", EncryptionData)
+                // console.log("encryption", EncryptionData)
                 decryptUserPost(EncryptionData).then((decrypted: any) => {
                     setBody(decrypted)
-                    console.log(decrypted)
+                    // console.log(decrypted)
                 })
             }
         }

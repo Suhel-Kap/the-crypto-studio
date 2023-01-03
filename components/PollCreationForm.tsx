@@ -106,16 +106,13 @@ export default function PollCreationForm(props: any) {
                     const res = await orbis.createPost(
                         {
                             context: `${groupId}`,
-                            body: "Created the"+`${electionId}`,
+                            body: `${electionId}`,
                             tags: [{
                                 slug: "poll",
                                 title: "Poll"
                             }],
                         }
                     )
-                    if(res===200){
-                        let res2 = await orbis.editPost(res.doc, {body: "  Created the election with ID =   "+electionId+"  check it here" + "https://the-crypto-studio.vercel.app/voting?electionID="+electionId+"&creator=did%3Apkh%3Aeip155%3A42%3A"+address+"&streamId="+res.dec});
-                    }
                     if (res.status === 200) {
                         updateNotification({
                             title: "Poll created",

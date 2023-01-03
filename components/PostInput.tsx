@@ -8,8 +8,7 @@ import {tcsContractAddress} from "../constants";
 // @ts-ignore
 import LitJsSdk from "@lit-protocol/sdk-browser";
 import {useRouter} from "next/router";
-import getCreatedNfts from "../utils/getCreatedNfts";
-
+import {useAccount, useSigner} from "wagmi";
 interface PostInputProps {
     groupId: string
     tag: string
@@ -20,48 +19,53 @@ interface PostInputProps {
 
 export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}: PostInputProps) {
     const [content, setContent] = useInputState("")
+    const {address} = useAccount()
+
     const router = useRouter()
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
 
-    const userEncryptionConditions = [
-        {
-            contractAddress: tcsContractAddress["the-crypto-studio"],
-            functionName: "balanceOf",
-            functionParams: [":userAddress", tokenId],
-            functionAbi: {
-                type: "function",
-                stateMutability: "view",
-                outputs: [
-                    {
-                        type: "uint256",
-                        name: "",
-                        internalType: "uint256",
-                    },
-                ],
-                name: "balanceOf",
-                inputs: [
-                    {
-                        type: "address",
-                        name: "account",
-                        internalType: "address",
-                    },
-                    {
-                        type: "uint256",
-                        name: "id",
-                        internalType: "uint256",
-                    },
-                ],
-            },
-            chain: "mumbai",
-            returnValueTest: {
-                key: "",
-                comparator: ">",
-                value: "0",
-            },
-        },]
+    function getTokenGatedConditions(tokenid:any){
+        const accessControlConditions = [
+            {
+                contractAddress: tcsContractAddress["the-crypto-studio"],
+                functionName: "balanceOf",
+                functionParams: [":userAddress", tokenid],
+                functionAbi: {
+                    type: "function",
+                    stateMutability: "view",
+                    outputs: [
+                        {
+                            type: "uint256",
+                            name: "",
+                            internalType: "uint256",
+                        },
+                    ],
+                    name: "balanceOf",
+                    inputs: [
+                        {
+                            type: "address",
+                            name: "account",
+                            internalType: "address",
+                        },
+                        {
+                            type: "uint256",
+                            name: "id",
+                            internalType: "uint256",
+                        },
+                    ],
+                },
+                chain: "mumbai",
+                returnValueTest: {
+                    key: "",
+                    comparator: ">",
+                    value: "0",
+                },
+            },]
+            return accessControlConditions
+    }
 
-    const evmContractConditions = [
+    var evmContractConditions = [
         {
             contractAddress: tcsContractAddress["the-crypto-studio"],
             functionName: "isSpaceMember",
@@ -86,7 +90,7 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         },
     ]
 
-    const hanldeEncryptPost = async () => {
+    const hanldeEncryptPostOnlySpaceMembers = async () => {
         showNotification({
             id: "post-input",
             title: "Posting...",
@@ -116,8 +120,9 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
             toDecrypt: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"),
             encrypted: resu
         }
+        console.log(groupId.toLowerCase())
         const res = await orbis.createPost({
-            body: "This is an encrypted post visible only to space members",
+            body: "https://the-crypto-studio.vercel.app/space?address="+address.toLowerCase()+"&groupId="+groupId.toLowerCase()+"&id=The%20Immutable%20Gallery",
             context: groupId.toLowerCase(),
             tags: [{
                 slug: tag.toLowerCase(),
@@ -147,7 +152,7 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         }
     }
 
-    const handleUserEncryptionPost = async () => {
+    const handleUserTokenGatedEncryptionPost = async () => {
         showNotification({
             id: "post-input",
             title: "Posting...",
@@ -163,9 +168,9 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         );
 
         await client.connect()
-
+        evmContractConditions = getTokenGatedConditions(tokenId)
         const encryptedSymmetricKey = await client.saveEncryptionKey({
-            userEncryptionConditions,
+            evmContractConditions,
             symmetricKey,
             authSig,
             chain,
@@ -173,10 +178,15 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         let resu = await LitJsSdk.blobToBase64String(encryptedString)
         const encryptedRes = {
             toDecrypt: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16"),
-            encrypted: resu
+            encrypted: resu,
+            tokenid: tokenId,
         }
+        console.log("TokenID : ",encryptedRes.tokenid)
+        let bodytext = "This is an encrypted post visible only to tokenID = "+encryptedRes.tokenid+" NFT holders check it here on TheCryptoStudioPlatform "+
+        "https://the-crypto-studio.vercel.app/user?address="+address.toLowerCase()
+        console.log(bodytext)
         const res = await orbis.createPost({
-            body: "This is an encrypted post visible only to NFT holders",
+            body: bodytext,
             context: groupId.toLowerCase(),
             tags: [{
                 slug: tag.toLowerCase(),
@@ -260,10 +270,10 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
                     {!encrypted && <ActionIcon onClick={handleSubmit}>
                         <IconSend size={32} color={"blue"}/>
                     </ActionIcon>}
-                    {!tokenId && encrypted && <ActionIcon onClick={hanldeEncryptPost}>
+                    {!tokenId && encrypted && <ActionIcon onClick={hanldeEncryptPostOnlySpaceMembers}>
                         <IconSend size={32} color={"blue"}/>
                     </ActionIcon>}
-                    {tokenId && encrypted && <ActionIcon onClick={handleUserEncryptionPost}>
+                    {tokenId && encrypted && <ActionIcon onClick={handleUserTokenGatedEncryptionPost}>
                         <IconSend size={32} color={"blue"}/>
                     </ActionIcon>}
                 </Center>

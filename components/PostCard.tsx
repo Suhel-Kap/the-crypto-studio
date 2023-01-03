@@ -22,54 +22,88 @@ export default function PostCard(props: any) {
     const [likes, setLikes] = useState(props.post.count_likes)
     const [downvotes, setDownvotes] = useState(props.post.count_downvotes)
     const [haha, setHaha] = useState(props.post.count_haha)
-    const {address} = useAccount()
     const [likeColor, setLikeColor] = useState("gray")
     const [downvoteColor, setDownvoteColor] = useState("gray")
     const [hahaColor, setHahaColor] = useState("gray")
     const [encrypted, setEncrypted] = useState(false)
+    const [able, setAble] = useState(false)
     const [body, setBody] = useState(`This is an encrypted post visible only to ${props.spaceName} NFT holders.`)
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
-    let tokenId = 0
+    useEffect(() => {
+        var cond = props.post.content.tags[1]
+        console.log(cond)
+        if(cond){
+            var data = JSON.parse(props.post.content.tags[1].title)
+            let tokenIds: any = []
+            if(props.groupId){
+                getNfts(props.groupId).then((nfts) => {
+                    nfts.forEach((nft: any) => {
+                    tokenIds.push(nft.tokenID)
+                    });
+                    console.log(tokenIds)
+                    tokenIds.forEach((tokenid:any)=>{
+                        if(tokenid==data.tokenid){
+                            setAble(true)
+                        }
+                    })
+                })
+            }
+            setEncrypted(true)
+        }
+        else{
+            setEncrypted(false)
+            setAble(false)
+        }
+        
+                
+        if (props.post.content.body.includes( "This is an encrypted post visible only to")) {
+            setEncrypted(true)
+        }
+    }, [props.post.content.body])
+    function getTokenGatedConditions(tokenid:any){
+        const accessControlConditions = [
+            {
+                contractAddress: tcsContractAddress["the-crypto-studio"],
+                functionName: "balanceOf",
+                functionParams: [":userAddress", tokenid],
+                functionAbi: {
+                    type: "function",
+                    stateMutability: "view",
+                    outputs: [
+                        {
+                            type: "uint256",
+                            name: "",
+                            internalType: "uint256",
+                        },
+                    ],
+                    name: "balanceOf",
+                    inputs: [
+                        {
+                            type: "address",
+                            name: "account",
+                            internalType: "address",
+                        },
+                        {
+                            type: "uint256",
+                            name: "id",
+                            internalType: "uint256",
+                        },
+                    ],
+                },
+                chain: "mumbai",
+                returnValueTest: {
+                    key: "",
+                    comparator: ">",
+                    value: "0",
+                },
+            }]
+            return accessControlConditions
+    }
 
-    // const evmContractConditionsUser = [
-    //     {
-    //         contractAddress: tcsContractAddress["the-crypto-studio"],
-    //         functionName: "balanceOf",
-    //         functionParams: [":userAddress", tokenId],
-    //         functionAbi: {
-    //             type: "function",
-    //             stateMutability: "view",
-    //             outputs: [
-    //                 {
-    //                     type: "uint256",
-    //                     name: "",
-    //                     internalType: "uint256",
-    //                 },
-    //             ],
-    //             name: "balanceOf",
-    //             inputs: [
-    //                 {
-    //                     type: "address",
-    //                     name: "account",
-    //                     internalType: "address",
-    //                 },
-    //                 {
-    //                     type: "uint256",
-    //                     name: "id",
-    //                     internalType: "uint256",
-    //                 },
-    //             ],
-    //         },
-    //         chain: "mumbai",
-    //         returnValueTest: {
-    //             key: "",
-    //             comparator: ">",
-    //             value: "0",
-    //         },
-    //     },]
+    
 
-    const evmContractConditions = [
+    var evmContractConditions = [
         {
             contractAddress: tcsContractAddress["the-crypto-studio"],
             functionName: "isSpaceMember",
@@ -96,9 +130,12 @@ export default function PostCard(props: any) {
 
     const decryptUserPost = async (encrypted: any) => {
         const client = new LitJsSdk.LitNodeClient()
+
         const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: "mumbai" })
         await client.connect()
-
+        
+        
+        evmContractConditions = getTokenGatedConditions(encrypted.tokenid)
         const symmetricKey2 = await client.getEncryptionKey({
             evmContractConditions,
             toDecrypt: encrypted.toDecrypt,
@@ -110,21 +147,9 @@ export default function PostCard(props: any) {
             symmetricKey2
         )
     }
+    
 
-    if(router.pathname === "/user" && encrypted){
-        getNfts(address!).then((nfts: any) => {
-            // for tokenId of each nft, try to decrypt the user post
-            nfts.forEach((nft: any) => {
-                tokenId = parseInt(nft.tokenID)
-                // console.log("token id", tokenId)
-                const encryption = JSON.parse(props.post.content.tags[1].title)
-                // console.log("encryption", encryption)
-                // decryptUserPost(encryption).then((decrypted: any) => {
-                //     setBody(decrypted)
-                // })
-            })
-        })
-    }
+    
 
     const decrypt = async (encrypted: any) => {
         if(!props?.spaceMember) return
@@ -150,11 +175,27 @@ export default function PostCard(props: any) {
         decrypt(encryption).then(res => setBody(res))
     }
 
-    useEffect(() => {
-        if (props.post.content.body === "This is an encrypted post visible only to space members") {
-            setEncrypted(true)
-        }
-    }, [props.post.content.body])
+    if((router.pathname === "/user" || router.pathname === "/my-nft")  && encrypted){
+        // able is a useState variable and checks if the user has balanceOf > 0 for the current post 
+        // token gated NFT
+        console.log(able)
+       if(true){
+        var EncryptionData = JSON.parse(props.post.content.tags[1].title)
+        console.log(EncryptionData)
+        if(EncryptionData.tokenid){
+        console.log("encryption", EncryptionData)
+        decryptUserPost(EncryptionData).then((decrypted: any) => {
+        setBody(decrypted)
+        console.log(decrypted)
+    })
+       }
+            
+            
+        
+        
+    }
+    
+}
 
 
     const handleDelete = async () => {

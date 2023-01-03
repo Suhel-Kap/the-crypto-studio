@@ -93,25 +93,29 @@ export default function PollCreationForm(props: any) {
                 const {groupId} = router.query
                 const {data, error} = await orbis.getGroupMembers(groupId)
                 console.log(data)
-                const mentions = data.map((member: any) => ({did: member.profile_details.did, username: member.profile_details.profile.username}))
+                const mentions = data.map((member: any) => ({did: member.profile_details.did, username: member.profile_details.profile.username as string}))
                 const groupMembers = data.map((member: any) => member.did.slice(-42))
                 try {
                     const endDate = new Date(values.endDate)
                     endDate.setHours(values.endHour)
                     endDate.setMinutes(values.endMinute)
                     const electionId = await initElection(signer, groupMembers, values.topic, values.description, endDate, imageUri, values.questions)
+                    console.log(groupId)
                     console.log(electionId)
+
                     const res = await orbis.createPost(
                         {
                             context: `${groupId}`,
-                            body: `${electionId}`,
-                            mentions: mentions,
+                            body: "Created the"+`${electionId}`,
                             tags: [{
                                 slug: "poll",
                                 title: "Poll"
                             }],
                         }
                     )
+                    if(res===200){
+                        let res2 = await orbis.editPost(res.doc, {body: "  Created the election with ID =   "+electionId+"  check it here" + "https://the-crypto-studio.vercel.app/voting?electionID="+electionId+"&creator=did%3Apkh%3Aeip155%3A42%3A"+address+"&streamId="+res.dec});
+                    }
                     if (res.status === 200) {
                         updateNotification({
                             title: "Poll created",

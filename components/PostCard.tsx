@@ -11,7 +11,7 @@ import {useRouter} from "next/router";
 import LitJsSdk from "@lit-protocol/sdk-browser";
 import {tcsContractAddress} from "../constants";
 import {getNfts} from "../utils/getNfts";
-import {useAccount} from "wagmi";
+import {getOwnersForNft} from "../utils/getOwnersForNft";
 
 dayjs.extend(relativeTime)
 
@@ -33,35 +33,43 @@ export default function PostCard(props: any) {
     useEffect(() => {
         var cond = props.post.content.tags[1]
         console.log(cond)
-        if(cond){
-            var data = JSON.parse(props.post.content.tags[1].title)
+        if (cond) {
+            let data = JSON.parse(props.post.content.tags[1].title)
+            if(data.tokenid){
+                getOwnersForNft(data.tokenid).then((owners:any)=>{
+                    console.log(owners.owners)
+                    if(owners.owners.includes(props.address.toLowerCase())){
+                        setAble(true)
+                    }
+                })
+            }
             let tokenIds: any = []
-            if(props.groupId){
+            if (props.groupId) {
                 getNfts(props.groupId).then((nfts) => {
                     nfts.forEach((nft: any) => {
-                    tokenIds.push(nft.tokenID)
+                        tokenIds.push(nft.tokenID)
                     });
                     console.log(tokenIds)
-                    tokenIds.forEach((tokenid:any)=>{
-                        if(tokenid==data.tokenid){
+                    tokenIds.forEach((tokenid: any) => {
+                        if (tokenid == data.tokenid) {
                             setAble(true)
                         }
                     })
                 })
             }
             setEncrypted(true)
-        }
-        else{
+        } else {
             setEncrypted(false)
             setAble(false)
         }
-        
-                
-        if (props.post.content.body.includes( "This is an encrypted post visible only to")) {
+
+
+        if (props.post.content.body.includes("This is an encrypted post visible only to")) {
             setEncrypted(true)
         }
     }, [props.post.content.body])
-    function getTokenGatedConditions(tokenid:any){
+
+    function getTokenGatedConditions(tokenid: any) {
         const accessControlConditions = [
             {
                 contractAddress: tcsContractAddress["the-crypto-studio"],
@@ -98,12 +106,11 @@ export default function PostCard(props: any) {
                     value: "0",
                 },
             }]
-            return accessControlConditions
+        return accessControlConditions
     }
 
-    
 
-    var evmContractConditions = [
+    let evmContractConditions = [
         {
             contractAddress: tcsContractAddress["the-crypto-studio"],
             functionName: "isSpaceMember",
@@ -131,10 +138,10 @@ export default function PostCard(props: any) {
     const decryptUserPost = async (encrypted: any) => {
         const client = new LitJsSdk.LitNodeClient()
 
-        const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: "mumbai" })
+        const authSig = await LitJsSdk.checkAndSignAuthMessage({chain: "mumbai"})
         await client.connect()
-        
-        
+
+
         evmContractConditions = getTokenGatedConditions(encrypted.tokenid)
         const symmetricKey2 = await client.getEncryptionKey({
             evmContractConditions,
@@ -147,15 +154,13 @@ export default function PostCard(props: any) {
             symmetricKey2
         )
     }
-    
 
-    
 
     const decrypt = async (encrypted: any) => {
-        if(!props?.spaceMember) return
+        if (!props?.spaceMember) return
 
         const client = new LitJsSdk.LitNodeClient()
-        const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: "mumbai" })
+        const authSig = await LitJsSdk.checkAndSignAuthMessage({chain: "mumbai"})
         await client.connect()
 
         const symmetricKey2 = await client.getEncryptionKey({
@@ -170,32 +175,27 @@ export default function PostCard(props: any) {
         )
     }
 
-    if(encrypted && router.pathname === "/space"){
+    if (encrypted && router.pathname === "/space") {
         const encryption = JSON.parse(props.post.content.tags[1].title)
         decrypt(encryption).then(res => setBody(res))
     }
 
-    if((router.pathname === "/user" || router.pathname === "/my-nft")  && encrypted){
-        // able is a useState variable and checks if the user has balanceOf > 0 for the current post 
+    if ((router.pathname === "/user" || router.pathname === "/my-nft") && encrypted) {
+        // able is a useState variable and checks if the user has balanceOf > 0 for the current post
         // token gated NFT
         console.log(able)
-       if(true){
-        var EncryptionData = JSON.parse(props.post.content.tags[1].title)
-        console.log(EncryptionData)
-        if(EncryptionData.tokenid){
-        console.log("encryption", EncryptionData)
-        decryptUserPost(EncryptionData).then((decrypted: any) => {
-        setBody(decrypted)
-        console.log(decrypted)
-    })
-       }
-            
-            
-        
-        
+        if (able) {
+            var EncryptionData = JSON.parse(props.post.content.tags[1].title)
+            console.log(EncryptionData)
+            if (EncryptionData.tokenid) {
+                console.log("encryption", EncryptionData)
+                decryptUserPost(EncryptionData).then((decrypted: any) => {
+                    setBody(decrypted)
+                    console.log(decrypted)
+                })
+            }
+        }
     }
-    
-}
 
 
     const handleDelete = async () => {

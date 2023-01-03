@@ -85,7 +85,7 @@ export default function UserPosts() {
                 {
                     data?.map((post: any, index: number) => {
                         return (
-                            <PostCard key={index} post={post}/>
+                            <PostCard address={address as string} key={index} post={post}/>
                         )
                     })
                 }

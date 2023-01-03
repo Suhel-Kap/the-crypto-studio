@@ -44,6 +44,7 @@ export default function GroupPosts({spaceMember}: GroupPostProps){
             {
                 data?.map((post: any, index: number) => {
                     return (
+                        // @ts-ignore
                         <PostCard spaceMember={spaceMember} spaceName={spaceName} key={index} post={post} />
                     )
                 })

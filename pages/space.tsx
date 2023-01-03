@@ -39,6 +39,19 @@ const useStyles = createStyles((theme) => ({
         [theme.fn.smallerThan('md')]: {
             width: "100%"
         }
+    },
+    btnGrp: {
+        [theme.fn.smallerThan('md')]: {
+            display: "none"
+        }
+    },
+    btnGrpMobile: {
+        [theme.fn.smallerThan('md')]: {
+            display: "block"
+        },
+        [theme.fn.largerThan('md')]: {
+            display: "none"
+        }
     }
 }))
 
@@ -217,7 +230,7 @@ export default function Space() {
                                 {renderCreator}
                             </Grid.Col>
                             <Grid.Col lg={6}>
-                                <Button.Group sx={{height: "100%"}}>
+                                <Button.Group sx={{height: "100%"}} className={classes.btnGrp}>
                                     <Button component={"a"} href={query} target={"_blank"} color={"indigo"} sx={{height: "-webkit-fill-available"}}
                                             className={classes.btn}>
                                         View Space on Opensea
@@ -243,6 +256,32 @@ export default function Space() {
                                         Go to Space Chat
                                     </Button>
                                 </Button.Group>
+                                <div className={classes.btnGrpMobile}>
+                                    <Button component={"a"} href={query} target={"_blank"} color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                            className={classes.btn}>
+                                        View Space on Opensea
+                                    </Button>
+                                    {!user &&
+                                        <Button onClick={() => router.push('/discussions')} color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                                variant={"light"}
+                                                className={classes.btn}>
+                                            Connect to Orbis
+                                        </Button>}
+                                    {user && isGroupMember &&
+                                        <Button variant={"light"} onClick={handleLeave} color={"indigo"} sx={{height: "-webkit-fill-available"}}
+                                                className={classes.btn}>
+                                            Leave Space
+                                        </Button>}
+                                    {user && !isGroupMember &&
+                                        <Button variant={"light"} onClick={handleJoin} color={"indigo"}
+                                                className={classes.btn}>
+                                            Join Space
+                                        </Button>}
+                                    <Button variant={"subtle"} component={"a"} href={orbisGroup} target={"_blank"}
+                                            color={"indigo"} className={classes.btn}>
+                                        Go to Space Chat
+                                    </Button>
+                                </div>
                             </Grid.Col>
                         </Grid>
                     </Stack>}

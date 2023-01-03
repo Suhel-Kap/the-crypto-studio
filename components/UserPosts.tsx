@@ -9,7 +9,6 @@ import {useAccount} from "wagmi";
 import getCreatedNfts from "../utils/getCreatedNfts";
 
 
-
 export default function UserPosts() {
     const router = useRouter()
     const [isDashboard, setIsDashboard] = useState(false)
@@ -47,14 +46,15 @@ export default function UserPosts() {
 
     const getTokenId = async () => {
         if (router.pathname === "/my-nft") {
-                let tokenIds: any = []
-                getCreatedNfts(address!.toLowerCase()).then((nfts) => {
-                        nfts.forEach((nft: any) => {
-                        tokenIds.push(nft.tokenID)
-                    });
-                    // console.log(tokenIds)
-                    setTokenIds(tokenIds)
-                })
+            let tokenIds: any = []
+            getCreatedNfts(address!.toLowerCase()).then((nfts) => {
+                nfts.forEach((nft: any) => {
+                    tokenIds.push(nft.tokenID)
+                });
+                // console.log(tokenIds)
+                setTokenIds(tokenIds)
+                setSelectedToken(tokenIds[0])
+            })
         }
     }
 
@@ -62,13 +62,13 @@ export default function UserPosts() {
         if (!address) return
         if (!checked) return
         getTokenId()
-        console.log(selectedToken)
     }, [address, checked])
 
     return (
         <Container>
-            {isDashboard && 
-                <PostInput spaceName={""} groupId={address as string} tag={address as string} encrypted={checked} tokenId={selectedToken}/>}
+            {isDashboard &&
+                <PostInput spaceName={""} groupId={address as string} tag={address as string} encrypted={checked}
+                           tokenId={selectedToken}/>}
             {isDashboard && <div style={{
                 marginTop: -60
             }}></div>}

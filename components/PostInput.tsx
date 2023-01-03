@@ -20,6 +20,7 @@ interface PostInputProps {
 export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}: PostInputProps) {
     const [content, setContent] = useInputState("")
     const {address} = useAccount()
+    console.log(tokenId)
 
     const router = useRouter()
     // @ts-ignore

@@ -122,7 +122,7 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         }
         console.log(groupId.toLowerCase())
         const res = await orbis.createPost({
-            body: "https://the-crypto-studio.vercel.app/space?address="+address.toLowerCase()+"&groupId="+groupId.toLowerCase()+"&id=The%20Immutable%20Gallery",
+            body: "https://the-crypto-studio.vercel.app/space?address="+address!.toLowerCase()+"&groupId="+groupId.toLowerCase()+"&id=The%20Immutable%20Gallery",
             context: groupId.toLowerCase(),
             tags: [{
                 slug: tag.toLowerCase(),
@@ -183,7 +183,7 @@ export default function PostInput({groupId, tag, tokenId, spaceName, encrypted}:
         }
         console.log("TokenID : ",encryptedRes.tokenid)
         let bodytext = "This is an encrypted post visible only to tokenID = "+encryptedRes.tokenid+" NFT holders check it here on TheCryptoStudioPlatform "+
-        "https://the-crypto-studio.vercel.app/user?address="+address.toLowerCase()
+        "https://the-crypto-studio.vercel.app/user?address="+address!.toLowerCase()
         console.log(bodytext)
         const res = await orbis.createPost({
             body: bodytext,

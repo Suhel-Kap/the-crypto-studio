@@ -6,7 +6,7 @@ import {useIsMounted} from "../hooks/useIsMounted";
 import {GlobalContext} from "../contexts/GlobalContext";
 import PostCard from "./PostCard";
 import {useAccount} from "wagmi";
-import {getNfts} from "../utils/getNfts";
+import getCreatedNfts from "../utils/getCreatedNfts";
 
 
 
@@ -48,11 +48,11 @@ export default function UserPosts() {
     const getTokenId = async () => {
         if (router.pathname === "/my-nft") {
                 let tokenIds: any = []
-                getNfts(address!).then((nfts) => {
-                    nfts.forEach((nft: any) => {
-                    tokenIds.push(nft.tokenID)
+                getCreatedNfts(address!).then((nfts) => {
+                        nfts.forEach((nft: any) => {
+                        tokenIds.push(nft.tokenID)
                     });
-                    console.log(tokenIds)
+                    // console.log(tokenIds)
                     setTokenIds(tokenIds)
                 })
         }

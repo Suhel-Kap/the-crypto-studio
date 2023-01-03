@@ -48,7 +48,7 @@ export default function UserPosts() {
     const getTokenId = async () => {
         if (router.pathname === "/my-nft") {
                 let tokenIds: any = []
-                getNfts(address).then((nfts) => {
+                getNfts(address!).then((nfts) => {
                     nfts.forEach((nft: any) => {
                     tokenIds.push(nft.tokenID)
                     });

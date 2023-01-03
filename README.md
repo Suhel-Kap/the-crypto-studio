@@ -44,7 +44,7 @@ We provide them all of them from our UI!
 # Technologies Used
 
 <p align="left">
-<img src="./public/TCSTECH.webp"/>
+<img src="./public/TCSTECH2.webp"/>
 
 
 

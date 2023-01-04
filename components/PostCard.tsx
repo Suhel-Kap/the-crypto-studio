@@ -27,12 +27,12 @@ export default function PostCard(props: any) {
     const [hahaColor, setHahaColor] = useState("gray")
     const [encrypted, setEncrypted] = useState(false)
     const [able, setAble] = useState(false)
-    const [body, setBody] = useState(`This is an encrypted post visible only to ${props.spaceName} NFT holders.`)
+    const [body, setBody] = useState("")
     // @ts-ignore
     const {orbis} = useContext(GlobalContext)
     useEffect(() => {
         let cond = props.post.content.tags[1]
-        // console.log(cond)
+        console.log(props)
         if (cond) {
             let data = JSON.parse(props.post.content.tags[1].title)
             if(data.tokenid){
@@ -40,6 +40,8 @@ export default function PostCard(props: any) {
                     console.log(owners.owners)
                     if(owners.owners.includes(props.address.toLowerCase())){
                         setAble(true)
+                    }else{
+                        setBody(`Post only visible to token holders of tokenID = ${data.tokenid}`)
                     }
                 })
             }
@@ -176,24 +178,18 @@ export default function PostCard(props: any) {
 
     if (encrypted && router.pathname === "/space") {
         const encryption = JSON.parse(props.post.content.tags[1].title)
-        decrypt(encryption).then(res => setBody(res))
+        decrypt(encryption).then(res => setBody(res?res:`Post only visible to spaceMembers. You will be a space member if u hold one NFT from that space`))
     }
 
-    if ((router.pathname === "/user" || router.pathname === "/my-nft") && encrypted) {
-        // able is a useState variable and checks if the user has balanceOf > 0 for the current post
-        // token gated NFT
-        // console.log(able)
-        if (able) {
-            let EncryptionData = JSON.parse(props.post.content.tags[1].title)
-            // console.log(EncryptionData)
+    if ((router.pathname === "/user" || router.pathname === "/my-nft") && encrypted && able) {
+        let EncryptionData = JSON.parse(props.post.content.tags[1].title)
+        
             if (EncryptionData.tokenid) {
-                // console.log("encryption", EncryptionData)
                 decryptUserPost(EncryptionData).then((decrypted: any) => {
                     setBody(decrypted)
-                    // console.log(decrypted)
                 })
-            }
-        }
+                console.log("dgfsgsgsfgsfg:   ",props.post.content.body)            }
+        
     }
 
 

@@ -38,6 +38,9 @@ export default function PollCreationForm(props: any) {
     useEffect(() => {
         if(!mounted) return
         if(!address) return
+        (async() => {
+            console.log("address", address)
+        })()
     }, [mounted, address])
 
     const form = useForm({

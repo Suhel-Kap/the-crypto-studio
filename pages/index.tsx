@@ -12,7 +12,6 @@ import ComingSoon from "../components/ComingSoon";
 import { GlobalContext } from '../contexts/GlobalContext';
 import {useAccount} from "wagmi";
 
-
 export default function Home() {
     const [nfts, setNfts] = useState();
     const {isDisconnected} = useAccount()

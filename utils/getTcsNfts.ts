@@ -10,6 +10,7 @@ const alchemy = new Alchemy(config)
 
 export async function getTcsNfts(){
     const nfts = await alchemy.nft.getNftsForContract(tcsContractAddress["the-crypto-studio"].toLowerCase(), {pageSize: 9})
+    console.log(nfts)
     let nftsData = []
     for (const nft of nfts.nfts) {
         // @ts-ignore

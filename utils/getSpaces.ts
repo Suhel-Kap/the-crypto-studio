@@ -1,5 +1,5 @@
 import {tableland} from "../constants";
-const spaceTableUri = `https://testnets.tableland.network/query?s=SELECT%20spaceName%20FROM%20${tableland["space-artists"]}`
+const spaceTableUri = `https://testnets.tableland.network/api/v1/query?statement=SELECT%20spaceName%20FROM%20${tableland["space-artists"]}`
 
 const getSpaces = async (address: `0x${string}`) => {
     const query = spaceTableUri + `%20WHERE%20space_artist=%27${address?.toLowerCase()}%27`
